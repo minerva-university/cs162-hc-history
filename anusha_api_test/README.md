@@ -7,12 +7,12 @@
 - run `python test_endpoints.py` if you want to get your own data (read more below)
 
 #### API Endpoints
-- Identified all accessible API endpoints. The list will be stored in `all_minerva_endpoints.txt`
-- Created `test_endpoints.py`, a script to systematically send GET requests to all endpoints
+- I identified all accessible API endpoints. The list is stored in `all_minerva_endpoints.txt`
+- I created `test_endpoints.py`, a script to systematically send GET requests to all endpoints
 - Requests may fail due to missing parameters/other errors
 
 #### API Responses
-- API responses are now stored in the `api_responses/` directory
+- API responses are stored in the `api_responses/` directory
 - Each endpoint has its own `.txt` file
 - The script formats JSON responses for readability and logs errors when applicable
 
