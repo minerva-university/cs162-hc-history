@@ -80,7 +80,7 @@ This is an example of feedback I got on a CS162 assignment:
 ### **Most Important Data**
 - **`learning-outcome`**: ID for the learning outcome/HC being graded
 - **`score`**: The score for each piece of feedback
-- **`type`**: Can be `"assignment"`, `"poll"`, `"video"`, or `"preclass_assignment"`
+- **`type`**: Can be "assignment", "poll", "video", or "preclass_assignment"
 
 ### **URL Format for Feedback Entries**
 
@@ -92,25 +92,25 @@ where **assignment-id**, **target-user-id**, and **id** are data points for each
 
 ### **Other Data Points & Findings**
 
-- **`active`**: Always `true`, unclear what it does
-- **`assignment-id`**: `null` if feedback is from a poll or in-class score
-- **`broken-hc-key`** & **`class-event-id`**: Always `null`
+- **`active`**: Always true, unclear what it does
+- **`assignment-id`**: null if feedback is from a poll or in-class score
+- **`broken-hc-key`** & **`class-event-id`**: Always null
 - **`comment`** (text), **`created-on`** (date), **`graded-blindly`** (T/F): Self-explanatory
 - **`grader-user-id`**: Likely the professor or TA who graded it
-- **`hc-id`** & **`hc-item-id`**: Always `null`. **`hc-id`** might have been replaced with **`learning-outcome`**.
-- **`klass-id`**: `null` for assignments. But poll/in-class/video grades are linked at:
+- **`hc-id`** & **`hc-item-id`**: Always null. **hc-id** might have been replaced with **learning-outcome**.
+- **`klass-id`**: null for assignments. But poll/in-class/video grades are linked at:
   - **`https://forum.minerva.edu/app/courses/0/sections/0/classes/**klass-id**/review`**
-  - for direct links: `review?tab=polls`, `review?tab=video`, `review?tab=workbooks`
-- **`learning-outcome`**: ID for the learning outcome/HC being graded, `null` if it's just a comment
+  - for direct links: review?tab=polls, review?tab=video, review?tab=workbooks
+- **`learning-outcome`**: ID for the learning outcome/HC being graded, null if it's just a comment
 - **`metadata`**: Unknown purpose lol
 - **`poll-session-id`**: Exists for polls, not sure what it's used for
-- **`recording-session`** & **`recording-session-event-id`**: Always `null`
+- **`recording-session`** & **`recording-session-event-id`**: Always null
 - **`score`**: The score for each piece of feedback
-- **`scoring-category`**: Seems to always be `null`
+- **`scoring-category`**: Seems to always be null
 - **`target-assignment-group-id`**: Only relevant for group projects
-- **`target-breakout-group-id`**: Always `null`
+- **`target-breakout-group-id`**: Always null
 - **`target-user-id`**: The student receiving feedback
-- **`type`**: Can be `"assignment"`, `"poll"`, `"video"`, or `"preclass_assignment"`
+- **`type`**: Can be "assignment", "poll", "video", or "preclass_assignment"
 - **`updated-on`**: Timestamp of the last update
 
 This section will be updated as I figure out more details from other endpoints! 
