@@ -1,5 +1,5 @@
 
-from api import HEADERS, BASE_URL, get_courses
+from api import HEADERS, BASE_URL
 
 import requests
 def get_assignments():

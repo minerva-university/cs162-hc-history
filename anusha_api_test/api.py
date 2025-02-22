@@ -14,14 +14,3 @@ HEADERS = {
     "Cookie": f"csrftoken={CSRF_TOKEN}; sessionid={SESSION_ID}",
     "X-Csrftoken": CSRF_TOKEN,
 }
-
-def get_courses():
-    """Fetches the list of courses the user is enrolled in."""
-    url = f"{BASE_URL}assignments"
-    response = requests.get(url, headers=HEADERS, params={"course_id":3409})
-    
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Failed to fetch courses. Status code: {response.status_code}")
-        return []
