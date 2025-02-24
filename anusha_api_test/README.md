@@ -1,8 +1,8 @@
 ## API Testing Progress
 
-### Progress Made:
+### Running The Code
 
-#### Running The Code:
+#### From the Console
 - open your console and run `git pull && git switch anusha-api-test && cd anusha_api_test` to get into this folder
 - run `python setup.py` if you want to get your own data
 - data will be pulled and stored in a new folder, `api_responses/`
@@ -14,6 +14,8 @@
 - Click on the "Headers" tab
 - Click on the "Request Headers" dropdown
 - One of the first ten rows should say Cookie: csrftoken=...; sessionid=...;
+
+### Progress Made
 
 #### API Endpoints
 - I identified all accessible API endpoints. The list is stored in `all_minerva_endpoints.txt`
