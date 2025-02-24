@@ -3,8 +3,17 @@
 ### Progress Made:
 
 #### Running The Code:
-- Navigate to `anusha_api_test/` in your console
-- run `python test_endpoints.py` if you want to get your own data (read more below)
+- open your console and run `git pull && git switch anusha-api-test && cd anusha_api_test` to get into this folder
+- run `python setup.py` if you want to get your own data
+- data will be pulled and stored in a new folder, `api_responses/`
+
+#### Finding CSRF Token and Session ID
+- Go to [forum.minerva.edu](https://forum.minerva.edu)
+- Inspect element, click on the Network tab, and refresh the page
+- Search for the "self" file
+- Click on the "Headers" tab
+- Click on the "Request Headers" dropdown
+- One of the first ten rows should say Cookie: csrftoken=...; sessionid=...;
 
 #### API Endpoints
 - I identified all accessible API endpoints. The list is stored in `all_minerva_endpoints.txt`
@@ -21,14 +30,7 @@
 - To use, create a .env file with the following two lines (replacing with your data):
     - `CSRF_TOKEN="XXXXXX"`
     - `SESSION_ID="XXXXX"`
-
-#### Finding CSRF Token and Session ID
-- Go to [forum.minerva.edu](https://forum.minerva.edu)
-- Inspect element, click on the Network tab, and refresh the page
-- Search for the "self" file
-- Click on the "Headers" tab
-- Click on the "Request Headers" dropdown
-- One of the first ten rows should say Cookie: csrftoken=...; sessionid=...;
+- `setup.py` will prompt you for these tokens
 
 #### Next Steps
 - I'm currently analyzing API responses to determine useful data
