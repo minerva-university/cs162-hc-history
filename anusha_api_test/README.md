@@ -15,6 +15,8 @@
 - Click on the "Request Headers" dropdown
 - One of the first ten rows should say Cookie: csrftoken=...; sessionid=...;
 
+<img width="1312" alt="gettokens" src="https://github.com/user-attachments/assets/549df9fd-36ec-45c2-8a70-d42ffc7f0b25" />
+
 ### Progress Made
 
 #### API Endpoints
