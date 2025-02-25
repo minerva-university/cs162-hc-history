@@ -27,7 +27,7 @@ def main():
 
     # Run test_endpoints.py
     print("Running test_endpoints.py...")
-    subprocess.run(["python", "test_endpoints.py"])
+    subprocess.run(["python3", "test_endpoints.py"])
 
 if __name__ == "__main__":
     main()
