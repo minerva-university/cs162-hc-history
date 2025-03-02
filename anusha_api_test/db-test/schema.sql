@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS outcome_assessments (
 CREATE TABLE IF NOT EXISTS courses (
     course_id INTEGER PRIMARY KEY, 
     course_title TEXT NOT NULL, 
-    code TEXT NOT NULL, 
-    college INTEGER, 
+    course_code TEXT NOT NULL, 
+    college_id INTEGER, 
     term_id INTEGER, 
     state TEXT,
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -37,6 +37,13 @@ CREATE TABLE IF NOT EXISTS learning_outcomes (
 CREATE TABLE IF NOT EXISTS terms (
     term_id TEXT PRIMARY KEY,
     term_title TEXT,
+    updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS colleges (
+    college_id INTEGER PRIMARY KEY,
+    college_code TEXT NOT NULL,
+    college_name TEXT NOT NULL,
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

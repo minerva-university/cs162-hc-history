@@ -79,7 +79,7 @@ def insert_courses(cursor, lo_trees):
             course_college = course_info.get("college")
                 
             cursor.execute("""
-            INSERT OR IGNORE INTO courses (course_id, course_title, code, college, term_id, state)
+            INSERT OR IGNORE INTO courses (course_id, course_title, course_code, college_id, term_id, state)
             VALUES (?, ?, ?, ?, ?, ?)
             """, (course_id, course_title, course_code, course_college, course_term, course_state))
 
@@ -114,6 +114,19 @@ def insert_terms(cursor, terms):
         """, (term_id, term_title))
 
     print("✅ Terms data inserted.")
+
+def insert_colleges(cursor, colleges):
+    if isinstance(colleges, list):
+        for college in colleges:
+            college_id = college.get("id")
+            college_code = college.get("code")
+            college_name = college.get("name")
+
+            # Insert into the colleges table
+            cursor.execute("""
+            INSERT OR IGNORE INTO colleges (college_id, college_code, college_name)
+            VALUES (?, ?, ?)
+            """, (college_id, college_code, college_name))
 
 # Insert assignment data into the database
 def insert_assignment_data(cursor, assignment_data):
@@ -188,6 +201,15 @@ def fetch_assignment_data(BASE_URL, headers, assignment_id):
     else:
         return None
 
+def create_assignment_scores_table(db_path, sql_file):
+    """Executes the SQL script to create the assignment_scores table."""
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        with open(sql_file, "r") as f:
+            sql_script = f.read()
+        cursor.executescript(sql_script)
+        print("✅ Assignment Scores table created successfully!")
+
 # Main function to tie everything together
 def main():
     # Load environment variables
@@ -205,8 +227,9 @@ def main():
     lo_trees = fetch_data_from_api(f"{BASE_URL}lo-trees", headers)
     terms = fetch_data_from_api(f"{BASE_URL}terms", headers)
     outcomes = fetch_data_from_api(f"{BASE_URL}outcome-assessments", headers)
-    
-    if not lo_trees or not terms or not outcomes:
+    colleges = fetch_data_from_api(f"{BASE_URL}colleges", headers)
+
+    if not lo_trees or not terms or not outcomes or not colleges:
         print("❌ No data returned from the API.")
         return  # Exit if no data is returned from the API
     
@@ -218,6 +241,7 @@ def main():
     insert_courses(cursor, lo_trees)
     insert_learning_outcomes(cursor, lo_trees)
     insert_terms(cursor, terms)
+    insert_colleges(cursor, colleges)
 
     # Commit and close connection
     conn.commit()
@@ -239,6 +263,9 @@ def main():
     conn.commit()
     conn.close()
 
+    # Create the assignment_scores table
+    sql_file = "views.sql"
+    create_assignment_scores_table(DB_NAME, sql_file)
 
     print("✅ Data successfully stored in data.db")
 
