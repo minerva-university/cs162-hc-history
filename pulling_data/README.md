@@ -1,6 +1,6 @@
 # Minerva API Client
 
-This repository is a Python-based client for interacting with the Minerva API, designed to fetch data, store it, and allow you to view the data in a structured format.
+This is a Python-based client for interacting with the Minerva API, designed to fetch data, store it, and allow you to view the data in a structured format.
 
 ## Installation
 
@@ -34,7 +34,7 @@ To set up the project, you'll need to create a virtual environment.
     ```
     git pull && git switch anusha-api-test && cd pulling_data
     ```
-3. Run the setup script to pull data and store it in a new folder (`api_responses/`):
+3. Run the setup script to pull data and store it:
     ```
     python3 setup.py
     ```
