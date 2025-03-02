@@ -14,7 +14,7 @@ def create_env_file():
         env_file.write(f'CSRF_TOKEN="{csrf_token}"\n')
         env_file.write(f'SESSION_ID="{session_id}"\n')
 
-    print(".env file created successfully.")
+    print("✅ .env file created successfully.")
     print("You can edit your CSRF_TOKEN and SESSION_ID in the .env file if necessary.")
 
 def main():
