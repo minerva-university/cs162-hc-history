@@ -3,6 +3,7 @@ DROP VIEW IF EXISTS assignment_scores;
 CREATE VIEW assignment_scores AS 
 SELECT 
     oa.assessment_id AS assessment_id, 
+    oa.score AS score,
     oa.comment AS comment,
     lo.name AS outcome_name, 
     lo.outcome_id AS outcome_id, 
