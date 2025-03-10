@@ -1,1 +1,1 @@
-Please open ``pulling_data/`` for the most recent code and README
+Please open ``pulling_data/`` for the backend code
