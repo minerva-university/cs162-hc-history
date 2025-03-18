@@ -1,4 +1,17 @@
 "use client"
+/**
+ * GradeLegend Component
+ * 
+ * A visual representation of the grading scale used throughout the platform.
+ * Features:
+ * - Displays grade levels from 1-5 with corresponding labels and colors
+ * - Includes animated particle background using HTML Canvas
+ * - Interactive hover effects on grade elements
+ * - Consistent color coding with the rest of the platform
+ * 
+ * The component uses Framer Motion for animations and HTML Canvas for
+ * the particle background effect.
+ */ 
 
 import { useEffect, useRef } from "react"
 import { motion } from "framer-motion"
