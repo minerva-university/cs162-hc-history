@@ -1,6 +1,6 @@
 # 📚 AI Summary Tool for Student Feedback
 
-This project uses OpenAI’s GPT models to generate natural language summaries from student feedback data stored in the `assignment_scores` view of a SQLite database. The summaries are saved into structured tables to support analysis, reporting, or visualization.
+This project uses OpenAI's GPT models to generate natural language summaries from student feedback data stored in the `assignment_scores` view of a SQLite database. The summaries are saved into structured tables to support analysis, reporting, or visualization.
 
 ---
 
@@ -18,29 +18,45 @@ pip install -r requirements.txt
 
 ### 2️⃣ Set Up OpenAI API Key
 
-Create a `.env` file inside the `ai-summary/` directory and paste:
+You have two options to set up your OpenAI API key:
 
+#### Option 1: Using the Setup Script (Recommended)
+Run the setup script and follow the prompts:
+```bash
+python setup.py
+```
+This will:
+- Ask if you want to enable AI summarization
+- Guide you through getting an OpenAI API key
+- Automatically save your key to the .env file
+
+#### Option 2: Manual Setup
+Create a `.env` file inside the `ai-summary/` directory and paste:
 ```
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-> 🔒 Do **not** share or commit your API key.
+> 🔒 Do **not** share or commit your API key. The .env file is automatically ignored by Git.
 
 ### 3️⃣ Initialize Database Schema
 
-Ensure your SQLite database exists at this relative path:  
-`../pulling_data/data.db`
-
-Then run:
+Initialize the database and set up OpenAI:
 
 ```bash
-sqlite3 ../pulling_data/data.db < db_schema/setup.sql
+python init_db.py
 ```
 
 This creates the following tables:
 - `ai_summaries`
 - `assignment_summaries`
 - `outcome_summaries`
+
+### 4️⃣ Verify Setup
+
+Test that your OpenAI key is working:
+```bash
+python test_openai.py
+```
 
 ---
 

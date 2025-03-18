@@ -1,4 +1,5 @@
 import sqlite3
+from setup import setup_openai
 
 def run_setup():
     with open("db_schema/setup.sql", "r") as f:
@@ -9,5 +10,9 @@ def run_setup():
     conn.commit()
     print(f"✅ Database schema initialized in {db_path}")
 
-if __name__ == "__main__":
+def main():
     run_setup()
+    setup_openai()
+
+if __name__ == "__main__":
+    main()
