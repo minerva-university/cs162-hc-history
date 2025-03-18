@@ -1,2 +1,0 @@
-=== USERS (Status Code: 400) ===
-⚠️ ERROR: 400 - {"error":"Must specify a filter"}

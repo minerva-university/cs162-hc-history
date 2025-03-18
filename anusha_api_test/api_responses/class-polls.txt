@@ -1,2 +1,0 @@
-=== CLASS-POLLS (Status Code: 405) ===
-⚠️ ERROR: 405 - {"detail":"Method \"GET\" not allowed."}
