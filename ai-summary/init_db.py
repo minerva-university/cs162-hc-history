@@ -1,4 +1,6 @@
 import sqlite3
+import os
+from dotenv import load_dotenv
 from setup import setup_openai
 
 def run_setup():
@@ -12,7 +14,11 @@ def run_setup():
 
 def main():
     run_setup()
-    setup_openai()
+    
+    # Only run OpenAI setup if API key doesn't exist
+    load_dotenv()
+    if not os.getenv('OPENAI_API_KEY'):
+        setup_openai()
 
 if __name__ == "__main__":
     main()
