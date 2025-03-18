@@ -1,0 +1,75 @@
+=== PUBSUBSERVERS (Status Code: 200) ===
+[
+    {
+        "id": 45,
+        "is-available": true,
+        "hostname-prefix": "pubsub-1",
+        "group": "default"
+    },
+    {
+        "id": 46,
+        "is-available": false,
+        "hostname-prefix": "pubsub-7",
+        "group": "default"
+    },
+    {
+        "id": 47,
+        "is-available": false,
+        "hostname-prefix": "pubsub-5",
+        "group": "default"
+    },
+    {
+        "id": 48,
+        "is-available": true,
+        "hostname-prefix": "pubsub-2",
+        "group": "default"
+    },
+    {
+        "id": 49,
+        "is-available": false,
+        "hostname-prefix": "pubsub-6",
+        "group": "default"
+    },
+    {
+        "id": 50,
+        "is-available": false,
+        "hostname-prefix": "pubsub-3",
+        "group": "default"
+    },
+    {
+        "id": 51,
+        "is-available": false,
+        "hostname-prefix": "pubsub-4",
+        "group": "default"
+    },
+    {
+        "id": 52,
+        "is-available": false,
+        "hostname-prefix": "pubsub-8",
+        "group": "default"
+    },
+    {
+        "id": 53,
+        "is-available": false,
+        "hostname-prefix": "pubsub-india-1",
+        "group": "india"
+    },
+    {
+        "id": 54,
+        "is-available": false,
+        "hostname-prefix": "pubsub-india-2",
+        "group": "india"
+    },
+    {
+        "id": 56,
+        "is-available": false,
+        "hostname-prefix": "pubsub-india-3",
+        "group": "india"
+    },
+    {
+        "id": 57,
+        "is-available": false,
+        "hostname-prefix": "pubsub-hong-kong-1",
+        "group": "hong-kong"
+    }
+]

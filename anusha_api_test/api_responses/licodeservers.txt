@@ -1,0 +1,111 @@
+=== LICODESERVERS (Status Code: 200) ===
+[
+    {
+        "id": 14,
+        "group": "mke-sf",
+        "is-available": false,
+        "url": "licode1.av.minervaproject.com"
+    },
+    {
+        "id": 20,
+        "group": "mke-sf",
+        "is-available": false,
+        "url": "licode2.av.minervaproject.com"
+    },
+    {
+        "id": 24,
+        "group": "mke-sf",
+        "is-available": false,
+        "url": "licode3.av.minervaproject.com"
+    },
+    {
+        "id": 25,
+        "group": "mke-europe",
+        "is-available": false,
+        "url": "licode-eu1.av.minervaproject.com"
+    },
+    {
+        "id": 26,
+        "group": "mke-europe",
+        "is-available": false,
+        "url": "licode-eu2.av.minervaproject.com"
+    },
+    {
+        "id": 30,
+        "group": "mke-sp",
+        "is-available": false,
+        "url": "licode-sp1.av.minervaproject.com"
+    },
+    {
+        "id": 31,
+        "group": "mke-sp",
+        "is-available": false,
+        "url": "licode-sp2.av.minervaproject.com"
+    },
+    {
+        "id": 34,
+        "group": "development",
+        "is-available": true,
+        "url": "licode-dev1.av.minervaproject.com"
+    },
+    {
+        "id": 35,
+        "group": "mke-korea",
+        "is-available": false,
+        "url": "licode-ap1.av.minervaproject.com"
+    },
+    {
+        "id": 36,
+        "group": "mke-korea",
+        "is-available": false,
+        "url": "licode-ap2.av.minervaproject.com"
+    },
+    {
+        "id": 37,
+        "group": "mke-india",
+        "is-available": false,
+        "url": "licode-in1.av.minervaproject.com"
+    },
+    {
+        "id": 38,
+        "group": "mke-india",
+        "is-available": false,
+        "url": "licode-in2.av.minervaproject.com"
+    },
+    {
+        "id": 40,
+        "group": "mke-singapore",
+        "is-available": false,
+        "url": "licode-aps1.av.minervaproject.com"
+    },
+    {
+        "id": 41,
+        "group": "mke-europe",
+        "is-available": false,
+        "url": "licode-eu3.av.minervaproject.com"
+    },
+    {
+        "id": 42,
+        "group": "scalable",
+        "is-available": true,
+        "url": "licode-scalable1.av.minervaproject.com"
+    },
+    {
+        "id": 43,
+        "group": "development",
+        "is-available": true,
+        "url": "licode-dev2.av.minervaproject.com"
+    },
+    {
+        "id": 44,
+        "group": "mke-singapore",
+        "is-available": false,
+        "url": "licode-aps2.av.minervaproject.com"
+    },
+    {
+        "id": 45,
+        "group": "fallback",
+        "is-available": true,
+        "url": "licode-fallback1.av.minervaproject.com"
+    }
+]

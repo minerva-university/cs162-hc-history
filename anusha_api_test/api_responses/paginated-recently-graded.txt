@@ -1,0 +1,60 @@
+=== PAGINATED-RECENTLY-GRADED (Status Code: 200) ===
+{
+    "count": 766,
+    "next": "https://forum.minerva.edu/api/v1/paginated-recently-graded?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": 1022389,
+            "assessment": 92955,
+            "assignment": null,
+            "assignment-id": null,
+            "class-name": "CS162 Session 13 - SQL indices",
+            "course-id": 3409,
+            "item-type": "Class Assessment",
+            "klass-id": 90996,
+            "results": "1 score, 1 comment",
+            "section-id": 12249,
+            "was-seen": false
+        },
+        {
+            "id": 1020654,
+            "assessment": null,
+            "assignment": 1507253,
+            "assignment-id": 1507253,
+            "class-name": "Summary Paper",
+            "course-id": null,
+            "item-type": "Iterative Assignment",
+            "klass-id": null,
+            "results": "2 scores, 2 comments",
+            "section-id": null,
+            "was-seen": false
+        },
+        {
+            "id": 1019872,
+            "assessment": 93262,
+            "assignment": null,
+            "assignment-id": null,
+            "class-name": "IL181.006 Session 6 - Train your own chatbot (Illia)",
+            "course-id": 3429,
+            "item-type": "Class Assessment",
+            "klass-id": 91303,
+            "results": "1 score, 1 comment",
+            "section-id": 12312,
+            "was-seen": false
+        },
+        {
+            "id": 1018601,
+            "assessment": 92954,
+            "assignment": null,
+            "assignment-id": null,
+            "class-name": "CS162 Session 11 - Data normalization",
+            "course-id": 3409,
+            "item-type": "Class Assessment",
+            "klass-id": 90995,
+            "results": "1 comment",
+            "section-id": 12249,
+            "was-seen": false
+        }
+    ]
+}

@@ -1,0 +1,368 @@
+=== PAGINATED-ANNOUNCEMENTS (Status Code: 200) ===
+{
+    "count": 167,
+    "next": "https://forum.minerva.edu/api/v1/paginated-announcements?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": 13840,
+            "attachments": [],
+            "created-on": "2025-02-28T10:58:00Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "Hi all,\nDeep Learning is a tutorial that runs in the Monday/Tuesday slot, so we have gotten out of sync with tutorials that run in the Wednesday/Thursday slot (because of the spring break). We need to have an extra class.  I have gone and scheduled the extra class for Thursday 20 March. \n\nPlease make sure to update your calendars and add extra notifications so that you don't forget!\n\nKind regards,\nPhilip\n",
+            "sections": [
+                {
+                    "id": 24837,
+                    "section-id": 12312,
+                    "section-title": "IL181.006-Sterne, T@6PM Berlin Deep Learning"
+                }
+            ],
+            "send-date": "2025-02-28T10:58:00.400546Z",
+            "sender": {
+                "id": 595,
+                "aws-avatar-key": "65b66400-1de2-11e7-8da4-0aad7e0c93b9-avatar.png",
+                "email": "psterne@minerva.edu",
+                "first-name": "Philip",
+                "last-name": "Sterne",
+                "official-first-name": "Philip",
+                "official-last-name": "Sterne",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "[Deep Learning] Extra Class"
+        },
+        {
+            "id": 13838,
+            "attachments": [],
+            "created-on": "2025-02-28T03:47:10Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "GL98 Students,\n\nPlease be sure to review the Ethnographic Assignment instructions early as you will need to pick an Alumni partner to complete this assignment. Within the instructions you will find a list of over 100 alumni members who are willing to participate in the interview for this assignment. \n\nThe alumni member you select must be from the provided list and you must indicate your selection in one of the yellow cells; you will need to designate which alumni member you will be interviewing on the list by next Thursday, March 06. Alumni members are limited to two (and in some cases one) participant sign up, so these are on a first-come, first-served selection basis. \n\nPlease reach out if you have any questions. ",
+            "sections": [
+                {
+                    "id": 24835,
+                    "section-id": 12317,
+                    "section-title": "GL98-Section 3 Global Learning VIII"
+                }
+            ],
+            "send-date": "2025-02-28T03:47:10.118687Z",
+            "sender": {
+                "id": 12618,
+                "aws-avatar-key": "Jason_Lindo_12618_2022-11-01T00:12:11.926Z",
+                "email": "jason@minerva.edu",
+                "first-name": "Jason",
+                "last-name": "Lindo",
+                "official-first-name": "Jason",
+                "official-last-name": "Lindo",
+                "org-id": 1,
+                "role": "dean",
+                "title": "Dean"
+            },
+            "subject": "Ethnographic Assignment Partner Selection"
+        },
+        {
+            "id": 13835,
+            "attachments": [],
+            "created-on": "2025-02-27T14:22:04Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "Hey Students! \n\nYou're in the home stretch of your capstone now, here is what to expect in the next week or two.\n\nBefore your defense:\n1. Make sure you are signed up for your defense here: https://calendar.app.google/pRwjaPyXW5NjULpG9 \n2. Make sure you upload your complete, camera-ready capstone write up by March 2. This most be feature-complete with all indexes and materials. It is the version your advisors will be evaluating when making our pass/no pass decision.  \n3. At least 48 hours before your defense, upload a loom video here: https://docs.google.com/spreadsheets/d/1Zepz3CGck4g8rlrlFTQ0pBGm67prS4jp27j3fzMt2WQ/edit?usp=sharing\n that explains your project in some depth (this likely includes a demo, and an executive summary of the project).\n\nAt your defense\n1. Be prepared to show a running and interactive version of your project (demo, analysis, webpage etc). \n2. Have any critical visual aids at the ready.\n\nFor the defense we'll expect you to give a brief (5-10 minute) update on the work you've done since our last meeting, and then you should be ready to answer 10-20 minutes of questions about your project. We'll briefly hop into a breakout room to discuss the project for a few minutes, and then return to give you our pass/no pass decision and outline any changes we expect to see in your final capstone write up when you turn it in April 6. \n\nLooking forward to seeing where you've ended up on this long journey in the next two weeks.",
+            "sections": [
+                {
+                    "id": 24832,
+                    "section-id": 12378,
+                    "section-title": "CP194.029-Watson I, Wed @12:30PM San Francisco Capstone Directed Study II - Watson I"
+                }
+            ],
+            "send-date": "2025-02-27T14:22:04.364750Z",
+            "sender": {
+                "id": 598,
+                "aws-avatar-key": "Patrick_Watson_598_2023-01-03T18:09:28.606Z",
+                "email": "pwatson@minerva.edu",
+                "first-name": "Patrick",
+                "last-name": "Watson",
+                "official-first-name": "Patrick",
+                "official-last-name": "Watson",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "Capstone checklist"
+        },
+        {
+            "id": 13834,
+            "attachments": [],
+            "created-on": "2025-02-27T14:15:26Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "Hi all,\nPlease note that I have put together a preliminary set of assignments:\nhttps://docs.google.com/document/d/1rINGSdH57xpPNNXRY_eaux3qIKiFk9SlrB-aXYC5cvk/edit?tab=t.0#heading=h.zej4w6t27hdj\n\nFor these assignments, you are allowed to work alone, or in pairs. You are allowed to choose your own project, as long as it covers multiple topics from the syllabus. There is an initial (ungraded) email to identify teams and projects. Then there is a first draft, a peer review process, and a final submission.\n\nPlease email me with questions (or make comments in the syllabus doc). The due date for the inital email is 9 March. \n\nKind regards,\nPhilip",
+            "sections": [
+                {
+                    "id": 24831,
+                    "section-id": 12312,
+                    "section-title": "IL181.006-Sterne, T@6PM Berlin Deep Learning"
+                }
+            ],
+            "send-date": "2025-02-27T14:15:26.471750Z",
+            "sender": {
+                "id": 595,
+                "aws-avatar-key": "65b66400-1de2-11e7-8da4-0aad7e0c93b9-avatar.png",
+                "email": "psterne@minerva.edu",
+                "first-name": "Philip",
+                "last-name": "Sterne",
+                "official-first-name": "Philip",
+                "official-last-name": "Sterne",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "[Deep Learning] Assignment descriptions released"
+        },
+        {
+            "id": 13796,
+            "attachments": [],
+            "created-on": "2025-02-24T14:43:16Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "While most of you have already seen this message, it's important to sign up for a capstone slot.\n\nHere are a few things to get you ready:\nScheduling: Please schedule your defense using this link:\nhttps://calendar.app.google/pRwjaPyXW5NjULpG9\nPlease upload links to a demo using this link:\nhttps://docs.google.com/spreadsheets/d/1Zepz3CGck4g8rlrlFTQ0pBGm67prS4jp27j3fzMt2WQ/edit?usp=sharing\n\nNote that a defense will be the full 30 minutes (as opposed to the 20 minute meetings we've been running in the past. Hopefully we will finish in 25, but please expect to spend the whole 30 minutes.\n\nExpectations:\nBe ready and waiting 2 minutes before the scheduled timeslot. Make sure you have a quiet room with a good internet connection.\nKnow that this is a defense. This means that you should expect tricky questions. Feel free to push back against questions you feel might be unfair. (I promise you that deep down we are still friendly people, and we *really* don't want you to be stressed at all about the defense.)\nPlease send a Loom video with more than 24 hours to spare. The Loom video will typically be a demo of your product of 5-8 minutes. Please also include a url if your demo has been deployed and is publicly accessible.\nThe majority of students pass their defense, so you shouldn't be stressed about it. However you should still be well-prepared for the defense. (See below for suggestions)\nOutcomes:\nAfter we have discussed your project to our satisfaction then Prof Watson and I will leave the meeting for a few minutes to discuss our impressions privately. When we come back in, we will let you know the outcome of the defense. Most (>80%) of the defenses are successful, and we will then congratulate you. If it is not successful then we will spend several minutes explaining why it was not successful. In the defenses that I have been in, it has been either:\nInsufficient work on the product.\nInsufficient preparation on the defense.\n(And a bizarre defense where the student seemed unfamiliar with their own project.)\nAssuming you've done enough work, then below are some suggestions on how to prepare for the defense.\n\nPreparation:\nA good way to prepare for the defense is to take a critical look at your project. What are things that went well, and what are things that went badly? If you knew then what you know now, how would you have tackled the project differently? How do you see the contribution of your capstone? (Remember that it is fine to say something like \"My capstone project involved building a Lego robot that connected to my iPhone, however the contribution is much larger. My capstone identifies a low-cost solution to bringing robotics into a high-school classroom.\")\n\nAnother aspect of your capstone worth thinking about - future work. Very few capstones result in finished, polished products with widespread adoption. Try crafting a plan with some detailed steps on what you would do if Peter Thiel suddenly gave you a million dollars to work on your capstone for the next year.\n\nBe prepared to spend a couple of minutes defending technical choices, but know that this is (typically) only a small portion of the defense. We might discuss it in more detail if you have done something unusual, but most of the time we are interested in the bigger picture, rather than the technical minutiae.\n\nAnd the final note to add is that when we say we want you to be critical of your project we don't want you to be overly negative about it. Be prepared to defend the strengths, just as much as conceding the weaknesses of your project. This is a project that was achieved with very little budget, and only a couple of hundred hours effort. Most comparable products that you've interacted with have taken orders of magnitude more time and money (and they're still not complete!) Be proud of what you have achieved!",
+            "sections": [
+                {
+                    "id": 24793,
+                    "section-id": 12378,
+                    "section-title": "CP194.029-Watson I, Wed @12:30PM San Francisco Capstone Directed Study II - Watson I"
+                }
+            ],
+            "send-date": "2025-02-24T14:43:15.892628Z",
+            "sender": {
+                "id": 598,
+                "aws-avatar-key": "Patrick_Watson_598_2023-01-03T18:09:28.606Z",
+                "email": "pwatson@minerva.edu",
+                "first-name": "Patrick",
+                "last-name": "Watson",
+                "official-first-name": "Patrick",
+                "official-last-name": "Watson",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "Defense sign up"
+        },
+        {
+            "id": 13795,
+            "attachments": [],
+            "created-on": "2025-02-24T14:36:34Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "High-level feedback from the Check-in assignment:\n================================================\nSome good progress on the LegacyQuest design, although the mascot is too similar to the DuoLingo owl and will need to be changed.\n\nThe HC Feedback group needs to spend a bit more time on design than the other groups since they will have a non-standard design. (However they will save time when the other teams have to deploy their websites)\n\nThe ConceptMap team is discussing using Node.js for the backend. This is fine, but I would warn everyone that experience has shown a Python backend to be more productive. (Simply because everyone tends to have more Python experience.)\n\nSome good proof of concept code on how to do Google authentication. (Things like this are very useful to figure out while waiting on a design!)\n\nI'd expect to see the basic design of the app by this stage. It can be rough, and a little embarrassing, but could be put in front of potential users for early-stage feedback. (Hint! Hint!)\n\nPR count for the teams:\n3 PRs for LegacyQuest: https://github.com/minerva-university/cs162-legacyquest\n1 PR for HC History: https://github.com/minerva-university/cs162-hc-history\nNo code whatsoever for: https://github.com/minerva-university/cs162-conceptmaps!",
+            "sections": [
+                {
+                    "id": 24792,
+                    "section-id": 12249,
+                    "section-title": "CS162-Sterne, TTh@12:00PM Buenos Aires Software Development: Building Powerful Applications"
+                }
+            ],
+            "send-date": "2025-02-24T14:36:34.094085Z",
+            "sender": {
+                "id": 595,
+                "aws-avatar-key": "65b66400-1de2-11e7-8da4-0aad7e0c93b9-avatar.png",
+                "email": "psterne@minerva.edu",
+                "first-name": "Philip",
+                "last-name": "Sterne",
+                "official-first-name": "Philip",
+                "official-last-name": "Sterne",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "[CS162] Project Checkin #1"
+        },
+        {
+            "id": 13785,
+            "attachments": [],
+            "created-on": "2025-02-23T17:25:46Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "Hi! I'm not sure whether/not you received a msg from me a second ago---but this is what I had intended to share with you (below):\n\nHi everyone, when you get a chance, please complete the following brief survey:\nhttps://harvard.az1.qualtrics.com/jfe/form/SV_djnjJKttF1RH8vY?Q_CHL=gl&RID=CGC_ZrrqcqEqYodjMo2&_g_=g\n\nI have enrolled us in a study at Harvard testing out Harvard's AI-self-learning statistics/math/coding tool (called \"PingPong\").\nhttps://pingpong.hks.harvard.edu/about\n\nIn order to participate, Harvard has asked me to ask you to complete two surveys: one now (the one above) and one at the end of the semester.",
+            "sections": [
+                {
+                    "id": 24782,
+                    "section-id": 12165,
+                    "section-title": "CS351-Diamond, TTh@10:30PM (Seoul) Formal Methods for Analysis and Decision Making"
+                }
+            ],
+            "send-date": "2025-02-23T17:25:46.055412Z",
+            "sender": {
+                "id": 200,
+                "aws-avatar-key": "Alexis_Diamond_200_2018-09-23T10:41:30.664Z",
+                "email": "adiamond@minerva.edu",
+                "first-name": "Alexis",
+                "last-name": "Diamond",
+                "official-first-name": "Alexis",
+                "official-last-name": "Diamond",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "Survey"
+        },
+        {
+            "id": 13784,
+            "attachments": [],
+            "created-on": "2025-02-23T17:19:47Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "When you get a chance, please complete the following brief survey:\nhttps://harvard.az1.qualtrics.com/jfe/form/SV_djnjJKttF1RH8vY?Q_CHL=gl&RID=CGC_fVPIyYpeqyVDPLE&_g_=g\n\nI have enrolled CS130 in a study at Harvard testing out Harvard's AI-self-learning statistics/math/coding tool (called \"PingPong\").\nhttps://pingpong.hks.harvard.edu/about\n\nIn order to participate, Harvard has asked me to ask you to complete two surveys: one now (the one above) and one at the end of the semester.",
+            "sections": [
+                {
+                    "id": 24781,
+                    "section-id": 12165,
+                    "section-title": "CS351-Diamond, TTh@10:30PM (Seoul) Formal Methods for Analysis and Decision Making"
+                }
+            ],
+            "send-date": "2025-02-23T17:19:46.790859Z",
+            "sender": {
+                "id": 200,
+                "aws-avatar-key": "Alexis_Diamond_200_2018-09-23T10:41:30.664Z",
+                "email": "adiamond@minerva.edu",
+                "first-name": "Alexis",
+                "last-name": "Diamond",
+                "official-first-name": "Alexis",
+                "official-last-name": "Diamond",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "Quick survey"
+        },
+        {
+            "id": 13783,
+            "attachments": [],
+            "created-on": "2025-02-23T17:19:41Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "When you get a chance, please complete the following brief survey:\nhttps://harvard.az1.qualtrics.com/jfe/form/SV_djnjJKttF1RH8vY?Q_CHL=gl&RID=CGC_fVPIyYpeqyVDPLE&_g_=g\n\nI have enrolled CS130 in a study at Harvard testing out Harvard's AI-self-learning statistics/math/coding tool (called \"PingPong\").\nhttps://pingpong.hks.harvard.edu/about\n\nIn order to participate, Harvard has asked me to ask you to complete two surveys: one now (the one above) and one at the end of the semester.",
+            "sections": [
+                {
+                    "id": 24780,
+                    "section-id": 12241,
+                    "section-title": "CS130-Diamond, TTh@06:00PM Buenos Aires Statistical Modeling: Prediction and Causal Inference"
+                }
+            ],
+            "send-date": "2025-02-23T17:19:40.848407Z",
+            "sender": {
+                "id": 200,
+                "aws-avatar-key": "Alexis_Diamond_200_2018-09-23T10:41:30.664Z",
+                "email": "adiamond@minerva.edu",
+                "first-name": "Alexis",
+                "last-name": "Diamond",
+                "official-first-name": "Alexis",
+                "official-last-name": "Diamond",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "Quick survey"
+        },
+        {
+            "id": 13782,
+            "attachments": [],
+            "created-on": "2025-02-23T17:19:38Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "When you get a chance, please complete the following brief survey:\nhttps://harvard.az1.qualtrics.com/jfe/form/SV_djnjJKttF1RH8vY?Q_CHL=gl&RID=CGC_fVPIyYpeqyVDPLE&_g_=g\n\nI have enrolled CS130 in a study at Harvard testing out Harvard's AI-self-learning statistics/math/coding tool (called \"PingPong\").\nhttps://pingpong.hks.harvard.edu/about\n\nIn order to participate, Harvard has asked me to ask you to complete two surveys: one now (the one above) and one at the end of the semester.",
+            "sections": [
+                {
+                    "id": 24779,
+                    "section-id": 12275,
+                    "section-title": "CS130-Diamond, MW@04:00PM Buenos Aires Statistical Modeling: Prediction and Causal Inference"
+                }
+            ],
+            "send-date": "2025-02-23T17:19:37.716781Z",
+            "sender": {
+                "id": 200,
+                "aws-avatar-key": "Alexis_Diamond_200_2018-09-23T10:41:30.664Z",
+                "email": "adiamond@minerva.edu",
+                "first-name": "Alexis",
+                "last-name": "Diamond",
+                "official-first-name": "Alexis",
+                "official-last-name": "Diamond",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "Quick survey"
+        },
+        {
+            "id": 13757,
+            "attachments": [],
+            "created-on": "2025-02-13T14:23:28Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "Hi all,\nNext week's class is the spring break, so there will be no class. Because of the spring break, tutorials that run on Mondays and Tuesdays get out of sync with Tutorials that run on Wednesdays and Thursdays. To get back in sync, we will need to either:\n1. have an extra class on one of the Thursdays, or\n2. have a Tuesday class in week 15\n\nIn the next session, let's discuss our options. I will suggest having an extra class in week 11-12 (ie. after the main capstone deadline). \n\nPlease also give some thought to the assignments that you'd be interested in.\n\nKind regards,",
+            "sections": [
+                {
+                    "id": 24754,
+                    "section-id": 12312,
+                    "section-title": "IL181.006-Sterne, T@6PM Berlin Deep Learning"
+                }
+            ],
+            "send-date": "2025-02-13T14:23:28.467995Z",
+            "sender": {
+                "id": 595,
+                "aws-avatar-key": "65b66400-1de2-11e7-8da4-0aad7e0c93b9-avatar.png",
+                "email": "psterne@minerva.edu",
+                "first-name": "Philip",
+                "last-name": "Sterne",
+                "official-first-name": "Philip",
+                "official-last-name": "Sterne",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "[Deep Learning] Extra class"
+        },
+        {
+            "id": 13689,
+            "attachments": [],
+            "created-on": "2025-02-03T09:01:56Z",
+            "emails-sent": true,
+            "is-scheduled": false,
+            "is-teacher-announcement": true,
+            "message": "Hi all,\nHere are the final project teams:\n\nLegacyQuest\n===========\nDaisuke (Dice) (PM)\nMerxon\nAdam\nAidana\nMin-Kuan (Avi)\nDain\n\nConceptMap Builder\n==================\nEiad (PM)\nNuray\nRamsha\nElhassan\nVlad\nHayk\n\nHC & LO Feedback\n================\nAnusha (PM)\nMiray\nPriscilla\nTanatswa\nLina\nRawan\nTjalling\n\nOf the 16 students who submitted their preferences: 10 got their first pref, 2 got their second pref, 4 got their third pref, and 3 did not give their preferences.\n\nBy default I have made the person who proposed the project as the product manager (PM), however this is flexible and can be reassigned if you want.\n\nKind regards,\n",
+            "sections": [
+                {
+                    "id": 24686,
+                    "section-id": 12249,
+                    "section-title": "CS162-Sterne, TTh@12:00PM Buenos Aires Software Development: Building Powerful Applications"
+                }
+            ],
+            "send-date": "2025-02-03T09:01:56.190994Z",
+            "sender": {
+                "id": 595,
+                "aws-avatar-key": "65b66400-1de2-11e7-8da4-0aad7e0c93b9-avatar.png",
+                "email": "psterne@minerva.edu",
+                "first-name": "Philip",
+                "last-name": "Sterne",
+                "official-first-name": "Philip",
+                "official-last-name": "Sterne",
+                "org-id": 1,
+                "role": "faculty",
+                "title": "Prof."
+            },
+            "subject": "[CS162] Final project teams"
+        }
+    ]
+}
