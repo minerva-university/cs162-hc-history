@@ -85,3 +85,32 @@ Once the database and tables are set up, you can visualize the data:
 
 1. **Run `db_visualizer.py`** to choose and display the tables visually in an HTML format.
 2. The script generates an interactive table, allowing you to toggle the visibility of columns.
+
+# Data Pulling and Processing
+
+## Setup
+
+### Basic Setup
+1. Clone this repository
+2. Install required packages: `pip install -r requirements.txt`
+3. Set up your database configuration in `.env`
+
+### AI Summarization Setup (Optional)
+If you want to enable AI summarization of the data:
+
+1. Get an OpenAI API key:
+   - Go to https://platform.openai.com/api-keys
+   - Sign up or log in to your OpenAI account
+   - Click on "Create new secret key"
+   - Copy your API key (keep it secure!)
+
+2. Run the setup script:
+   ```bash
+   python setup.py
+   ```
+
+3. When prompted, choose 'yes' for AI summarization and enter your OpenAI API key
+
+Note: Your OpenAI API key will be stored in the `.env` file. Never commit this file to version control.
+
+## Usage
