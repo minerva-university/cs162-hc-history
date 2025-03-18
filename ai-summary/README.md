@@ -1,23 +1,6 @@
-```markdown
 # 📚 AI Summary Tool for Student Feedback
 
 This project uses OpenAI’s GPT models to generate natural language summaries from student feedback data stored in the `assignment_scores` view of a SQLite database. The summaries are saved into structured tables to support analysis, reporting, or visualization.
-
----
-
-## 📁 Directory Structure
-
-```
-ai-summary/
-├── ai_summary.py             # 🔥 Main unified script to generate summaries
-├── .env                      # Stores your OpenAI API key
-├── init_db.py                # (Optional) Script to initialize database tables
-├── db_visualizer.html        # HTML interface to view DB content
-├── db_schema/
-│   └── setup.sql             # SQL schema for creating summary tables
-├── requirements.txt          # List of required Python packages
-└── venv/                     # (Optional) Python virtual environment
-```
 
 ---
 
@@ -118,7 +101,8 @@ You can explore the database contents using:
 
 1. [DB Browser for SQLite](https://sqlitebrowser.org/)
 2. Built-in HTML visualizer (`db_visualizer.html`)
-   - Open in your browser after summaries are generated.
+   - Open it in your browser after summaries are generated.
+   - You can also run pulling_data/db_visualizer.py
 
 ---
 
@@ -129,5 +113,3 @@ You can explore the database contents using:
 3. **Store summaries** in the corresponding table.
 4. **Skip/validate** comments that are empty or exceed context length.
 5. **Support retry/overwrite** if summaries are updated later.
-
-```
