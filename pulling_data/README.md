@@ -85,3 +85,90 @@ Once the database and tables are set up, you can visualize the data:
 
 1. **Run `db_visualizer.py`** to choose and display the tables visually in an HTML format.
 2. The script generates an interactive table, allowing you to toggle the visibility of columns.
+
+# HC/LO Feedback Platform Setup
+
+This document provides instructions for setting up the HC/LO Feedback Platform on your local machine using your own data.
+
+## Prerequisites
+
+- Python 3.7+
+- Node.js and npm
+- SQLite3
+
+## Backend Setup
+
+1. **Create a virtual environment and install dependencies**
+
+```bash
+cd pulling_data
+python -m venv venv
+source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+pip install -r requirements.txt
+```
+
+2. **Set up your database**
+
+You have two options:
+
+### Option A: Use your own data.db file
+
+If you have your own SQLite database file containing HC/LO feedback data, simply place it in the `pulling_data` directory and name it `data.db`.
+
+### Option B: Create a new database with sample data
+
+```bash
+cd pulling_data
+sqlite3 data.db < schema.sql
+sqlite3 data.db < sample_data.sql
+```
+
+3. **Start the Flask backend**
+
+```bash
+cd pulling_data
+python app.py
+```
+
+The backend API will be available at `http://localhost:5001/api/feedback`.
+
+## Frontend Setup
+
+1. **Install dependencies**
+
+```bash
+cd frontend
+npm install
+```
+
+2. **Start the development server**
+
+```bash
+npm run dev
+```
+
+The frontend will be available at `http://localhost:3000`.
+
+## Understanding the Database Schema
+
+For the feedback platform to work correctly, your database needs to have either:
+
+1. An `assignment_scores` table with these columns:
+   - score
+   - comment
+   - outcome_name
+   - assignment_title
+   - course_title
+   - course_code
+   - term_title
+   - created_on
+
+2. OR a `feedback` table with the same columns.
+
+If you're using your own data format, you may need to create a view in SQLite that maps your data to this format.
+
+## Troubleshooting
+
+- If you see "Database Error" on the frontend, make sure the Flask backend is running and accessible.
+- If there's no data shown, check that your database contains records in the required format.
+- For more detailed logs, check the browser console and the Flask server output.
