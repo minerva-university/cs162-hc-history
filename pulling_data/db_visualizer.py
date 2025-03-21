@@ -163,7 +163,7 @@ def visualize_database(db_name, table_name):
 
 # User selection menu
 if __name__ == "__main__":
-    db_name = "data.db"
+    db_name = "../pulling_data/data.db"
 
     # Get tables and views
     tables = get_table_names(db_name)
