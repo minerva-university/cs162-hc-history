@@ -1,3 +1,6 @@
+
+Please open the README to understand how to use the ai-summary branch: https://github.com/minerva-university/cs162-hc-history/tree/ai-summary/ai-summary
+
 # HC/LO Feedback Platform
 Please open ``pulling_data/`` for the backend code
 A visualization platform for HC/LO feedback data.
@@ -51,3 +54,4 @@ For more detailed setup instructions and database configuration, see:
 ## Data Privacy
 
 This application is designed to work with your own database. The repository does not include any actual feedback data. When you clone the repository, you'll need to set up your own database using the provided schema and sample data, or connect it to your existing database.
+

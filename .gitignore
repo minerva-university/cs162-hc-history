@@ -2,3 +2,5 @@ data.db
 db_visualizer.html
 venv/
 .env
+*/.env
+anusha_api_test/api_responses/
