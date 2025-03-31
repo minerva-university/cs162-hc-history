@@ -1,0 +1,32 @@
+# Environment variables
+.env
+*/.env
+
+# Project specific
+anusha_api_test/api_responses/
+
+# Database files
+*.db
+frontend/public/data.db
+pulling_data/data.db
+
+# Node modules and dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# WebAssembly files
+*.wasm
+frontend/public/sql-wasm.wasm
+
+# Next.js
+.next/
+out/
+build
+dist/
+
+# Misc
+.DS_Store
+*.pem
+.env*.local
