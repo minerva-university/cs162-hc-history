@@ -20,6 +20,7 @@ import {
   PolarRadiusAxis,
   Radar,
   Area,
+  ReferenceLine,
 } from "recharts"
 import {
   LogOut,
@@ -78,6 +79,7 @@ export default function FeedbackPlatform() {
   const [uniqueCourses, setUniqueCourses] = useState<string[]>([]);
   const [uniqueTerms, setUniqueTerms] = useState<string[]>([]);
   const [dbError, setDbError] = useState<string>("");
+  const [classComparisonHC, setClassComparisonHC] = useState<string>("");
 
   const handleMinScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -434,15 +436,48 @@ export default function FeedbackPlatform() {
     ],
   }
 
-  // Radar chart data
-  const radarData = [
-    { subject: "Organization", A: 4.2, B: 3.8, fullMark: 5 },
-    { subject: "Clarity", A: 3.8, B: 3.2, fullMark: 5 },
-    { subject: "Helpfulness", A: 4.5, B: 4.0, fullMark: 5 },
-    { subject: "Feedback", A: 3.2, B: 3.5, fullMark: 5 },
-    { subject: "Engagement", A: 4.0, B: 3.7, fullMark: 5 },
-    { subject: "Resources", A: 3.9, B: 3.4, fullMark: 5 },
-  ]
+  // Generate radar chart data based on filtered data only
+  const generateRadarChartData = useMemo(() => {
+    if (!filteredData.length) return [];
+    
+    // Only include HC/LOs that exist in the current filtered dataset
+    // Group filtered data by outcome name (HC/LO)
+    const hcScores = new Map<string, {totalScore: number, count: number}>();
+    
+    filteredData.forEach(item => {
+      if (!item.outcome_name) return;
+      
+      if (!hcScores.has(item.outcome_name)) {
+        hcScores.set(item.outcome_name, { totalScore: 0, count: 0 });
+      }
+      
+      const scoreData = hcScores.get(item.outcome_name)!;
+      scoreData.totalScore += item.score;
+      scoreData.count += 1;
+    });
+    
+    // Convert to the format needed for the radar chart
+    // Will only include HCs/LOs that are present in the filtered data
+    return Array.from(hcScores.entries()).map(([name, data]) => ({
+      subject: name,
+      score: data.count > 0 ? Number((data.totalScore / data.count).toFixed(1)) : 0,
+      fullMark: 5
+    }));
+  }, [filteredData]);
+
+  // Radar chart data with fallback to sample data if needed
+  const radarData = useMemo(() => {
+    const data = generateRadarChartData.length > 0 ? generateRadarChartData : [
+      { subject: "Professionalism", score: 4.2, fullMark: 5 },
+      { subject: "Communication", score: 3.8, fullMark: 5 },
+      { subject: "ProblemSolving", score: 4.5, fullMark: 5 },
+      { subject: "TechnicalCompetence", score: 3.2, fullMark: 5 },
+      { subject: "Teamwork", score: 4.0, fullMark: 5 },
+      { subject: "CriticalThinking", score: 3.9, fullMark: 5 },
+    ];
+    
+    return data;
+  }, [generateRadarChartData]);
 
   // Calculate metrics for cards based on actual data
   const calculateMetrics = useMemo(() => {
@@ -585,6 +620,63 @@ export default function FeedbackPlatform() {
         };
   }, [generateYearComparisonData]);
 
+  // Generate class comparison data
+  const generateClassComparisonData = useMemo(() => {
+    // Start with the currently filtered data, not the entire dataset
+    // This ensures all top filters (term, course, score range) are respected
+    let dataToUse = filteredData;
+    
+    // If a specific HC is selected in the class comparison filter, further filter by that
+    if (classComparisonHC) {
+      dataToUse = dataToUse.filter(item => item.outcome_name === classComparisonHC);
+    }
+    
+    // Get unique course codes from the filtered data
+    const uniqueCourses = [...new Set(dataToUse.map(item => item.course_code))].filter(Boolean);
+    
+    // Calculate average score for each course
+    return uniqueCourses.map(courseCode => {
+      const courseItems = dataToUse.filter(item => item.course_code === courseCode);
+      const totalScore = courseItems.reduce((sum, item) => sum + item.score, 0);
+      const avgScore = courseItems.length > 0 ? Number((totalScore / courseItems.length).toFixed(2)) : 0;
+      
+      // Find a course title for display purposes
+      const courseTitle = courseItems[0]?.course_title || courseCode;
+      
+      return {
+        course: courseCode,
+        courseTitle: courseTitle,
+        averageScore: avgScore,
+        count: courseItems.length // Include count for reference
+      };
+    }).sort((a, b) => a.course.localeCompare(b.course)); // Sort alphabetically by course code
+  }, [filteredData, classComparisonHC]); // Now depends on filteredData instead of feedbackData
+
+  // First let's add a function to generate bar chart data for score distribution
+  const generateScoreDistributionData = useMemo(() => {
+    if (!filteredData.length) return [];
+    
+    // Initialize counters for each score (1-5)
+    const scoreCounts = [0, 0, 0, 0, 0];
+    
+    // Count occurrences of each score
+    filteredData.forEach(item => {
+      const scoreIndex = Math.floor(item.score) - 1;
+      if (scoreIndex >= 0 && scoreIndex < 5) {
+        scoreCounts[scoreIndex]++;
+      }
+    });
+    
+    // Convert to the format needed for the bar chart
+    return [
+      { score: 1, count: scoreCounts[0], color: "#E85D5D", name: "Lacks knowledge" },
+      { score: 2, count: scoreCounts[1], color: "#E89A5D", name: "Superficial knowledge" },
+      { score: 3, count: scoreCounts[2], color: "#73C173", name: "Knowledge" },
+      { score: 4, count: scoreCounts[3], color: "#3A4DB9", name: "Deep knowledge" },
+      { score: 5, count: scoreCounts[4], color: "#8B6BF2", name: "Profound knowledge" },
+    ];
+  }, [filteredData]);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
       {/* Header with navigation tabs */}
@@ -689,7 +781,8 @@ export default function FeedbackPlatform() {
               </div>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* HC/LO Type filter */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
                     <BookOpen className="h-3.5 w-3.5" />
@@ -707,6 +800,8 @@ export default function FeedbackPlatform() {
                     </SelectContent>
                   </Select>
                 </div>
+                
+                {/* Course filter */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
                     <BookOpen className="h-3.5 w-3.5" />
@@ -733,6 +828,8 @@ export default function FeedbackPlatform() {
                     </SelectContent>
                   </Select>
                 </div>
+                
+                {/* Term filter */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
                     <Calendar className="h-3.5 w-3.5" />
@@ -749,30 +846,32 @@ export default function FeedbackPlatform() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
-                      <Star className="h-3.5 w-3.5" />
-                      Score Range
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Input 
-                        type="number" 
-                        min="1" 
-                        max="5" 
-                        value={minScore} 
-                        onChange={handleMinScoreChange}
-                        className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
-                      />
-                      <span className="text-[#64748B]">to</span>
-                      <Input 
-                        type="number" 
-                        min="1" 
-                        max="5" 
-                        value={maxScore} 
-                        onChange={handleMaxScoreChange}
-                        className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
-                      />
-                    </div>
+                </div>
+                
+                {/* Score Range filter - now in the fourth column */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
+                    <Star className="h-3.5 w-3.5" />
+                    Score Range
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <Input 
+                      type="number" 
+                      min="1" 
+                      max="5" 
+                      value={minScore} 
+                      onChange={handleMinScoreChange}
+                      className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
+                    />
+                    <span className="text-[#64748B]">to</span>
+                    <Input 
+                      type="number" 
+                      min="1" 
+                      max="5" 
+                      value={maxScore} 
+                      onChange={handleMaxScoreChange}
+                      className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
+                    />
                   </div>
                 </div>
               </div>
@@ -839,99 +938,100 @@ export default function FeedbackPlatform() {
         {/* Content based on active tab */}
         {activeTab === "byHC" && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Summary Card */}
-              <motion.div
-                className="col-span-1 md:col-span-3"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <Card className="border-none shadow-lg overflow-hidden">
-                  <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4 flex flex-row items-center justify-between">
-                    <div>
-                      <CardTitle className="text-xl font-bold">
-                        {selectedHC || "All HCs/LOs"} - Average Score: {
-                          selectedHC 
-                            ? (filteredData
-                                .filter(item => item.outcome_name === selectedHC)
-                                .reduce((sum, item) => sum + item.score, 0) / 
-                              filteredData.filter(item => item.outcome_name === selectedHC).length).toFixed(1)
-                            : (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(1)
-                        }
-                      </CardTitle>
-                      <CardDescription className="text-[#94A3B8] mt-1">
-                        Based on {filteredData.length} responses across {
-                          new Set(filteredData.map(item => item.course_code)).size
-                        } courses
-                      </CardDescription>
-                    </div>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button variant="outline" size="sm" className="text-white border-white hover:bg-[#1E293B]">
-                        HC Handbook
-                        <ArrowUpRight className="ml-1 h-3 w-3" />
-                      </Button>
-                    </motion.div>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          <Lightbulb className="h-5 w-5 text-[#73C173]" />
-                          <h3 className="font-semibold text-[#0F172A]">Strengths:</h3>
-                        </div>
-                        <ul className="space-y-2">
-                          {aiSummary.pros.map((item, index) => (
-                            <motion.li
-                              key={item}
-                              className="flex items-start gap-2"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.5 + index * 0.1 }}
-                            >
-                              <div className="mt-1 rounded-full bg-[#73C173]/20 p-0.5 shadow-[0_0_8px_rgba(115,193,115,0.5)]">
-                                <Check className="h-3 w-3 text-[#73C173]" />
-                              </div>
-                              <span className="text-sm text-[#334155]">{item}</span>
-                            </motion.li>
-                          ))}
-                        </ul>
+            {/* First row: Summary Card (full width) */}
+            <motion.div
+              className="w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              {/* Summary Card content remains unchanged */}
+              <Card className="border-none shadow-lg overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4 flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl font-bold">
+                      {selectedHC || "All HCs/LOs"} - Average Score: {
+                        selectedHC 
+                          ? (filteredData
+                              .filter(item => item.outcome_name === selectedHC)
+                              .reduce((sum, item) => sum + item.score, 0) / 
+                            filteredData.filter(item => item.outcome_name === selectedHC).length).toFixed(1)
+                          : (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(1)
+                      }
+                    </CardTitle>
+                    <CardDescription className="text-[#94A3B8] mt-1">
+                      Based on {filteredData.length} responses across {
+                        new Set(filteredData.map(item => item.course_code)).size
+                      } courses
+                    </CardDescription>
+                  </div>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="outline" size="sm" className="text-white border-white hover:bg-[#1E293B]">
+                      HC Handbook
+                      <ArrowUpRight className="ml-1 h-3 w-3" />
+                    </Button>
+                  </motion.div>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Lightbulb className="h-5 w-5 text-[#73C173]" />
+                        <h3 className="font-semibold text-[#0F172A]">Strengths:</h3>
                       </div>
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          <AlertCircle className="h-5 w-5 text-[#E89A5D]" />
-                          <h3 className="font-semibold text-[#0F172A]">Areas for Improvement:</h3>
-                        </div>
-                        <ul className="space-y-2">
-                          {aiSummary.cons.map((item, index) => (
-                            <motion.li
-                              key={item}
-                              className="flex items-start gap-2"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.5 + index * 0.1 }}
-                            >
-                              <div className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5 shadow-[0_0_8px_rgba(232,154,93,0.5)]">
-                                <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
-                              </div>
-                              <span className="text-sm text-[#334155]">{item}</span>
-                            </motion.li>
-                          ))}
-                        </ul>
-                      </div>
+                      <ul className="space-y-2">
+                        {aiSummary.pros.map((item, index) => (
+                          <motion.li
+                            key={item}
+                            className="flex items-start gap-2"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.5 + index * 0.1 }}
+                          >
+                            <div className="mt-1 rounded-full bg-[#73C173]/20 p-0.5 shadow-[0_0_8px_rgba(115,193,115,0.5)]">
+                              <Check className="h-3 w-3 text-[#73C173]" />
+                            </div>
+                            <span className="text-sm text-[#334155]">{item}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-5 w-5 text-[#E89A5D]" />
+                        <h3 className="font-semibold text-[#0F172A]">Areas for Improvement:</h3>
+                      </div>
+                      <ul className="space-y-2">
+                        {aiSummary.cons.map((item, index) => (
+                          <motion.li
+                            key={item}
+                            className="flex items-start gap-2"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.5 + index * 0.1 }}
+                          >
+                            <div className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5 shadow-[0_0_8px_rgba(232,154,93,0.5)]">
+                              <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
+                            </div>
+                            <span className="text-sm text-[#334155]">{item}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
+            {/* Second row: 2x2 grid of equal-sized chart cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Score over time chart */}
               <motion.div
-                className="col-span-1 md:col-span-2"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <Card className="border-none shadow-lg overflow-hidden">
+                <Card className="border-none shadow-lg overflow-hidden h-[400px]">
                   <CardHeader className="p-4 border-b border-[#E2E8F0]">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
@@ -958,17 +1058,9 @@ export default function FeedbackPlatform() {
                       </DropdownMenu>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-6">
-                    <ChartContainer
-                      config={{
-                        score: {
-                          label: "Score",
-                          color: "#8B6BF2",
-                        },
-                      }}
-                      className="h-[300px]"
-                    >
-                      <LineChart data={timeSeriesData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                  <CardContent className="p-4 h-[330px]">
+                    <ChartContainer config={{ score: { label: "Score", color: "#8B6BF2" } }} className="h-full">
+                      <LineChart data={timeSeriesData} margin={{ top: 15, right: 15, left: 15, bottom: 15 }}>
                         <defs>
                           <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#8B6BF2" stopOpacity={0.8} />
@@ -985,6 +1077,7 @@ export default function FeedbackPlatform() {
                           fontSize={12}
                           tickLine={false}
                           axisLine={{ stroke: "#E2E8F0" }}
+                          label={{ value: 'Month', position: 'insideBottom', offset: -5, fill: '#64748B' }}
                         />
                         <YAxis
                           domain={[1, 5]}
@@ -993,6 +1086,7 @@ export default function FeedbackPlatform() {
                           tickLine={false}
                           axisLine={{ stroke: "#E2E8F0" }}
                           ticks={[1, 2, 3, 4, 5]}
+                          label={{ value: 'Score', angle: -90, position: 'insideLeft', offset: -10, fill: '#64748B' }}
                         />
                         <ChartTooltip content={<ChartTooltipContent />} />
                         <Line
@@ -1005,6 +1099,7 @@ export default function FeedbackPlatform() {
                           filter="url(#shadow)"
                           connectNulls={true}
                           isAnimationActive={false}
+                          name="Average Score"
                         />
                         <Area
                           type="monotone"
@@ -1013,6 +1108,7 @@ export default function FeedbackPlatform() {
                           stroke="none"
                           fillOpacity={0.3}
                           isAnimationActive={animateCharts}
+                          name="Score Range"
                         />
                       </LineChart>
                     </ChartContainer>
@@ -1020,144 +1116,194 @@ export default function FeedbackPlatform() {
                 </Card>
               </motion.div>
 
-              {/* HC Score distribution */}
+              {/* Score Distribution bar chart */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-                <Card className="border-none shadow-lg overflow-hidden">
+                <Card className="border-none shadow-lg overflow-hidden h-[400px]">
                   <CardHeader className="p-4 border-b border-[#E2E8F0]">
                     <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                      <PieChartIcon className="h-4 w-4 text-[#8B6BF2]" />
+                      <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
                       Score Distribution
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="h-[300px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={pieData}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                            isAnimationActive={animateCharts}
-                          >
-                            {pieData.map((entry, index) => (
-                              <Cell
-                                key={entry.name}
-                                fill={entry.color}
-                                filter={`drop-shadow(0px 4px 8px ${entry.color}80)`}
-                              />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
+                  <CardContent className="p-4 h-[330px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={generateScoreDistributionData}
+                        margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
+                        barGap={0}
+                        barCategoryGap="30%"
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                        <XAxis 
+                          dataKey="score" 
+                          fontSize={12}
+                          tick={{ fill: "#64748B" }}
+                          axisLine={{ stroke: "#E2E8F0" }}
+                          tickLine={false}
+                          label={{ value: 'Score', position: 'insideBottom', offset: -10, fill: '#64748B' }}
+                        />
+                        <YAxis
+                          fontSize={12}
+                          tick={{ fill: "#64748B" }}
+                          axisLine={{ stroke: "#E2E8F0" }}
+                          tickLine={false}
+                          label={{ value: 'Frequency', angle: -90, position: 'insideLeft', offset: -15, fill: '#64748B' }}
+                        />
+                        <Tooltip
+                          formatter={(value) => [`${value}`, 'Frequency']}
+                          labelFormatter={(label) => {
+                            const scoreItem = generateScoreDistributionData.find(item => item.score === Number(label));
+                            return scoreItem ? `${label} - ${scoreItem.name}` : label;
+                          }}
+                        />
+                        <Bar 
+                          dataKey="count" 
+                          name="Frequency" 
+                          isAnimationActive={animateCharts}
+                        >
+                          {generateScoreDistributionData.map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={entry.color}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   </CardContent>
                 </Card>
               </motion.div>
-            </div>
 
-            {/* Radar chart and year comparison */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {/* HC/LO Performance Radar */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
-                <Card className="border-none shadow-lg overflow-hidden">
+                <Card className="border-none shadow-lg overflow-hidden h-[400px]">
                   <CardHeader className="p-4 border-b border-[#E2E8F0]">
                     <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
                       <Activity className="h-4 w-4 text-[#8B6BF2]" />
-                      Criteria Comparison
+                      HC/LO Performance Radar
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="h-[300px]">
+                  <CardContent className="p-4 h-[330px]">
+                    {radarData.length > 0 ? (
                       <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                           <PolarGrid stroke="#E2E8F0" />
                           <PolarAngleAxis dataKey="subject" tick={{ fill: "#64748B", fontSize: 12 }} />
                           <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: "#64748B", fontSize: 10 }} />
                           <Radar
-                            name="2024"
-                            dataKey="A"
+                            name="Average Score"
+                            dataKey="score"
                             stroke="#8B6BF2"
                             fill="#8B6BF2"
                             fillOpacity={0.6}
                             isAnimationActive={animateCharts}
                           />
-                          <Radar
-                            name="2023"
-                            dataKey="B"
-                            stroke="#3A4DB9"
-                            fill="#3A4DB9"
-                            fillOpacity={0.6}
-                            isAnimationActive={animateCharts}
+                          <Tooltip 
+                            formatter={(value) => [`${value}`, 'Score']} 
+                            labelFormatter={(label) => `HC/LO: ${label}`}
                           />
-                          <Tooltip />
-                          <Legend />
                         </RadarChart>
                       </ResponsiveContainer>
-                    </div>
+                    ) : (
+                      <div className="h-full flex items-center justify-center">
+                        <p className="text-[#64748B] text-center">
+                          No HC/LO data available
+                        </p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
 
+              {/* Class Comparison chart */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
-                <Card className="border-none shadow-lg overflow-hidden">
+                <Card className="border-none shadow-lg overflow-hidden h-[400px]">
                   <CardHeader className="p-4 border-b border-[#E2E8F0]">
-                    <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                      <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
-                      Year Comparison
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                        <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
+                        Class Comparison
+                      </CardTitle>
+                      <Select 
+                        value={classComparisonHC || "All"} 
+                        onValueChange={(value) => setClassComparisonHC(value === "All" ? "" : value)}
+                      >
+                        <SelectTrigger className="w-[180px] h-8 text-xs border-[#E2E8F0] focus:ring-[#38BDF8]">
+                          <SelectValue placeholder="Select HC/LO" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="All">All HC/LOs</SelectItem>
+                          {uniqueHCs.map(hc => (
+                            <SelectItem key={hc} value={hc}>{hc}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </CardHeader>
-                  <CardContent className="p-6">
-                    <ChartContainer
-                      config={yearLabels}
-                      className="h-[300px]"
-                    >
-                      <BarChart data={yearComparisonData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                        <defs>
-                          <filter id="shadow-bar" x="-2" y="-2" width="104%" height="104%">
-                            <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#000000" floodOpacity="0.1" />
-                          </filter>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-                        <XAxis
-                          dataKey="score"
-                          stroke="#64748B"
-                          fontSize={12}
-                          tickLine={false}
-                          axisLine={{ stroke: "#E2E8F0" }}
-                        />
-                        <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={{ stroke: "#E2E8F0" }} />
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                        <Bar
-                          dataKey="Yr1"
-                          radius={[4, 4, 0, 0]}
-                          filter="url(#shadow-bar)"
-                          isAnimationActive={animateCharts}
-                        />
-                        <Bar
-                          dataKey="Yr2"
-                          radius={[4, 4, 0, 0]}
-                          filter="url(#shadow-bar)"
-                          isAnimationActive={animateCharts}
-                        />
-                        <Bar
-                          dataKey="Yr3"
-                          radius={[4, 4, 0, 0]}
-                          filter="url(#shadow-bar)"
-                          isAnimationActive={animateCharts}
-                        />
-                      </BarChart>
-                    </ChartContainer>
+                  <CardContent className="p-4 h-[330px]">
+                    {generateClassComparisonData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart 
+                          data={generateClassComparisonData} 
+                          margin={{ top: 20, right: 20, left: 30, bottom: 75 }}
+                          barSize={30}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                          <XAxis 
+                            dataKey="course" 
+                            stroke="#64748B" 
+                            fontSize={11} 
+                            tickLine={false} 
+                            axisLine={{ stroke: "#E2E8F0" }}
+                            angle={-45}
+                            textAnchor="end"
+                            height={70}
+                            interval={0}
+                            label={{ value: 'Course', position: 'insideBottom', offset: -5, fill: '#64748B' }}
+                          />
+                          <YAxis 
+                            domain={[0, 5]} 
+                            ticks={[0, 1, 2, 3, 4, 5]} 
+                            stroke="#64748B" 
+                            fontSize={12} 
+                            tickLine={false} 
+                            axisLine={{ stroke: "#E2E8F0" }}
+                            label={{ value: 'Average Score', angle: -90, position: 'insideLeft', offset: -15, fill: '#64748B' }}
+                          />
+                          <Tooltip
+                            formatter={(value) => [`${value}`, 'Average Score']}
+                            labelFormatter={(label) => {
+                              const course = generateClassComparisonData.find(item => item.course === label);
+                              return course ? `${label} - ${course.courseTitle}` : label;
+                            }}
+                          />
+                          <Bar 
+                            dataKey="averageScore"
+                            name="Average Score" 
+                            fill="#3A4DB9"
+                            radius={[4, 4, 0, 0]}
+                            isAnimationActive={animateCharts}
+                          />
+                          <ReferenceLine 
+                            y={generateClassComparisonData.length > 0 ? 
+                              generateClassComparisonData.reduce((sum, item) => sum + item.averageScore, 0) / generateClassComparisonData.length : 0} 
+                            stroke="#0F172A" 
+                            strokeDasharray="3 3"
+                            ifOverflow="extendDomain"
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="h-full flex items-center justify-center">
+                        <p className="text-[#64748B]">No data available</p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
             </div>
 
-            {/* All scores table */}
+            {/* Recent Feedback table remains below the charts, full width */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
               <Card className="border-none shadow-lg overflow-hidden">
                 <CardHeader className="p-4 border-b border-[#E2E8F0]">
@@ -1183,87 +1329,6 @@ export default function FeedbackPlatform() {
                     </Button>
                   </div>
                 </CardFooter>
-              </Card>
-            </motion.div>
-
-            {/* Score distribution by category */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.0 }}>
-              <Card className="border-none shadow-lg overflow-hidden mt-6">
-                <CardHeader className="p-4 border-b border-[#E2E8F0]">
-                  <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                    <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
-                    Score Distribution by Category
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={scoreDistributionData}
-                        margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-                        barGap={0}
-                        barCategoryGap="15%"
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                        <XAxis
-                          dataKey="name"
-                          fontSize={12}
-                          tick={{ fill: "#64748B" }}
-                          axisLine={{ stroke: "#E2E8F0" }}
-                          tickLine={false}
-                        />
-                        <YAxis
-                          fontSize={12}
-                          tick={{ fill: "#64748B" }}
-                          axisLine={{ stroke: "#E2E8F0" }}
-                          tickLine={false}
-                        />
-                        <Tooltip />
-                        <Legend />
-                        <Bar
-                          dataKey="score5"
-                          name="Excellent (5)"
-                          stackId="a"
-                          fill="#8B6BF2"
-                          radius={[0, 0, 0, 0]}
-                          isAnimationActive={animateCharts}
-                        />
-                        <Bar
-                          dataKey="score4"
-                          name="Good (4)"
-                          stackId="a"
-                          fill="#3A4DB9"
-                          radius={[0, 0, 0, 0]}
-                          isAnimationActive={animateCharts}
-                        />
-                        <Bar
-                          dataKey="score3"
-                          name="Average (3)"
-                          stackId="a"
-                          fill="#73C173"
-                          radius={[0, 0, 0, 0]}
-                          isAnimationActive={animateCharts}
-                        />
-                        <Bar
-                          dataKey="score2"
-                          name="Fair (2)"
-                          stackId="a"
-                          fill="#E89A5D"
-                          radius={[0, 0, 0, 0]}
-                          isAnimationActive={animateCharts}
-                        />
-                        <Bar
-                          dataKey="score1"
-                          name="Poor (1)"
-                          stackId="a"
-                          fill="#E85D5D"
-                          radius={[0, 0, 0, 0]}
-                          isAnimationActive={animateCharts}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
               </Card>
             </motion.div>
           </div>

@@ -81,11 +81,11 @@ export function GradeLegend() {
         <h3 className="text-lg font-semibold mb-4 text-[#0F172A]">Grade Scale</h3>
         <div className="flex gap-4 items-center justify-center">
           {[
-            { grade: 1, color: "#E85D5D", label: "Poor" },
-            { grade: 2, color: "#E89A5D", label: "Fair" },
-            { grade: 3, color: "#73C173", label: "Average" },
-            { grade: 4, color: "#3A4DB9", label: "Good" },
-            { grade: 5, color: "#8B6BF2", label: "Excellent" },
+            { grade: 1, color: "#E85D5D", label: "Lacks knowledge" },
+            { grade: 2, color: "#E89A5D", label: "Superficial knowledge" },
+            { grade: 3, color: "#73C173", label: "Knowledge" },
+            { grade: 4, color: "#3A4DB9", label: "Deep knowledge" },
+            { grade: 5, color: "#8B6BF2", label: "Profound knowledge" },
           ].map((item) => (
             <motion.div
               key={item.grade}
