@@ -479,54 +479,6 @@ export default function FeedbackPlatform() {
     return data;
   }, [generateRadarChartData]);
 
-  // Calculate metrics for cards based on actual data
-  const calculateMetrics = useMemo(() => {
-    if (!feedbackData.length) return null;
-    
-    // Calculate average score
-    const totalScore = feedbackData.reduce((sum, item) => sum + item.score, 0);
-    const avgScore = (totalScore / feedbackData.length).toFixed(1);
-    
-    // Count unique outcome names as a proxy for "Response Rate"
-    const uniqueOutcomes = new Set(feedbackData.map(item => item.outcome_name)).size;
-    const responseRate = Math.min(100, Math.round((uniqueOutcomes / 6) * 100)); // Assuming 6 total possible outcomes
-    
-    // Use the count of items as a proxy for "Completion Time"
-    // Lower count = faster completion (for demonstration purposes)
-    const completionTime = Math.max(5, Math.min(20, Math.round(30 - feedbackData.length / 10)));
-    
-    return {
-      avgScore,
-      responseRate,
-      completionTime
-    };
-  }, [feedbackData]);
-
-  // Trend indicators
-  const trendData = useMemo(() => [
-    { 
-      metric: "Average Score", 
-      value: calculateMetrics ? calculateMetrics.avgScore : "3.2", 
-      change: "+0.3", 
-      trend: "up", 
-      icon: <Award /> 
-    },
-    { 
-      metric: "Response Rate", 
-      value: calculateMetrics ? `${calculateMetrics.responseRate}%` : "78%", 
-      change: "+5%", 
-      trend: "up", 
-      icon: <UserCheck /> 
-    },
-    { 
-      metric: "Completion Time", 
-      value: calculateMetrics ? `${calculateMetrics.completionTime} min` : "12 min", 
-      change: "-2 min", 
-      trend: "down", 
-      icon: <Clock /> 
-    },
-  ], [calculateMetrics]);
-
   // Score distribution by category
   const scoreDistributionData = [
     { name: "Clarity", score1: 5, score2: 10, score3: 30, score4: 40, score5: 15 },
@@ -916,24 +868,7 @@ export default function FeedbackPlatform() {
           <GradeLegend />
         </motion.div>
 
-        {/* Key metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {trendData.map((item, index) => (
-            <motion.div
-              key={item.metric}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + index * 0.1 }}
-            >
-              <AnimatedScoreCard
-                score={(Number.parseFloat(item.value.replace("%", "")) / 100) * 5 || Number.parseFloat(item.value)}
-                title={item.metric}
-                subtitle={`${item.change} from previous period`}
-                icon={item.icon}
-              />
-            </motion.div>
-          ))}
-        </div>
+        
 
         {/* Content based on active tab */}
         {activeTab === "byHC" && (
@@ -1093,12 +1028,12 @@ export default function FeedbackPlatform() {
                           type="monotone"
                           dataKey="score"
                           stroke="#8B6BF2"
-                          strokeWidth={3}
+                          strokeWidth={4}
                           activeDot={{ r: 8, fill: "#0F172A", stroke: "#8B6BF2", strokeWidth: 2 }}
                           dot={{ r: 4, fill: "#8B6BF2", stroke: "#0F172A", strokeWidth: 2 }}
                           filter="url(#shadow)"
                           connectNulls={true}
-                          isAnimationActive={false}
+                          isAnimationActive={true}
                           name="Average Score"
                         />
                         <Area
