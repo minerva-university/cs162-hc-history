@@ -3,3 +3,5 @@ db_visualizer.html
 venv/
 .env
 selenium/
+anusha_api_test/api_responses/
+
