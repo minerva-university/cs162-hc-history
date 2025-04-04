@@ -633,16 +633,23 @@ export default function FeedbackPlatform() {
     <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
       {/* Header with navigation tabs */}
       <header className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white shadow-lg sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
+          <div className="flex items-center gap-5">
             <motion.div
-              className="bg-[#38BDF8] rounded-lg p-2"
-              whileHover={{ rotate: 10, scale: 1.1 }}
+              whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300, damping: 10 }}
             >
-              <GraduationCap className="h-6 w-6 text-[#0F172A]" />
+              <img 
+                src="https://minerva-orgs.s3.us-west-2.amazonaws.com/production/e9fd1c3c-b16f-11e8-9bf9-0622cf94bff4/mu-darkbg.png?v=fc61135b6a13fea802d4c4373cd4dc420fee7850" 
+                alt="Minerva Logo" 
+                style={{ 
+                  objectFit: "cover", 
+                  width: "10rem", 
+                  height: "9rem" 
+                }}
+              />
             </motion.div>
-            <h1 className="text-2xl font-bold tracking-tight">Academic Feedback Platform</h1>
+            <h1 className="text-2xl font-bold tracking-tight">HC and LO Feedback</h1>
           </div>
           <div className="flex items-center space-x-4">
             <motion.div
@@ -801,29 +808,29 @@ export default function FeedbackPlatform() {
                 </div>
                 
                 {/* Score Range filter - now in the fourth column */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
-                    <Star className="h-3.5 w-3.5" />
-                    Score Range
-                  </label>
-                  <div className="flex items-center space-x-2">
-                    <Input 
-                      type="number" 
-                      min="1" 
-                      max="5" 
-                      value={minScore} 
-                      onChange={handleMinScoreChange}
-                      className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
-                    />
-                    <span className="text-[#64748B]">to</span>
-                    <Input 
-                      type="number" 
-                      min="1" 
-                      max="5" 
-                      value={maxScore} 
-                      onChange={handleMaxScoreChange}
-                      className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
-                    />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
+                      <Star className="h-3.5 w-3.5" />
+                      Score Range
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <Input 
+                        type="number" 
+                        min="1" 
+                        max="5" 
+                        value={minScore} 
+                        onChange={handleMinScoreChange}
+                        className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
+                      />
+                      <span className="text-[#64748B]">to</span>
+                      <Input 
+                        type="number" 
+                        min="1" 
+                        max="5" 
+                        value={maxScore} 
+                        onChange={handleMaxScoreChange}
+                        className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
+                      />
                   </div>
                 </div>
               </div>
@@ -874,89 +881,89 @@ export default function FeedbackPlatform() {
         {activeTab === "byHC" && (
           <div className="space-y-6">
             {/* First row: Summary Card (full width) */}
-            <motion.div
+              <motion.div
               className="w-full"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
               {/* Summary Card content remains unchanged */}
-              <Card className="border-none shadow-lg overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4 flex flex-row items-center justify-between">
-                  <div>
-                    <CardTitle className="text-xl font-bold">
-                      {selectedHC || "All HCs/LOs"} - Average Score: {
-                        selectedHC 
-                          ? (filteredData
-                              .filter(item => item.outcome_name === selectedHC)
-                              .reduce((sum, item) => sum + item.score, 0) / 
-                            filteredData.filter(item => item.outcome_name === selectedHC).length).toFixed(1)
-                          : (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(1)
-                      }
-                    </CardTitle>
-                    <CardDescription className="text-[#94A3B8] mt-1">
-                      Based on {filteredData.length} responses across {
-                        new Set(filteredData.map(item => item.course_code)).size
-                      } courses
-                    </CardDescription>
-                  </div>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="outline" size="sm" className="text-white border-white hover:bg-[#1E293B]">
-                      HC Handbook
-                      <ArrowUpRight className="ml-1 h-3 w-3" />
-                    </Button>
-                  </motion.div>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Lightbulb className="h-5 w-5 text-[#73C173]" />
-                        <h3 className="font-semibold text-[#0F172A]">Strengths:</h3>
-                      </div>
-                      <ul className="space-y-2">
-                        {aiSummary.pros.map((item, index) => (
-                          <motion.li
-                            key={item}
-                            className="flex items-start gap-2"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.5 + index * 0.1 }}
-                          >
-                            <div className="mt-1 rounded-full bg-[#73C173]/20 p-0.5 shadow-[0_0_8px_rgba(115,193,115,0.5)]">
-                              <Check className="h-3 w-3 text-[#73C173]" />
-                            </div>
-                            <span className="text-sm text-[#334155]">{item}</span>
-                          </motion.li>
-                        ))}
-                      </ul>
+                <Card className="border-none shadow-lg overflow-hidden">
+                  <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4 flex flex-row items-center justify-between">
+                    <div>
+                      <CardTitle className="text-xl font-bold">
+                        {selectedHC || "All HCs/LOs"} - Average Score: {
+                          selectedHC 
+                            ? (filteredData
+                                .filter(item => item.outcome_name === selectedHC)
+                                .reduce((sum, item) => sum + item.score, 0) / 
+                              filteredData.filter(item => item.outcome_name === selectedHC).length).toFixed(1)
+                            : (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(1)
+                        }
+                      </CardTitle>
+                      <CardDescription className="text-[#94A3B8] mt-1">
+                        Based on {filteredData.length} responses across {
+                          new Set(filteredData.map(item => item.course_code)).size
+                        } courses
+                      </CardDescription>
                     </div>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <AlertCircle className="h-5 w-5 text-[#E89A5D]" />
-                        <h3 className="font-semibold text-[#0F172A]">Areas for Improvement:</h3>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button variant="outline" size="sm" className="text-white border-white hover:bg-[#1E293B]">
+                        HC Handbook
+                        <ArrowUpRight className="ml-1 h-3 w-3" />
+                      </Button>
+                    </motion.div>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <Lightbulb className="h-5 w-5 text-[#73C173]" />
+                          <h3 className="font-semibold text-[#0F172A]">Strengths:</h3>
+                        </div>
+                        <ul className="space-y-2">
+                          {aiSummary.pros.map((item, index) => (
+                            <motion.li
+                              key={item}
+                              className="flex items-start gap-2"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.5 + index * 0.1 }}
+                            >
+                              <div className="mt-1 rounded-full bg-[#73C173]/20 p-0.5 shadow-[0_0_8px_rgba(115,193,115,0.5)]">
+                                <Check className="h-3 w-3 text-[#73C173]" />
+                              </div>
+                              <span className="text-sm text-[#334155]">{item}</span>
+                            </motion.li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="space-y-2">
-                        {aiSummary.cons.map((item, index) => (
-                          <motion.li
-                            key={item}
-                            className="flex items-start gap-2"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.5 + index * 0.1 }}
-                          >
-                            <div className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5 shadow-[0_0_8px_rgba(232,154,93,0.5)]">
-                              <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
-                            </div>
-                            <span className="text-sm text-[#334155]">{item}</span>
-                          </motion.li>
-                        ))}
-                      </ul>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-5 w-5 text-[#E89A5D]" />
+                          <h3 className="font-semibold text-[#0F172A]">Areas for Improvement:</h3>
+                        </div>
+                        <ul className="space-y-2">
+                          {aiSummary.cons.map((item, index) => (
+                            <motion.li
+                              key={item}
+                              className="flex items-start gap-2"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.5 + index * 0.1 }}
+                            >
+                              <div className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5 shadow-[0_0_8px_rgba(232,154,93,0.5)]">
+                                <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
+                              </div>
+                              <span className="text-sm text-[#334155]">{item}</span>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
             {/* Second row: 2x2 grid of equal-sized chart cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -994,17 +1001,11 @@ export default function FeedbackPlatform() {
                     </div>
                   </CardHeader>
                   <CardContent className="p-4 h-[330px]">
-                    <ChartContainer config={{ score: { label: "Score", color: "#8B6BF2" } }} className="h-full">
-                      <LineChart data={timeSeriesData} margin={{ top: 15, right: 15, left: 15, bottom: 15 }}>
-                        <defs>
-                          <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#8B6BF2" stopOpacity={0.8} />
-                            <stop offset="95%" stopColor="#8B6BF2" stopOpacity={0} />
-                          </linearGradient>
-                          <filter id="shadow" x="-2" y="-2" width="104%" height="104%">
-                            <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#8B6BF2" floodOpacity="0.3" />
-                          </filter>
-                        </defs>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart 
+                        data={timeSeriesData}
+                        margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                      >
                         <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                         <XAxis
                           dataKey="month"
@@ -1012,41 +1013,60 @@ export default function FeedbackPlatform() {
                           fontSize={12}
                           tickLine={false}
                           axisLine={{ stroke: "#E2E8F0" }}
-                          label={{ value: 'Month', position: 'insideBottom', offset: -5, fill: '#64748B' }}
                         />
                         <YAxis
-                          domain={[1, 5]}
+                          domain={[0, 5]}
                           stroke="#64748B"
                           fontSize={12}
                           tickLine={false}
                           axisLine={{ stroke: "#E2E8F0" }}
                           ticks={[1, 2, 3, 4, 5]}
-                          label={{ value: 'Score', angle: -90, position: 'insideLeft', offset: -10, fill: '#64748B' }}
                         />
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                        <Line
-                          type="monotone"
-                          dataKey="score"
-                          stroke="#8B6BF2"
-                          strokeWidth={4}
-                          activeDot={{ r: 8, fill: "#0F172A", stroke: "#8B6BF2", strokeWidth: 2 }}
-                          dot={{ r: 4, fill: "#8B6BF2", stroke: "#0F172A", strokeWidth: 2 }}
-                          filter="url(#shadow)"
-                          connectNulls={true}
-                          isAnimationActive={true}
-                          name="Average Score"
+                        <Tooltip
+                          formatter={(value) => [`${value}`, 'Score']}
+                          labelFormatter={(label) => `Month: ${label}`}
+                          contentStyle={{ 
+                            backgroundColor: "white", 
+                            border: "1px solid #E2E8F0",
+                            borderRadius: "4px",
+                            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)"
+                          }}
                         />
+                        
+                        {/* Solid fill area under the line */}
                         <Area
                           type="monotone"
                           dataKey="score"
-                          fill="url(#colorScore)"
+                          fill="#8B6BF2"
+                          fillOpacity={0.1}
                           stroke="none"
-                          fillOpacity={0.3}
-                          isAnimationActive={animateCharts}
-                          name="Score Range"
                         />
+                        
+                        {/* The main line - without legend */}
+                        <Line
+                          type="monotone"
+                          dataKey="score"
+                          name="Average Score"
+                          stroke="#8B6BF2"
+                          strokeWidth={3}
+                          dot={{
+                            fill: "#8B6BF2",
+                            r: 5,
+                            strokeWidth: 2,
+                            stroke: "#FFFFFF"
+                          }}
+                          activeDot={{
+                            fill: "#8B6BF2",
+                            r: 7,
+                            strokeWidth: 2,
+                            stroke: "#FFFFFF"
+                          }}
+                        />
+                        
+                        {/* Reference lines for score levels */}
+                        <ReferenceLine y={3} stroke="#64748B" strokeDasharray="3 3" />
                       </LineChart>
-                    </ChartContainer>
+                    </ResponsiveContainer>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -1061,7 +1081,7 @@ export default function FeedbackPlatform() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-4 h-[330px]">
-                    <ResponsiveContainer width="100%" height="100%">
+                      <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={generateScoreDistributionData}
                         margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
@@ -1094,17 +1114,17 @@ export default function FeedbackPlatform() {
                         <Bar 
                           dataKey="count" 
                           name="Frequency" 
-                          isAnimationActive={animateCharts}
-                        >
+                            isAnimationActive={animateCharts}
+                          >
                           {generateScoreDistributionData.map((entry, index) => (
-                            <Cell 
+                              <Cell
                               key={`cell-${index}`} 
-                              fill={entry.color}
-                            />
-                          ))}
+                                fill={entry.color}
+                              />
+                            ))}
                         </Bar>
                       </BarChart>
-                    </ResponsiveContainer>
+                      </ResponsiveContainer>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -1144,7 +1164,7 @@ export default function FeedbackPlatform() {
                         <p className="text-[#64748B] text-center">
                           No HC/LO data available
                         </p>
-                      </div>
+                    </div>
                     )}
                   </CardContent>
                 </Card>
@@ -1155,10 +1175,10 @@ export default function FeedbackPlatform() {
                 <Card className="border-none shadow-lg overflow-hidden h-[400px]">
                   <CardHeader className="p-4 border-b border-[#E2E8F0]">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                        <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
+                    <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                      <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
                         Class Comparison
-                      </CardTitle>
+                    </CardTitle>
                       <Select 
                         value={classComparisonHC || "All"} 
                         onValueChange={(value) => setClassComparisonHC(value === "All" ? "" : value)}
@@ -1184,7 +1204,7 @@ export default function FeedbackPlatform() {
                           barSize={30}
                         >
                           <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                          <XAxis 
+                        <XAxis
                             dataKey="course" 
                             stroke="#64748B" 
                             fontSize={11} 
@@ -1199,10 +1219,10 @@ export default function FeedbackPlatform() {
                           <YAxis 
                             domain={[0, 5]} 
                             ticks={[0, 1, 2, 3, 4, 5]} 
-                            stroke="#64748B" 
-                            fontSize={12} 
-                            tickLine={false} 
-                            axisLine={{ stroke: "#E2E8F0" }}
+                          stroke="#64748B"
+                          fontSize={12}
+                          tickLine={false}
+                          axisLine={{ stroke: "#E2E8F0" }}
                             label={{ value: 'Average Score', angle: -90, position: 'insideLeft', offset: -15, fill: '#64748B' }}
                           />
                           <Tooltip
@@ -1211,22 +1231,22 @@ export default function FeedbackPlatform() {
                               const course = generateClassComparisonData.find(item => item.course === label);
                               return course ? `${label} - ${course.courseTitle}` : label;
                             }}
-                          />
-                          <Bar 
+                        />
+                        <Bar
                             dataKey="averageScore"
                             name="Average Score" 
                             fill="#3A4DB9"
-                            radius={[4, 4, 0, 0]}
-                            isAnimationActive={animateCharts}
-                          />
+                          radius={[4, 4, 0, 0]}
+                          isAnimationActive={animateCharts}
+                        />
                           <ReferenceLine 
                             y={generateClassComparisonData.length > 0 ? 
                               generateClassComparisonData.reduce((sum, item) => sum + item.averageScore, 0) / generateClassComparisonData.length : 0} 
                             stroke="#0F172A" 
                             strokeDasharray="3 3"
                             ifOverflow="extendDomain"
-                          />
-                        </BarChart>
+                        />
+                      </BarChart>
                       </ResponsiveContainer>
                     ) : (
                       <div className="h-full flex items-center justify-center">
@@ -1409,16 +1429,23 @@ export default function FeedbackPlatform() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white py-6 mt-auto">
+      <footer className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white py-8 mt-auto">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center gap-2 mb-4 md:mb-0">
-              <div className="bg-[#8B6BF2] rounded-lg p-1.5">
-                <GraduationCap className="h-4 w-4 text-[#0F172A]" />
-              </div>
-              <span className="font-semibold">Academic Feedback Platform</span>
+            <div className="flex items-center gap-4 mb-4 md:mb-0">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
+                <img 
+                  src="https://minerva-orgs.s3.us-west-2.amazonaws.com/production/e9fd1c3c-b16f-11e8-9bf9-0622cf94bff4/mu-darkbg.png?v=fc61135b6a13fea802d4c4373cd4dc420fee7850" 
+                  alt="Minerva Logo" 
+                  className="h-14 w-14" 
+                />
+              </motion.div>
+              <span className="font-semibold text-lg">HC and LO Feedback</span>
             </div>
-            <div className="text-sm text-[#94A3B8]">© 2025 Academic Feedback Platform. All rights reserved.</div>
+            <div className="text-sm text-[#94A3B8]">© {new Date().getFullYear()} HC and LO Feedback. All rights reserved.</div>
           </div>
         </div>
       </footer>
