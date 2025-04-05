@@ -5,6 +5,23 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
+/**
+ * AnimatedScoreCard Component
+ * 
+ * A reusable component that displays a score card with animations and dynamic styling.
+ * Features:
+ * - Color coding based on score value (excellent, good, average, fair, poor)
+ * - Hover animations with floating particles
+ * - Animated progress bar
+ * - Dynamic shadow effects
+ * 
+ * Props:
+ * - score: number - The score value (1-5)
+ * - title: string - The title of the score card
+ * - subtitle: string - Additional information displayed below the title
+ * - icon: React.ReactNode - Icon to display in the top right
+ */
+
 interface AnimatedScoreCardProps {
   score: number
   title: string

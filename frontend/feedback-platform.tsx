@@ -53,6 +53,28 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { GradeLegend } from "./grade-legend"
 import { AnimatedScoreCard } from "./animated-score-card"
 
+
+/**
+ * Academic Feedback Platform
+ * 
+ * The main dashboard component that renders the entire feedback platform UI.
+ * This component includes:
+ * - Header with navigation tabs
+ * - Filtering interface
+ * - Data visualizations (charts, graphs)
+ * - Feedback tables and summaries
+ * - Interactive elements and animations
+ * 
+ * The dashboard displays academic feedback data with multiple views:
+ * - By HC (Higher Criteria)
+ * - By LO (Learning Outcomes)
+ * - By Course
+ * - Overall performance
+ * 
+ * It uses mock data for demonstration purposes but is designed to connect
+ * to a real data source in production.
+ */
+
 interface FeedbackItem {
   score: number;
   comment: string;
@@ -63,6 +85,7 @@ interface FeedbackItem {
   term_title: string;
   created_on: string;
 }
+
 
 export default function FeedbackPlatform() {
   const [activeTab, setActiveTab] = useState<string>("byHC")
