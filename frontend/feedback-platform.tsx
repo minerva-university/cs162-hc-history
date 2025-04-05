@@ -670,7 +670,7 @@ export default function FeedbackPlatform() {
         <div className="max-w-7xl mx-auto px-4">
           <Tabs defaultValue="byHC" className="w-full" onValueChange={setActiveTab}>
             <TabsList className="bg-transparent border-b border-[#334155] w-full justify-start rounded-none h-auto p-0 mb-0">
-              {["byHC", "byLO", "byCourse", "overall"].map((tab, index) => (
+              {["byHC", "byCourse", "overall"].map((tab, index) => (
                 <motion.div
                   key={tab}
                   initial={{ opacity: 0, y: -10 }}
@@ -1292,60 +1292,6 @@ export default function FeedbackPlatform() {
           </div>
         )}
 
-        {activeTab === "byLO" && (
-          <motion.div
-            className="space-y-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="border-none shadow-lg overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4">
-                <CardTitle className="text-xl font-bold">Learning Outcomes Analysis</CardTitle>
-                <CardDescription className="text-[#94A3B8] mt-1">
-                  Analyze student performance against learning objectives
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-[#F1F5F9] border-b border-[#E2E8F0]">
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
-                          Learning Outcome
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
-                          Average Score
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#E2E8F0]">
-                      {filteredData.reduce<Array<{ outcome_name: string; totalScore: number; count: number }>>((acc, item) => {
-                        const existing = acc.find((row) => row.outcome_name === item.outcome_name);
-                        if (existing) {
-                          existing.totalScore += item.score;
-                          existing.count += 1;
-                        } else {
-                          acc.push({ outcome_name: item.outcome_name, totalScore: item.score, count: 1 });
-                        }
-                        return acc;
-                      }, []).map((row) => (
-                        <tr key={row.outcome_name} className="hover:bg-[#F8FAFC]">
-                          <td className="px-6 py-4 whitespace-nowrap text-[#334155] font-medium">
-                            {row.outcome_name}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#334155]">
-                            {(row.totalScore / row.count).toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
 
         {activeTab === "byCourse" && (
           <motion.div
@@ -1641,8 +1587,7 @@ function ChevronRight({ className, ...props }: { className?: string } & React.SV
 
 function getTabLabel(tab: string): string {
   switch (tab) {
-    case "byHC": return "By HC";
-    case "byLO": return "By LO";
+    case "byHC": return "By HC and LO";
     case "byCourse": return "By Course";
     default: return "Overall";
   }
