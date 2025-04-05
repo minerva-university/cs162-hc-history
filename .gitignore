@@ -2,9 +2,10 @@ data.db
 db_visualizer.html
 venv/
 .env
-*/.env
+selenium/
 anusha_api_test/api_responses/
 */node_modules
 */data.db
 /frontend/.next
 /pulling_data/selenium
+

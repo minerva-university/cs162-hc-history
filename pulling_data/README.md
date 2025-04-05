@@ -53,9 +53,9 @@ A Python-based client for interacting with the Minerva API. This tool fetches da
 ### From the Console
 
 1. Open your console and navigate to the repository.
-2. Pull the latest changes and switch to the appropriate branch:
+2. Pull the latest changes and switch to the appropriate folder:
     ```bash
-    git pull && git switch anusha-api-test && cd pulling_data
+    git pull && cd pulling_data
     ```
 3. Run the setup script to fetch data and store it:
     ```bash
