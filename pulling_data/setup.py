@@ -1,11 +1,5 @@
 import os
 import subprocess
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import WebDriverException, TimeoutException
-from webdriver_manager.chrome import ChromeDriverManager
-
 
 def manual_cookie_entry():
     print("\n⚠️  Could not extract cookies automatically.")
@@ -21,6 +15,11 @@ def manual_cookie_entry():
 
 
 def scrape_and_save_cookies():
+    from selenium import webdriver
+    from selenium.webdriver.chrome.service import Service
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.common.exceptions import WebDriverException, TimeoutException
+    from webdriver_manager.chrome import ChromeDriverManager
     options = webdriver.ChromeOptions()
     options.add_argument("user-data-dir=selenium")  # persistent browser session
 
