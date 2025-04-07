@@ -1,7 +1,14 @@
 import os
+import subprocess
 from dotenv import load_dotenv
 
 def setup_openai():
+    if os.path.exists("requirements.txt"):
+        print("📦 Installing dependencies from requirements.txt...")
+        subprocess.run(["pip3", "install", "-r", "requirements.txt"])
+    else:
+        print("📂 No requirements.txt found. Skipping dependency installation.")
+
     """Setup OpenAI API key configuration"""
     print("\nAI Summarization Setup")
     print("=====================")
