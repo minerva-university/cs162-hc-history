@@ -1,6 +1,6 @@
 # HC/LO Feedback Viewer
 
-**A platform for pulling, viewing, and summarizing student feedback data from the Minerva Forum.**
+**A platform for pulling, viewing, and summarizing student feedback data from Forum.**
 
 This project requires three pieces of information to work fully:
 
