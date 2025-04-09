@@ -62,6 +62,68 @@ requirements.txt     setup.py          backend
 run.py
 ```
 
+### Make Sure Python Is Installed
+
+Once you're in the project folder, check if Python is installed by running:
+
+```bash
+python3 --version
+```
+
+If that doesn't work, try:
+
+```bash
+python --version
+```
+
+You should see a version like:
+
+```
+Python 3.x.x
+```
+
+If you see an error or it says Python 2.x, follow the instructions below to install Python 3.
+
+<details>
+<summary><strong>Install Python 3 on macOS</strong></summary>
+
+1. Visit [python.org/downloads/mac-osx](https://www.python.org/downloads/mac-osx/)
+2. Download the latest version of Python 3.
+3. Run the installer and follow the steps.
+4. After installation, reopen your terminal and run:
+
+```bash
+python3 --version
+```
+
+You should now see a version like `Python 3.x.x`.
+
+> Optional: If you're comfortable with Homebrew, you can also run:
+
+```bash
+brew install python
+```
+
+</details>
+
+<details>
+<summary><strong>Install Python 3 on Windows</strong></summary>
+
+1. Visit [python.org/downloads/windows](https://www.python.org/downloads/windows/)
+2. Download the latest version of Python 3.
+3. When installing:
+   - **Check the box** that says "Add Python to PATH"
+   - Click "Install Now"
+4. After installation, open a new terminal and run:
+
+```bash
+python --version
+```
+
+You should see a version like `Python 3.x.x`.
+
+</details>
+
 ---
 
 ## Project Overview
