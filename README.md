@@ -57,8 +57,8 @@ dir # Windows
 
 You should see something like this:
 ```arduino
-README.md            pulling_data      ai-summary
-requirements.txt     setup.py          frontend
+README.md            frontend          ai-summary
+requirements.txt     setup.py          backend
 run.py
 ```
 

@@ -16,7 +16,7 @@ def run_command(command):
 
 # Function to check if the 'data.db' file exists
 def check_data_db():
-    db_path = './pulling_data/data.db'
+    db_path = './backend/data.db'
     if os.path.exists(db_path):
         print("✅ data.db file found.")
         return True
@@ -44,7 +44,7 @@ def run_ai_setup():
 def run_backend():
     print("🚀 Starting backend...")
     # Run the backend in the same terminal (non-blocking)
-    backend_process = subprocess.Popen(["python3", "pulling_data/app.py"])
+    backend_process = subprocess.Popen(["python3", "backend/app.py"])
     return backend_process
 
 # Function to run the frontend in a new terminal window (cross-platform)
@@ -68,9 +68,9 @@ def main():
         print("📦 Installing dependencies from requirements.txt...")
         subprocess.run(["pip3", "install", "-r", "requirements.txt"])
 
-    # Step 1: Run pulling_data/setup.py
-    print("🚀 Running pulling_data/setup.py...")
-    run_command(["python3", "pulling_data/setup.py"])
+    # Step 1: Run backend/setup.py
+    print("🚀 Running backend/setup.py...")
+    run_command(["python3", "backend/setup.py"])
 
     # Step 2: Check if data.db file is created
     if not check_data_db():
