@@ -2,11 +2,7 @@
 
 **A platform for pulling, viewing, and summarizing student feedback data from Forum.**
 
-This project requires three pieces of information to work fully:
-
-- `csrftoken` (required)  
-- `sessionid` (required)  
-- OpenAI API key (optional, for AI summarization of your feedback)
+This project can run fully with just an OpenAI API key (optional, for AI summarization of your feedback). The platform automatically handles login to the Forum using your browser session.
 
 ---
 
@@ -19,7 +15,6 @@ This project requires three pieces of information to work fully:
 2. [Project Overview](#project-overview)
 3. [Video Demo](#video-demo)
 4. [Required Credentials](#required-credentials)
-   - [How to Find CSRF Token and Session ID](#how-to-find-csrf-token-and-session-id)
    - [How to Get an OpenAI API Key (Optional)](#how-to-get-an-openai-api-key-optional)
 5. [How to Set Up the Project (`setup.py`)](#how-to-set-up-the-project-setuppy)
 6. [How to Run the Project (`run.py`)](#how-to-run-the-project-runpy)
@@ -128,7 +123,7 @@ You should see a version like `Python 3.x.x`.
 
 ## Project Overview
 
-This project pulls feedback data from the Minerva Forum using your credentials, stores it in a local database (`data.db`), and lets you view or summarize that data.
+This project pulls feedback data from the Minerva Forum using your active browser session, stores it in a local database (`data.db`), and lets you view or summarize that data.
 
 It includes:
 
@@ -146,29 +141,7 @@ A demo video will go here once it's recorded.
 
 ## Required Credentials
 
-To run everything, you'll need three things:
-
-- csrftoken  
-- sessionid  
-- OpenAI API key (only needed for AI summaries)
-
-You only need to find these once, and the setup process will save them in a hidden `.env` file.
-
----
-
-### How to Find CSRF Token and Session ID
-
-1. Go to https://forum.minerva.edu  
-2. Right-click anywhere and click Inspect  
-3. Go to the Network tab and refresh the page  
-4. Look for the "self" request  
-5. Click it, then open the Headers tab  
-6. Scroll down to find:  
-   - `csrftoken=...`  
-   - `sessionid=...`  
-
-Example:  
-![gettokens](https://github.com/user-attachments/assets/549df9fd-36ec-45c2-8a70-d42ffc7f0b25)
+To run everything, you only need an OpenAI API key if you want to use AI summaries. The system will handle your login session through an interactive browser.
 
 ---
 
@@ -200,7 +173,7 @@ python3 setup.py
 
 What it does:
 - Installs dependencies  
-- Prompts you for your credentials  
+- Authenticates using your browser session  
 - Pulls data from the Minerva Forum and stores it in `data.db`  
 - Optionally runs AI summarization using OpenAI  
 
@@ -215,7 +188,7 @@ python3 run.py
 ```
 
 What it does:
-- Verifies everything is in place (`data.db`, credentials, etc.)  
+- Verifies everything is in place (`data.db`, `.env`, etc.)  
 - Launches the backend and frontend  
 
 ---
