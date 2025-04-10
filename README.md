@@ -123,7 +123,7 @@ You should see a version like `Python 3.x.x`.
 
 ## Project Overview
 
-This project pulls feedback data from the Minerva Forum using your active browser session, stores it in a local database (`data.db`), and lets you view or summarize that data.
+This project pulls feedback data from Forum using your active browser session, stores it in a local database (`data.db`), and lets you view or summarize that data.
 
 It includes:
 
@@ -174,7 +174,7 @@ python3 setup.py
 What it does:
 - Installs dependencies  
 - Authenticates using your browser session  
-- Pulls data from the Minerva Forum and stores it in `data.db`  
+- Pulls data from Forum and stores it in `data.db`  
 - Optionally runs AI summarization using OpenAI  
 
 ---
