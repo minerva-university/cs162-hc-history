@@ -16,7 +16,7 @@ def run_command(command):
 
 # Function to check if the 'data.db' file exists
 def check_data_db():
-    db_path = './pulling_data/data.db'
+    db_path = './backend/data.db'
     if os.path.exists(db_path):
         print("✅ data.db file found.")
         return True
@@ -44,22 +44,36 @@ def run_ai_setup():
 def run_backend():
     print("🚀 Starting backend...")
     # Run the backend in the same terminal (non-blocking)
-    backend_process = subprocess.Popen(["python3", "pulling_data/app.py"])
+    backend_process = subprocess.Popen(["python3", "backend/app.py"])
     return backend_process
 
 # Function to run the frontend in a new terminal window (cross-platform)
 def run_frontend():
     print("🚀 Starting frontend in a new console window...")
 
-    if platform.system() == "Windows":
-        # On Windows, use 'start' to open a new console window
-        subprocess.Popen("start cmd /K npm run dev", cwd=os.path.join(os.getcwd(), "frontend"), shell=True)
-    elif platform.system() == "Darwin":  # macOS
-        # On macOS, use 'osascript' to open a new terminal window
-        subprocess.Popen(['osascript', '-e', 'tell application "Terminal" to do script "cd ' + os.path.join(os.getcwd(), "frontend") + ' && npm run dev"'])
-    else:
-        # On Linux, use 'gnome-terminal' to open a new terminal window (adjust for other terminal emulators if needed)
-        subprocess.Popen(['gnome-terminal', '--', 'bash', '-c', f'cd {os.path.join(os.getcwd(), "frontend")} && npm run dev; exec bash'])
+    frontend_path = os.path.join(os.getcwd(), "frontend")
+    launch_command = (
+        f"cd {frontend_path} && npm install && npm run build && npm start"
+    )
+
+    system = platform.system()
+
+    if system == "Windows":
+        subprocess.Popen(
+            f'start cmd /K "{launch_command}"',
+            cwd=frontend_path,
+            shell=True
+        )
+    elif system == "Darwin":  # macOS
+        subprocess.Popen([
+            'osascript', '-e',
+            f'tell application "Terminal" to do script "{launch_command}"'
+        ])
+    else:  # Linux
+        subprocess.Popen([
+            'gnome-terminal', '--', 'bash', '-c',
+            f'{launch_command}; exec bash'
+        ])
 
 # Main setup function
 def main():
@@ -68,9 +82,9 @@ def main():
         print("📦 Installing dependencies from requirements.txt...")
         subprocess.run(["pip3", "install", "-r", "requirements.txt"])
 
-    # Step 1: Run pulling_data/setup.py
-    print("🚀 Running pulling_data/setup.py...")
-    run_command(["python3", "pulling_data/setup.py"])
+    # Step 1: Run backend/setup.py
+    print("🚀 Running backend/setup.py...")
+    run_command(["python3", "backend/setup.py"])
 
     # Step 2: Check if data.db file is created
     if not check_data_db():

@@ -8,4 +8,8 @@ anusha_api_test/api_responses/
 */data.db
 /frontend/.next
 /pulling_data/selenium
-
+/backend/selenium
+clickable-files/.DS_Store
+.DS_Store
+*.DS_Store
+*.log

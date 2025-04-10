@@ -19,8 +19,8 @@ def check_required_files():
 
     # Paths to check
     required_paths = [
-        "./pulling_data/data.db",
-        "./pulling_data/app.py",
+        "./backend/data.db",
+        "./backend/app.py",
         "./ai-summary/ai_summary.py",
         "./ai-summary/init_db.py",
         "./ai-summary/setup.py",
@@ -43,7 +43,7 @@ def check_required_files():
 # Function to run the backend
 def run_backend():
     print("🚀 Starting backend...")
-    return subprocess.Popen(["python3", "pulling_data/app.py"])
+    return subprocess.Popen(["python3", "backend/app.py"])
 
 # Function to run the frontend in a new terminal window
 def run_frontend():
