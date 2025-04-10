@@ -51,15 +51,29 @@ def run_backend():
 def run_frontend():
     print("🚀 Starting frontend in a new console window...")
 
-    if platform.system() == "Windows":
-        # On Windows, use 'start' to open a new console window
-        subprocess.Popen("start cmd /K npm run dev", cwd=os.path.join(os.getcwd(), "frontend"), shell=True)
-    elif platform.system() == "Darwin":  # macOS
-        # On macOS, use 'osascript' to open a new terminal window
-        subprocess.Popen(['osascript', '-e', 'tell application "Terminal" to do script "cd ' + os.path.join(os.getcwd(), "frontend") + ' && npm run dev"'])
-    else:
-        # On Linux, use 'gnome-terminal' to open a new terminal window (adjust for other terminal emulators if needed)
-        subprocess.Popen(['gnome-terminal', '--', 'bash', '-c', f'cd {os.path.join(os.getcwd(), "frontend")} && npm run dev; exec bash'])
+    frontend_path = os.path.join(os.getcwd(), "frontend")
+    launch_command = (
+        f"cd {frontend_path} && npm install && npm run build && npm start"
+    )
+
+    system = platform.system()
+
+    if system == "Windows":
+        subprocess.Popen(
+            f'start cmd /K "{launch_command}"',
+            cwd=frontend_path,
+            shell=True
+        )
+    elif system == "Darwin":  # macOS
+        subprocess.Popen([
+            'osascript', '-e',
+            f'tell application "Terminal" to do script "{launch_command}"'
+        ])
+    else:  # Linux
+        subprocess.Popen([
+            'gnome-terminal', '--', 'bash', '-c',
+            f'{launch_command}; exec bash'
+        ])
 
 # Main setup function
 def main():
