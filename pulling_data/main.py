@@ -35,10 +35,10 @@ def initialize_database(db_name, schema_file):
 
 # Fetch data from endpoint and handle response
 def fetch_data_from_api(url, headers):
-    print(f"Fetching data from {url}...")
+    print(f"🔄 Fetching data from {url}...")
     response = requests.get(url, headers=headers)
-    print(response.status_code)
     if response.status_code == 200:
+        print("✅ Data fetched successfully.")
         return response.json()
     else:
         print(f"❌ Error: {response.status_code} - {response.text}")
@@ -218,9 +218,12 @@ def main():
     # Set up headers for API requests
     headers = get_headers(CSRF_TOKEN, SESSION_ID)
     
+    # Get the directory of the current script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     # Initialize the database
-    DB_NAME = "data.db"
-    SCHEMA_FILE = "schema.sql"
+    # Absolute paths for DB and schema files
+    DB_NAME = os.path.join(script_dir, "data.db")
+    SCHEMA_FILE = os.path.join(script_dir, "schema.sql")
     initialize_database(DB_NAME, SCHEMA_FILE)
     
     # Fetch data from APIs
@@ -264,8 +267,8 @@ def main():
     conn.close()
 
     # Create the assignment_scores table
-    sql_file = "views.sql"
-    create_assignment_scores_table(DB_NAME, sql_file)
+    VIEWS_FILE = os.path.join(script_dir, "views.sql")
+    create_assignment_scores_table(DB_NAME, VIEWS_FILE)
 
     print("✅ Data successfully stored in data.db")
 

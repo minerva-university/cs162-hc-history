@@ -26,7 +26,7 @@ def scrape_and_save_cookies():
     try:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     except WebDriverException as e:
-        print("🚫 Failed to initialize Chrome WebDriver.")
+        print("❌ Failed to initialize Chrome WebDriver.")
         print(str(e))
         manual_cookie_entry()
         return
@@ -56,7 +56,7 @@ def scrape_and_save_cookies():
         print("✅ .env file created successfully with scraped cookies.")
 
     except (TimeoutException, ValueError) as e:
-        print("🚫 Failed to scrape cookies.")
+        print("❌ Failed to scrape cookies.")
         print(str(e))
         manual_cookie_entry()
 
@@ -66,30 +66,18 @@ def scrape_and_save_cookies():
         except Exception:
             pass
 
-
 def main():
-    # Install dependencies
-    if os.path.exists("requirements.txt"):
-        print("📦 Installing dependencies from requirements.txt...")
-        subprocess.run(["pip3", "install", "-r", "requirements.txt"])
-    else:
-        print("📂 No requirements.txt found. Skipping dependency installation.")
-
     # Scrape cookies and save to .env if it doesn't exist
     if not os.path.exists(".env"):
         scrape_and_save_cookies()
     else:
-        print(".env file already exists. Skipping scraping step.")
+        print("✅ .env file already exists. Skipping scraping step.")
 
     # Run main.py
     print("🚀 Running main.py...")
-    subprocess.run(["python3", "main.py"])
-
-    # Prompt for running db_visualizer.py
-    print("\n📊 You can now run db_visualizer.py to view tables from your database.")
-    print("To run it, use:\npython3 db_visualizer.py")
-    subprocess.run(["python3", "db_visualizer.py"])
-
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    main_path = os.path.join(script_dir, "main.py")
+    subprocess.run(["python3", main_path])
 
 if __name__ == "__main__":
     main()

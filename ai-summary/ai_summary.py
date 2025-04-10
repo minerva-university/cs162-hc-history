@@ -17,7 +17,9 @@ def main():
     parser.add_argument("--debug", action="store_true", help="Enable verbose debug logs.")
     args = parser.parse_args()
 
-    db_path = "../pulling_data/data.db"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.abspath(os.path.join(script_dir, "..", "pulling_data", "data.db"))
+
 
     try:
         if args.mode == "assignment_outcome":
