@@ -131,6 +131,21 @@ export default function FeedbackPlatform() {
         // Extract unique values for filters with more information
         const hcs = [...new Set(values.map((item: FeedbackItem) => item.outcome_name))].filter(Boolean);
         
+        // Sort HCs alphabetically, but keep LOs (with course codes) as they are
+        const sortedHCs = hcs.sort((a, b) => {
+          // Check if either item is an LO (contains a hyphen and course code)
+          const aIsLO = a.includes('-');
+          const bIsLO = b.includes('-');
+          
+          // If both are HCs or both are LOs, sort alphabetically
+          if ((aIsLO && bIsLO) || (!aIsLO && !bIsLO)) {
+            return a.localeCompare(b);
+          }
+          
+          // If only one is an LO, place HCs first
+          return aIsLO ? 1 : -1;
+        });
+        
         // Create combined course information (code + title)
         const coursesMap = new Map<string, string>();
         values.forEach((item: FeedbackItem) => {
@@ -142,11 +157,11 @@ export default function FeedbackPlatform() {
         
         const terms = [...new Set(values.map((item: FeedbackItem) => item.term_title))].filter(Boolean);
 
-        console.log("Unique HCs/LOs:", hcs);
+        console.log("Unique HCs/LOs:", sortedHCs);
         console.log("Unique Courses:", courses);
         console.log("Unique Terms:", terms);
 
-        setUniqueHCs(hcs);
+        setUniqueHCs(sortedHCs);
         setUniqueCourses(courses);
         setUniqueTerms(terms);
         setFeedbackData(values);
@@ -219,6 +234,21 @@ export default function FeedbackPlatform() {
         // Extract unique values for filters from mock data
         const hcs = [...new Set(mockData.map(item => item.outcome_name))];
         
+        // Sort HCs alphabetically, just like with real data
+        const sortedHCs = hcs.sort((a, b) => {
+          // Check if either item is an LO (contains a hyphen and course code)
+          const aIsLO = a.includes('-');
+          const bIsLO = b.includes('-');
+          
+          // If both are HCs or both are LOs, sort alphabetically
+          if ((aIsLO && bIsLO) || (!aIsLO && !bIsLO)) {
+            return a.localeCompare(b);
+          }
+          
+          // If only one is an LO, place HCs first
+          return aIsLO ? 1 : -1;
+        });
+        
         // Create combined course information for mock data
         const coursesMap = new Map<string, string>();
         mockData.forEach((item) => {
@@ -231,11 +261,11 @@ export default function FeedbackPlatform() {
         const terms = [...new Set(mockData.map(item => item.term_title))];
         
         console.log("Using mock data with:");
-        console.log("Unique HCs/LOs:", hcs);
+        console.log("Unique HCs/LOs:", sortedHCs);
         console.log("Unique Courses:", courses);
         console.log("Unique Terms:", terms);
         
-        setUniqueHCs(hcs);
+        setUniqueHCs(sortedHCs);
         setUniqueCourses(courses);
         setUniqueTerms(terms);
         setFeedbackData(mockData);
@@ -655,9 +685,9 @@ export default function FeedbackPlatform() {
   return (
     <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
       {/* Header with navigation tabs */}
-      <header className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white shadow-lg sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
-          <div className="flex items-center gap-5">
+      <header className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white shadow-lg fixed top-0 left-0 right-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-2 flex flex-col items-center">
+          <div className="flex items-center justify-center gap-4 py-1">
             <motion.div
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300, damping: 10 }}
@@ -667,735 +697,721 @@ export default function FeedbackPlatform() {
                 alt="Minerva Logo" 
                 style={{ 
                   objectFit: "cover", 
-                  width: "10rem", 
-                  height: "9rem" 
+                  width: "4.5rem", 
+                  height: "4.5rem" 
                 }}
               />
             </motion.div>
             <h1 className="text-2xl font-bold tracking-tight">HC and LO Feedback</h1>
           </div>
-          <div className="flex items-center space-x-4">
-            <motion.div
-              className="hidden md:flex items-center gap-2 bg-[#334155] rounded-full px-3 py-1.5"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <Search className="h-4 w-4 text-[#94A3B8]" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="bg-transparent border-none text-sm focus:outline-none text-white placeholder:text-[#94A3B8] w-32"
-              />
-            </motion.div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <motion.button
-                  className="flex items-center justify-center rounded-full"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Avatar className="h-8 w-8 border-2 border-[#38BDF8]">
-                    <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                    <AvatarFallback className="bg-[#334155]">JD</AvatarFallback>
-                  </Avatar>
-                </motion.button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="w-full px-4">
+            <Tabs defaultValue="byHC" className="w-full" onValueChange={setActiveTab}>
+              <TabsList className="bg-transparent border-b border-[#334155] w-full justify-center rounded-none h-auto p-0 mb-0">
+                {["byHC", "byCourse", "overall"].map((tab, index) => (
+                  <motion.div
+                    key={tab}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <TabsTrigger
+                      value={tab}
+                      className="data-[state=active]:border-b-2 data-[state=active]:border-[#38BDF8] data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none px-8 py-2 text-white data-[state=active]:text-[#38BDF8]"
+                    >
+                      {getTabLabel(tab)}
+                    </TabsTrigger>
+                  </motion.div>
+                ))}
+              </TabsList>
+            </Tabs>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4">
-          <Tabs defaultValue="byHC" className="w-full" onValueChange={setActiveTab}>
-            <TabsList className="bg-transparent border-b border-[#334155] w-full justify-start rounded-none h-auto p-0 mb-0">
-              {["byHC", "byCourse", "overall"].map((tab, index) => (
-                <motion.div
-                  key={tab}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <TabsTrigger
-                    value={tab}
-                    className="data-[state=active]:border-b-2 data-[state=active]:border-[#38BDF8] data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none px-4 py-2 text-white data-[state=active]:text-[#38BDF8]"
-                  >
-                    {getTabLabel(tab)}
-                  </TabsTrigger>
-                </motion.div>
-              ))}
-            </TabsList>
-          </Tabs>
-        </div>
       </header>
-
-      {/* Main content */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 py-8">
-        {/* Filters section */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="mb-6 border-none shadow-lg bg-white overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-medium flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Filters
-                </CardTitle>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-white hover:text-[#38BDF8] hover:bg-[#1E293B]"
-                  onClick={resetFilters}
-                >
-                  Reset
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {/* HC/LO Type filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
-                    <BookOpen className="h-3.5 w-3.5" />
-                    HC/LO Type
-                  </label>
-                  <Select defaultValue="All" onValueChange={(value) => setSelectedHC(value === "All" ? "" : value)}>
-                    <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="All">All</SelectItem>
-                      {uniqueHCs.map(hc => (
-                        <SelectItem key={hc} value={hc}>{hc}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+      
+      {/* Add padding to the main content to account for the fixed header */}
+      <div className="pt-[8.5rem]">
+        {/* Main content */}
+        <main className="flex-1 max-w-7xl mx-auto px-4 py-6">
+          {/* Filters section */}
+          <motion.div 
+            className="mt-4"
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="mb-6 border-none shadow-lg bg-white overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-medium flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    Filters
+                  </CardTitle>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-white hover:text-[#38BDF8] hover:bg-[#1E293B]"
+                    onClick={resetFilters}
+                  >
+                    Reset
+                  </Button>
                 </div>
-                
-                {/* Course filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
-                    <BookOpen className="h-3.5 w-3.5" />
-                    Course
-                  </label>
-                  <Select defaultValue="All" onValueChange={(value) => setSelectedCourse(value === "All" ? "" : value)}>
-                    <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
-                      <SelectValue placeholder="Select course" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="All">All Courses</SelectItem>
-                      {uniqueCourses.map(courseCode => {
-                        // Find the course title for this code
-                        const courseItem = feedbackData.find(item => item.course_code === courseCode);
-                        const displayText = courseItem ? 
-                          `${courseCode} - ${courseItem.course_title}` : 
-                          courseCode;
-                        return (
-                          <SelectItem key={courseCode} value={courseCode}>
-                            {displayText}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                {/* Term filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
-                    <Calendar className="h-3.5 w-3.5" />
-                    Term
-                  </label>
-                  <Select defaultValue="All" onValueChange={(value) => setSelectedTerm(value === "All" ? "" : value)}>
-                    <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
-                      <SelectValue placeholder="Select term" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="All">All Terms</SelectItem>
-                      {uniqueTerms.map(term => (
-                        <SelectItem key={term} value={term}>{term}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                {/* Score Range filter - now in the fourth column */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
-                      <Star className="h-3.5 w-3.5" />
-                      Score Range
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Input 
-                        type="number" 
-                        min="1" 
-                        max="5" 
-                        value={minScore} 
-                        onChange={handleMinScoreChange}
-                        className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
-                      />
-                      <span className="text-[#64748B]">to</span>
-                      <Input 
-                        type="number" 
-                        min="1" 
-                        max="5" 
-                        value={maxScore} 
-                        onChange={handleMaxScoreChange}
-                        className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
-                      />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Debug Section */}
-        {(dbError || filteredData.length === 0) && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="mb-6 border-none shadow-lg bg-red-50 overflow-hidden">
-              <CardHeader className="bg-red-500 text-white p-4">
-                <CardTitle className="text-lg font-medium flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4" />
-                  {filteredData.length === 0 ? "No Data Available" : "Database Error"}
-                </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="text-red-800 whitespace-pre-line">{dbError || "No data found with current filters."}</div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Button onClick={checkSqliteFiles} variant="outline" size="sm">
-                    Check SQLite Files
-                  </Button>
-                  <Button onClick={resetFilters} variant="outline" size="sm">
-                    Reset Filters
-                  </Button>
-                </div>
-                <div className="mt-4 p-4 bg-yellow-50 rounded-md">
-                  <p className="text-sm text-yellow-800">
-                    <strong>Troubleshooting:</strong> Make sure the <code>sql-wasm.wasm</code> file and <code>data.db</code> files 
-                    are in the correct location (typically in the <code>public</code> folder). If the database is not loading,
-                    the platform is showing sample data instead.
-                  </p>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {/* HC/LO Type filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
+                      <BookOpen className="h-3.5 w-3.5" />
+                      HC/LO Type
+                    </label>
+                    <Select defaultValue="All" onValueChange={(value) => setSelectedHC(value === "All" ? "" : value)}>
+                      <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All">All</SelectItem>
+                        {uniqueHCs.map(hc => (
+                          <SelectItem key={hc} value={hc}>{hc}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Course filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
+                      <BookOpen className="h-3.5 w-3.5" />
+                      Course
+                    </label>
+                    <Select defaultValue="All" onValueChange={(value) => setSelectedCourse(value === "All" ? "" : value)}>
+                      <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
+                        <SelectValue placeholder="Select course" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All">All Courses</SelectItem>
+                        {uniqueCourses.map(courseCode => {
+                          // Find the course title for this code
+                          const courseItem = feedbackData.find(item => item.course_code === courseCode);
+                          const displayText = courseItem ? 
+                            `${courseCode} - ${courseItem.course_title}` : 
+                            courseCode;
+                          return (
+                            <SelectItem key={courseCode} value={courseCode}>
+                              {displayText}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Term filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5" />
+                      Term
+                    </label>
+                    <Select defaultValue="All" onValueChange={(value) => setSelectedTerm(value === "All" ? "" : value)}>
+                      <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
+                        <SelectValue placeholder="Select term" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All">All Terms</SelectItem>
+                        {uniqueTerms.map(term => (
+                          <SelectItem key={term} value={term}>{term}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Score Range filter - now in the fourth column */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
+                        <Star className="h-3.5 w-3.5" />
+                        Score Range
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <Input 
+                          type="number" 
+                          min="1" 
+                          max="5" 
+                          value={minScore} 
+                          onChange={handleMinScoreChange}
+                          className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
+                        />
+                        <span className="text-[#64748B]">to</span>
+                        <Input 
+                          type="number" 
+                          min="1" 
+                          max="5" 
+                          value={maxScore} 
+                          onChange={handleMaxScoreChange}
+                          className="w-20 border-[#E2E8F0] focus:ring-[#38BDF8]" 
+                        />
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </motion.div>
-        )}
 
-        {/* Grade Legend */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <GradeLegend />
-        </motion.div>
+          {/* Debug Section */}
+          {(dbError || filteredData.length === 0) && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+              <Card className="mb-6 border-none shadow-lg bg-red-50 overflow-hidden">
+                <CardHeader className="bg-red-500 text-white p-4">
+                  <CardTitle className="text-lg font-medium flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4" />
+                    {filteredData.length === 0 ? "No Data Available" : "Database Error"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="text-red-800 whitespace-pre-line">{dbError || "No data found with current filters."}</div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Button onClick={checkSqliteFiles} variant="outline" size="sm">
+                      Check SQLite Files
+                    </Button>
+                    <Button onClick={resetFilters} variant="outline" size="sm">
+                      Reset Filters
+                    </Button>
+                  </div>
+                  <div className="mt-4 p-4 bg-yellow-50 rounded-md">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Troubleshooting:</strong> Make sure the <code>sql-wasm.wasm</code> file and <code>data.db</code> files 
+                      are in the correct location (typically in the <code>public</code> folder). If the database is not loading,
+                      the platform is showing sample data instead.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
-        
+          {/* Grade Legend */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <GradeLegend />
+          </motion.div>
 
-        {/* Content based on active tab */}
-        {activeTab === "byHC" && (
-          <div className="space-y-6">
-            {/* First row: Summary Card (full width) */}
-              <motion.div
-              className="w-full"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-              {/* Summary Card content remains unchanged */}
-                <Card className="border-none shadow-lg overflow-hidden">
-                  <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4 flex flex-row items-center justify-between">
-                    <div>
-                      <CardTitle className="text-xl font-bold">
-                        {selectedHC || "All HCs/LOs"} - Average Score: {
-                          selectedHC 
-                            ? (filteredData
-                                .filter(item => item.outcome_name === selectedHC)
-                                .reduce((sum, item) => sum + item.score, 0) / 
-                              filteredData.filter(item => item.outcome_name === selectedHC).length).toFixed(1)
-                            : (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(1)
-                        }
+          
+
+          {/* Content based on active tab */}
+          {activeTab === "byHC" && (
+            <div className="space-y-6">
+              {/* First row: Summary Card (full width) */}
+                <motion.div
+                className="w-full"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                {/* Summary Card content remains unchanged */}
+                  <Card className="border-none shadow-lg overflow-hidden">
+                    <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4 flex flex-row items-center justify-between">
+                      <div>
+                        <CardTitle className="text-xl font-bold">
+                          {selectedHC || "All HCs/LOs"} - Average Score: {
+                            selectedHC 
+                              ? (filteredData
+                                  .filter(item => item.outcome_name === selectedHC)
+                                  .reduce((sum, item) => sum + item.score, 0) / 
+                                filteredData.filter(item => item.outcome_name === selectedHC).length).toFixed(1)
+                              : (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(1)
+                          }
+                        </CardTitle>
+                        <CardDescription className="text-[#94A3B8] mt-1">
+                          Based on {filteredData.length} responses across {
+                            new Set(filteredData.map(item => item.course_code)).size
+                          } courses
+                        </CardDescription>
+                      </div>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button variant="outline" size="sm" className="text-white border-white hover:bg-[#1E293B]">
+                          HC Handbook
+                          <ArrowUpRight className="ml-1 h-3 w-3" />
+                        </Button>
+                      </motion.div>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2">
+                            <Lightbulb className="h-5 w-5 text-[#73C173]" />
+                            <h3 className="font-semibold text-[#0F172A]">Strengths:</h3>
+                          </div>
+                          <ul className="space-y-2">
+                            {aiSummary.pros.map((item, index) => (
+                              <motion.li
+                                key={item}
+                                className="flex items-start gap-2"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.5 + index * 0.1 }}
+                              >
+                                <div className="mt-1 rounded-full bg-[#73C173]/20 p-0.5 shadow-[0_0_8px_rgba(115,193,115,0.5)]">
+                                  <Check className="h-3 w-3 text-[#73C173]" />
+                                </div>
+                                <span className="text-sm text-[#334155]">{item}</span>
+                              </motion.li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2">
+                            <AlertCircle className="h-5 w-5 text-[#E89A5D]" />
+                            <h3 className="font-semibold text-[#0F172A]">Areas for Improvement:</h3>
+                          </div>
+                          <ul className="space-y-2">
+                            {aiSummary.cons.map((item, index) => (
+                              <motion.li
+                                key={item}
+                                className="flex items-start gap-2"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.5 + index * 0.1 }}
+                              >
+                                <div className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5 shadow-[0_0_8px_rgba(232,154,93,0.5)]">
+                                  <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
+                                </div>
+                                <span className="text-sm text-[#334155]">{item}</span>
+                              </motion.li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+              {/* Second row: 2x2 grid of equal-sized chart cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Score over time chart */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <Card className="border-none shadow-lg overflow-hidden h-[400px]">
+                    <CardHeader className="p-4 border-b border-[#E2E8F0]">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-[#8B6BF2]" />
+                          Scores over time
+                        </CardTitle>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>
+                              <Download className="mr-2 h-4 w-4" />
+                              <span>Download CSV</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Download className="mr-2 h-4 w-4" />
+                              <span>Download PNG</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 h-[330px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart 
+                          data={timeSeriesData}
+                          margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                          <XAxis
+                            dataKey="month"
+                            stroke="#64748B"
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={{ stroke: "#E2E8F0" }}
+                          />
+                          <YAxis
+                            domain={[0, 5]}
+                            stroke="#64748B"
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={{ stroke: "#E2E8F0" }}
+                            ticks={[1, 2, 3, 4, 5]}
+                          />
+                          <Tooltip
+                            formatter={(value) => [`${value}`, 'Score']}
+                            labelFormatter={(label) => `Month: ${label}`}
+                            contentStyle={{ 
+                              backgroundColor: "white", 
+                              border: "1px solid #E2E8F0",
+                              borderRadius: "4px",
+                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)"
+                            }}
+                          />
+                          
+                          {/* Solid fill area under the line */}
+                          <Area
+                            type="monotone"
+                            dataKey="score"
+                            fill="#8B6BF2"
+                            fillOpacity={0.1}
+                            stroke="none"
+                          />
+                          
+                          {/* The main line - without legend */}
+                          <Line
+                            type="monotone"
+                            dataKey="score"
+                            name="Average Score"
+                            stroke="#8B6BF2"
+                            strokeWidth={3}
+                            dot={{
+                              fill: "#8B6BF2",
+                              r: 5,
+                              strokeWidth: 2,
+                              stroke: "#FFFFFF"
+                            }}
+                            activeDot={{
+                              fill: "#8B6BF2",
+                              r: 7,
+                              strokeWidth: 2,
+                              stroke: "#FFFFFF"
+                            }}
+                          />
+                          
+                          {/* Reference lines for score levels */}
+                          <ReferenceLine y={3} stroke="#64748B" strokeDasharray="3 3" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                {/* Score Distribution bar chart */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+                  <Card className="border-none shadow-lg overflow-hidden h-[400px]">
+                    <CardHeader className="p-4 border-b border-[#E2E8F0]">
+                      <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                        <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
+                        Score Distribution
                       </CardTitle>
-                      <CardDescription className="text-[#94A3B8] mt-1">
-                        Based on {filteredData.length} responses across {
-                          new Set(filteredData.map(item => item.course_code)).size
-                        } courses
-                      </CardDescription>
-                    </div>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button variant="outline" size="sm" className="text-white border-white hover:bg-[#1E293B]">
-                        HC Handbook
-                        <ArrowUpRight className="ml-1 h-3 w-3" />
-                      </Button>
-                    </motion.div>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          <Lightbulb className="h-5 w-5 text-[#73C173]" />
-                          <h3 className="font-semibold text-[#0F172A]">Strengths:</h3>
-                        </div>
-                        <ul className="space-y-2">
-                          {aiSummary.pros.map((item, index) => (
-                            <motion.li
-                              key={item}
-                              className="flex items-start gap-2"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.5 + index * 0.1 }}
+                    </CardHeader>
+                    <CardContent className="p-4 h-[330px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                          data={generateScoreDistributionData}
+                          margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
+                          barGap={0}
+                          barCategoryGap="30%"
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                          <XAxis 
+                            dataKey="score" 
+                            fontSize={12}
+                            tick={{ fill: "#64748B" }}
+                            axisLine={{ stroke: "#E2E8F0" }}
+                            tickLine={false}
+                            label={{ value: 'Score', position: 'insideBottom', offset: -10, fill: '#64748B' }}
+                          />
+                          <YAxis
+                            fontSize={12}
+                            tick={{ fill: "#64748B" }}
+                            axisLine={{ stroke: "#E2E8F0" }}
+                            tickLine={false}
+                            label={{ value: 'Frequency', angle: -90, position: 'insideLeft', offset: -15, fill: '#64748B' }}
+                          />
+                          <Tooltip
+                            formatter={(value) => [`${value}`, 'Frequency']}
+                            labelFormatter={(label) => {
+                              const scoreItem = generateScoreDistributionData.find(item => item.score === Number(label));
+                              return scoreItem ? `${label} - ${scoreItem.name}` : label;
+                            }}
+                          />
+                          <Bar 
+                            dataKey="count" 
+                            name="Frequency" 
+                              isAnimationActive={animateCharts}
                             >
-                              <div className="mt-1 rounded-full bg-[#73C173]/20 p-0.5 shadow-[0_0_8px_rgba(115,193,115,0.5)]">
-                                <Check className="h-3 w-3 text-[#73C173]" />
-                              </div>
-                              <span className="text-sm text-[#334155]">{item}</span>
-                            </motion.li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          <AlertCircle className="h-5 w-5 text-[#E89A5D]" />
-                          <h3 className="font-semibold text-[#0F172A]">Areas for Improvement:</h3>
-                        </div>
-                        <ul className="space-y-2">
-                          {aiSummary.cons.map((item, index) => (
-                            <motion.li
-                              key={item}
-                              className="flex items-start gap-2"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.5 + index * 0.1 }}
-                            >
-                              <div className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5 shadow-[0_0_8px_rgba(232,154,93,0.5)]">
-                                <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
-                              </div>
-                              <span className="text-sm text-[#334155]">{item}</span>
-                            </motion.li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                            {generateScoreDistributionData.map((entry, index) => (
+                                <Cell
+                                key={`cell-${index}`} 
+                                  fill={entry.color}
+                                />
+                              ))}
+                          </Bar>
+                        </BarChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </motion.div>
 
-            {/* Second row: 2x2 grid of equal-sized chart cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Score over time chart */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Card className="border-none shadow-lg overflow-hidden h-[400px]">
+                {/* HC/LO Performance Radar */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+                  <Card className="border-none shadow-lg overflow-hidden h-[400px]">
+                    <CardHeader className="p-4 border-b border-[#E2E8F0]">
+                      <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                        <Activity className="h-4 w-4 text-[#8B6BF2]" />
+                        HC/LO Performance Radar
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 h-[330px]">
+                      {radarData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                            <PolarGrid stroke="#E2E8F0" />
+                            <PolarAngleAxis dataKey="subject" tick={{ fill: "#64748B", fontSize: 12 }} />
+                            <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: "#64748B", fontSize: 10 }} />
+                            <Radar
+                              name="Average Score"
+                              dataKey="score"
+                              stroke="#8B6BF2"
+                              fill="#8B6BF2"
+                              fillOpacity={0.6}
+                              isAnimationActive={animateCharts}
+                            />
+                            <Tooltip 
+                              formatter={(value) => [`${value}`, 'Score']} 
+                              labelFormatter={(label) => `HC/LO: ${label}`}
+                            />
+                          </RadarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div className="h-full flex items-center justify-center">
+                          <p className="text-[#64748B] text-center">
+                            No HC/LO data available
+                          </p>
+                      </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                {/* Class Comparison chart */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
+                  <Card className="border-none shadow-lg overflow-hidden h-[400px]">
+                    <CardHeader className="p-4 border-b border-[#E2E8F0]">
+                      <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                        <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
+                          Class Comparison
+                      </CardTitle>
+                        <Select 
+                          value={classComparisonHC || "All"} 
+                          onValueChange={(value) => setClassComparisonHC(value === "All" ? "" : value)}
+                        >
+                          <SelectTrigger className="w-[180px] h-8 text-xs border-[#E2E8F0] focus:ring-[#38BDF8]">
+                            <SelectValue placeholder="Select HC/LO" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="All">All HC/LOs</SelectItem>
+                            {uniqueHCs.map(hc => (
+                              <SelectItem key={hc} value={hc}>{hc}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 h-[330px]">
+                      {generateClassComparisonData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart 
+                            data={generateClassComparisonData} 
+                            margin={{ top: 20, right: 20, left: 30, bottom: 75 }}
+                            barSize={30}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                          <XAxis
+                              dataKey="course" 
+                              stroke="#64748B" 
+                              fontSize={11} 
+                              tickLine={false} 
+                              axisLine={{ stroke: "#E2E8F0" }}
+                              angle={-45}
+                              textAnchor="end"
+                              height={70}
+                              interval={0}
+                              label={{ value: 'Course', position: 'insideBottom', offset: -5, fill: '#64748B' }}
+                            />
+                            <YAxis 
+                              domain={[0, 5]} 
+                              ticks={[0, 1, 2, 3, 4, 5]} 
+                            stroke="#64748B"
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={{ stroke: "#E2E8F0" }}
+                              label={{ value: 'Average Score', angle: -90, position: 'insideLeft', offset: -15, fill: '#64748B' }}
+                            />
+                            <Tooltip
+                              formatter={(value) => [`${value}`, 'Average Score']}
+                              labelFormatter={(label) => {
+                                const course = generateClassComparisonData.find(item => item.course === label);
+                                return course ? `${label} - ${course.courseTitle}` : label;
+                              }}
+                          />
+                          <Bar
+                              dataKey="averageScore"
+                              name="Average Score" 
+                              fill="#3A4DB9"
+                            radius={[4, 4, 0, 0]}
+                            isAnimationActive={animateCharts}
+                          />
+                            <ReferenceLine 
+                              y={generateClassComparisonData.length > 0 ? 
+                                generateClassComparisonData.reduce((sum, item) => sum + item.averageScore, 0) / generateClassComparisonData.length : 0} 
+                              stroke="#0F172A" 
+                              strokeDasharray="3 3"
+                              ifOverflow="extendDomain"
+                          />
+                        </BarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div className="h-full flex items-center justify-center">
+                          <p className="text-[#64748B]">No data available</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </div>
+
+              {/* Recent Feedback table remains below the charts, full width */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
+                <Card className="border-none shadow-lg overflow-hidden">
                   <CardHeader className="p-4 border-b border-[#E2E8F0]">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-[#8B6BF2]" />
-                        Scores over time
+                        <MessageSquare className="h-4 w-4 text-[#8B6BF2]" />
+                        Recent Feedback
                       </CardTitle>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Download className="mr-2 h-4 w-4" />
-                            <span>Download CSV</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Download className="mr-2 h-4 w-4" />
-                            <span>Download PNG</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-[#334155] border-[#E2E8F0]"
+                        onClick={() => {
+                          // Build query parameters based on current filters
+                          const params = new URLSearchParams();
+                          if (selectedHC) params.append('hc', selectedHC);
+                          if (selectedCourse) params.append('course', selectedCourse);
+                          if (selectedTerm) params.append('term', selectedTerm);
+                          params.append('minScore', minScore.toString());
+                          params.append('maxScore', maxScore.toString());
+                          
+                          // Open the export URL with filters
+                          window.open(`http://localhost:5001/api/export?${params.toString()}`, '_blank');
+                        }}
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        Export
+                      </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-4 h-[330px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart 
-                        data={timeSeriesData}
-                        margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                        <XAxis
-                          dataKey="month"
-                          stroke="#64748B"
-                          fontSize={12}
-                          tickLine={false}
-                          axisLine={{ stroke: "#E2E8F0" }}
-                        />
-                        <YAxis
-                          domain={[0, 5]}
-                          stroke="#64748B"
-                          fontSize={12}
-                          tickLine={false}
-                          axisLine={{ stroke: "#E2E8F0" }}
-                          ticks={[1, 2, 3, 4, 5]}
-                        />
-                        <Tooltip
-                          formatter={(value) => [`${value}`, 'Score']}
-                          labelFormatter={(label) => `Month: ${label}`}
-                          contentStyle={{ 
-                            backgroundColor: "white", 
-                            border: "1px solid #E2E8F0",
-                            borderRadius: "4px",
-                            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)"
-                          }}
-                        />
-                        
-                        {/* Solid fill area under the line */}
-                        <Area
-                          type="monotone"
-                          dataKey="score"
-                          fill="#8B6BF2"
-                          fillOpacity={0.1}
-                          stroke="none"
-                        />
-                        
-                        {/* The main line - without legend */}
-                        <Line
-                          type="monotone"
-                          dataKey="score"
-                          name="Average Score"
-                          stroke="#8B6BF2"
-                          strokeWidth={3}
-                          dot={{
-                            fill: "#8B6BF2",
-                            r: 5,
-                            strokeWidth: 2,
-                            stroke: "#FFFFFF"
-                          }}
-                          activeDot={{
-                            fill: "#8B6BF2",
-                            r: 7,
-                            strokeWidth: 2,
-                            stroke: "#FFFFFF"
-                          }}
-                        />
-                        
-                        {/* Reference lines for score levels */}
-                        <ReferenceLine y={3} stroke="#64748B" strokeDasharray="3 3" />
-                      </LineChart>
-                    </ResponsiveContainer>
+                  <CardContent className="p-0">
+                    <FeedbackTable data={filteredData} />
                   </CardContent>
-                </Card>
-              </motion.div>
-
-              {/* Score Distribution bar chart */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-                <Card className="border-none shadow-lg overflow-hidden h-[400px]">
-                  <CardHeader className="p-4 border-b border-[#E2E8F0]">
-                    <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                      <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
-                      Score Distribution
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4 h-[330px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={generateScoreDistributionData}
-                        margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
-                        barGap={0}
-                        barCategoryGap="30%"
+                  <CardFooter className="p-4 border-t border-[#E2E8F0] flex items-center justify-between">
+                    <div className="text-sm text-[#64748B]">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-[#334155] border-[#E2E8F0]"
+                        onClick={() => window.open('http://localhost:5001/api/export-all', '_blank')}
                       >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                        <XAxis 
-                          dataKey="score" 
-                          fontSize={12}
-                          tick={{ fill: "#64748B" }}
-                          axisLine={{ stroke: "#E2E8F0" }}
-                          tickLine={false}
-                          label={{ value: 'Score', position: 'insideBottom', offset: -10, fill: '#64748B' }}
-                        />
-                        <YAxis
-                          fontSize={12}
-                          tick={{ fill: "#64748B" }}
-                          axisLine={{ stroke: "#E2E8F0" }}
-                          tickLine={false}
-                          label={{ value: 'Frequency', angle: -90, position: 'insideLeft', offset: -15, fill: '#64748B' }}
-                        />
-                        <Tooltip
-                          formatter={(value) => [`${value}`, 'Frequency']}
-                          labelFormatter={(label) => {
-                            const scoreItem = generateScoreDistributionData.find(item => item.score === Number(label));
-                            return scoreItem ? `${label} - ${scoreItem.name}` : label;
-                          }}
-                        />
-                        <Bar 
-                          dataKey="count" 
-                          name="Frequency" 
-                            isAnimationActive={animateCharts}
-                          >
-                          {generateScoreDistributionData.map((entry, index) => (
-                              <Cell
-                              key={`cell-${index}`} 
-                                fill={entry.color}
-                              />
-                            ))}
-                        </Bar>
-                      </BarChart>
-                      </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              {/* HC/LO Performance Radar */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
-                <Card className="border-none shadow-lg overflow-hidden h-[400px]">
-                  <CardHeader className="p-4 border-b border-[#E2E8F0]">
-                    <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                      <Activity className="h-4 w-4 text-[#8B6BF2]" />
-                      HC/LO Performance Radar
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4 h-[330px]">
-                    {radarData.length > 0 ? (
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                          <PolarGrid stroke="#E2E8F0" />
-                          <PolarAngleAxis dataKey="subject" tick={{ fill: "#64748B", fontSize: 12 }} />
-                          <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: "#64748B", fontSize: 10 }} />
-                          <Radar
-                            name="Average Score"
-                            dataKey="score"
-                            stroke="#8B6BF2"
-                            fill="#8B6BF2"
-                            fillOpacity={0.6}
-                            isAnimationActive={animateCharts}
-                          />
-                          <Tooltip 
-                            formatter={(value) => [`${value}`, 'Score']} 
-                            labelFormatter={(label) => `HC/LO: ${label}`}
-                          />
-                        </RadarChart>
-                      </ResponsiveContainer>
-                    ) : (
-                      <div className="h-full flex items-center justify-center">
-                        <p className="text-[#64748B] text-center">
-                          No HC/LO data available
-                        </p>
+                        <Download className="mr-2 h-4 w-4" />
+                        Export All Data
+                      </Button>
                     </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              {/* Class Comparison chart */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
-                <Card className="border-none shadow-lg overflow-hidden h-[400px]">
-                  <CardHeader className="p-4 border-b border-[#E2E8F0]">
-                    <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                      <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
-                        Class Comparison
-                    </CardTitle>
-                      <Select 
-                        value={classComparisonHC || "All"} 
-                        onValueChange={(value) => setClassComparisonHC(value === "All" ? "" : value)}
-                      >
-                        <SelectTrigger className="w-[180px] h-8 text-xs border-[#E2E8F0] focus:ring-[#38BDF8]">
-                          <SelectValue placeholder="Select HC/LO" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="All">All HC/LOs</SelectItem>
-                          {uniqueHCs.map(hc => (
-                            <SelectItem key={hc} value={hc}>{hc}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-4 h-[330px]">
-                    {generateClassComparisonData.length > 0 ? (
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart 
-                          data={generateClassComparisonData} 
-                          margin={{ top: 20, right: 20, left: 30, bottom: 75 }}
-                          barSize={30}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                        <XAxis
-                            dataKey="course" 
-                            stroke="#64748B" 
-                            fontSize={11} 
-                            tickLine={false} 
-                            axisLine={{ stroke: "#E2E8F0" }}
-                            angle={-45}
-                            textAnchor="end"
-                            height={70}
-                            interval={0}
-                            label={{ value: 'Course', position: 'insideBottom', offset: -5, fill: '#64748B' }}
-                          />
-                          <YAxis 
-                            domain={[0, 5]} 
-                            ticks={[0, 1, 2, 3, 4, 5]} 
-                          stroke="#64748B"
-                          fontSize={12}
-                          tickLine={false}
-                          axisLine={{ stroke: "#E2E8F0" }}
-                            label={{ value: 'Average Score', angle: -90, position: 'insideLeft', offset: -15, fill: '#64748B' }}
-                          />
-                          <Tooltip
-                            formatter={(value) => [`${value}`, 'Average Score']}
-                            labelFormatter={(label) => {
-                              const course = generateClassComparisonData.find(item => item.course === label);
-                              return course ? `${label} - ${course.courseTitle}` : label;
-                            }}
-                        />
-                        <Bar
-                            dataKey="averageScore"
-                            name="Average Score" 
-                            fill="#3A4DB9"
-                          radius={[4, 4, 0, 0]}
-                          isAnimationActive={animateCharts}
-                        />
-                          <ReferenceLine 
-                            y={generateClassComparisonData.length > 0 ? 
-                              generateClassComparisonData.reduce((sum, item) => sum + item.averageScore, 0) / generateClassComparisonData.length : 0} 
-                            stroke="#0F172A" 
-                            strokeDasharray="3 3"
-                            ifOverflow="extendDomain"
-                        />
-                      </BarChart>
-                      </ResponsiveContainer>
-                    ) : (
-                      <div className="h-full flex items-center justify-center">
-                        <p className="text-[#64748B]">No data available</p>
-                      </div>
-                    )}
-                  </CardContent>
+                  </CardFooter>
                 </Card>
               </motion.div>
             </div>
+          )}
 
-            {/* Recent Feedback table remains below the charts, full width */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
+
+          {activeTab === "byCourse" && (
+            <motion.div
+              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               <Card className="border-none shadow-lg overflow-hidden">
-                <CardHeader className="p-4 border-b border-[#E2E8F0]">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                      <MessageSquare className="h-4 w-4 text-[#8B6BF2]" />
-                      Recent Feedback
-                    </CardTitle>
-                    <Button variant="outline" size="sm" className="text-[#334155] border-[#E2E8F0]">
-                      <Download className="mr-2 h-4 w-4" />
-                      Export
-                    </Button>
-                  </div>
+                <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4">
+                  <CardTitle className="text-xl font-bold">Course Analysis</CardTitle>
+                  <CardDescription className="text-[#94A3B8] mt-1">
+                    Detailed performance metrics by course
+                  </CardDescription>
                 </CardHeader>
-                <CardContent className="p-0">
-                  <FeedbackTable data={filteredData} />
-                </CardContent>
-                <CardFooter className="p-4 border-t border-[#E2E8F0] flex items-center justify-between">
-                  <div className="text-sm text-[#64748B]">
-                    <Button variant="outline" size="sm" className="text-[#334155] border-[#E2E8F0]">
-                      <Download className="mr-2 h-4 w-4" />
-                      Export All Data
-                    </Button>
+                <CardContent className="p-6">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-[#F1F5F9] border-b border-[#E2E8F0]">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
+                            Course
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
+                            Average Score
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#E2E8F0]">
+                        {filteredData.reduce<Array<{ course_code: string; totalScore: number; count: number }>>((acc, item) => {
+                          const existing = acc.find((row) => row.course_code === item.course_code);
+                          if (existing) {
+                            existing.totalScore += item.score;
+                            existing.count += 1;
+                          } else {
+                            acc.push({ course_code: item.course_code, totalScore: item.score, count: 1 });
+                          }
+                          return acc;
+                        }, []).map((row) => (
+                          <tr key={row.course_code} className="hover:bg-[#F8FAFC]">
+                            <td className="px-6 py-4 whitespace-nowrap text-[#334155] font-medium">
+                              {row.course_code}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-[#334155]">
+                              {(row.totalScore / row.count).toFixed(2)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                </CardFooter>
+                </CardContent>
               </Card>
             </motion.div>
-          </div>
-        )}
+          )}
 
-
-        {activeTab === "byCourse" && (
-          <motion.div
-            className="space-y-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="border-none shadow-lg overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4">
-                <CardTitle className="text-xl font-bold">Course Analysis</CardTitle>
-                <CardDescription className="text-[#94A3B8] mt-1">
-                  Detailed performance metrics by course
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-[#F1F5F9] border-b border-[#E2E8F0]">
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
-                          Course
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
-                          Average Score
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#E2E8F0]">
-                      {filteredData.reduce<Array<{ course_code: string; totalScore: number; count: number }>>((acc, item) => {
-                        const existing = acc.find((row) => row.course_code === item.course_code);
-                        if (existing) {
-                          existing.totalScore += item.score;
-                          existing.count += 1;
-                        } else {
-                          acc.push({ course_code: item.course_code, totalScore: item.score, count: 1 });
-                        }
-                        return acc;
-                      }, []).map((row) => (
-                        <tr key={row.course_code} className="hover:bg-[#F8FAFC]">
-                          <td className="px-6 py-4 whitespace-nowrap text-[#334155] font-medium">
-                            {row.course_code}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#334155]">
-                            {(row.totalScore / row.count).toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {activeTab === "overall" && (
-          <motion.div
-            className="space-y-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="border-none shadow-lg overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4">
-                <CardTitle className="text-xl font-bold">Overall Performance</CardTitle>
-                <CardDescription className="text-[#94A3B8] mt-1">
-                  Aggregated metrics across all categories
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="flex flex-col items-center">
-                  <h2 className="text-4xl font-bold text-[#334155]">
-                    {filteredData.length > 0
-                      ? (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(2)
-                      : "N/A"}
-                  </h2>
-                  <p className="text-[#64748B]">Average score across all learning outcomes and courses</p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </main>
+          {activeTab === "overall" && (
+            <motion.div
+              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="border-none shadow-lg overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4">
+                  <CardTitle className="text-xl font-bold">Overall Performance</CardTitle>
+                  <CardDescription className="text-[#94A3B8] mt-1">
+                    Aggregated metrics across all categories
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center">
+                    <h2 className="text-4xl font-bold text-[#334155]">
+                      {filteredData.length > 0
+                        ? (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(2)
+                        : "N/A"}
+                    </h2>
+                    <p className="text-[#64748B]">Average score across all learning outcomes and courses</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </main>
+      </div>
 
       {/* Footer */}
       <footer className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white py-8 mt-auto">
@@ -1644,8 +1660,17 @@ function ScoreDisplay({ score }: { readonly score: number }): React.ReactElement
 
 function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): React.ReactElement {
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortDirection, setSortDirection] = useState<'desc' | 'asc'>('desc'); // 'desc' means newest first (default)
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  
+  // Sort data by date according to sort direction
+  const sortedData = [...data].sort((a, b) => {
+    const dateA = new Date(a.created_on).getTime();
+    const dateB = new Date(b.created_on).getTime();
+    return sortDirection === 'desc' ? dateB - dateA : dateA - dateB;
+  });
+  
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -1656,10 +1681,24 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
     });
   };
 
-  // Get current items
+  // Handle click on assignment title
+  const handleAssignmentClick = (item: FeedbackItem) => {
+    // In the future, this could navigate to an assignment page or open a modal with details
+    // For now, we'll just show an alert with the assignment details
+    alert(`Assignment: ${item.assignment_title}\nCourse: ${item.course_title}\n\nThis is a placeholder for future assignment link functionality.`);
+  };
+
+  // Toggle sort direction
+  const toggleSortDirection = () => {
+    setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc');
+    // Reset to first page when changing sort order
+    setCurrentPage(1);
+  };
+
+  // Get current items from sorted data
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Change page
   const goToPage = (pageNumber: number) => {
@@ -1668,13 +1707,38 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
 
   return (
     <div className="overflow-x-auto">
+      <div className="flex items-center justify-end px-6 py-2 bg-white">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleSortDirection}
+          className="text-[#334155] border-[#E2E8F0] text-xs flex items-center"
+        >
+          {sortDirection === 'desc' ? (
+            <>
+              <ArrowUpRight className="mr-1 h-3.5 w-3.5 rotate-180" />
+              Newest First
+            </>
+          ) : (
+            <>
+              <ArrowUpRight className="mr-1 h-3.5 w-3.5" />
+              Oldest First
+            </>
+          )}
+        </Button>
+      </div>
       <table className="w-full">
         <thead>
           <tr className="bg-[#F1F5F9] border-b border-[#E2E8F0]">
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Score</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Course</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Assignment</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Term</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Date</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
+              <div className="flex items-center">
+                Date
+              </div>
+            </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Comments</th>
           </tr>
         </thead>
@@ -1686,6 +1750,15 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="font-medium text-[#0F172A]">{item.course_code}</div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div 
+                  className="text-[#334155] hover:text-[#3A4DB9] hover:underline cursor-pointer flex items-center gap-1.5"
+                  onClick={() => handleAssignmentClick(item)}
+                >
+                  <BookOpen className="h-3.5 w-3.5" />
+                  {item.assignment_title}
+                </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-[#334155]">{item.term_title}</div>
@@ -1710,8 +1783,8 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
           <div>
             <p className="text-sm text-[#64748B]">
               Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{" "}
-              <span className="font-medium">{Math.min(indexOfLastItem, data.length)}</span> of{" "}
-              <span className="font-medium">{data.length}</span> entries
+              <span className="font-medium">{Math.min(indexOfLastItem, sortedData.length)}</span> of{" "}
+              <span className="font-medium">{sortedData.length}</span> entries
             </p>
           </div>
           <div className="flex items-center space-x-2">
