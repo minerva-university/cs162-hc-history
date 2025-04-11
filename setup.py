@@ -97,13 +97,16 @@ def main():
         run_ai_setup()
 
     # Step 5: Run the backend (in the original terminal)
-    backend_process = run_backend()
+    # backend_process = run_backend()
 
     # Step 6: Run the frontend (in a new terminal window)
-    run_frontend()
+    # run_frontend()
 
     # Optional: Wait for the backend to finish if you need to ensure it continues running
-    backend_process.wait()
+    # backend_process.wait()
+    
+    # Ignore the running component (backend and frontend) as they are handled in run.py
+    print("✅ Setup completed successfully. Please use run.py to start the application.")
 
 if __name__ == "__main__":
     main()
