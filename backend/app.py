@@ -18,6 +18,11 @@ def get_db_connection():
     return conn
 
 
+@app.route('/')
+def index():
+    return "Backend is up and running! Use /api/feedback for feedback data."
+
+
 @app.route('/api/feedback', methods=['GET'])
 def get_feedback():
     conn = get_db_connection()
@@ -82,6 +87,11 @@ def get_feedback():
     
     conn.close()
     return jsonify(feedback_data)
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return "", 204  # No content
 
 
 if __name__ == '__main__':
