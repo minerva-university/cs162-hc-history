@@ -290,52 +290,6 @@ export default function FeedbackPlatform() {
     }
   };
 
-  // Function to check for SQLite files
-  const checkSqliteFiles = async () => {
-    // Try different paths where WASM and DB might be located
-    const wasmPaths = [
-      './sql-wasm.wasm',
-      '/sql-wasm.wasm',
-      '../sql-wasm.wasm',
-      '/public/sql-wasm.wasm',
-      './public/sql-wasm.wasm'
-    ];
-    
-    const dbPaths = [
-      './data.db',
-      '/data.db',
-      '../data.db',
-      '/public/data.db',
-      './public/data.db'
-    ];
-    
-    const wasmResults = await Promise.all(wasmPaths.map(async path => ({
-      path,
-      exists: await checkFileExists(path)
-    })));
-    
-    const dbResults = await Promise.all(dbPaths.map(async path => ({
-      path,
-      exists: await checkFileExists(path)
-    })));
-    
-    console.log('WASM file check results:', wasmResults);
-    console.log('DB file check results:', dbResults);
-    
-    const workingWasmPath = wasmResults.find(result => result.exists)?.path;
-    const workingDbPath = dbResults.find(result => result.exists)?.path;
-    
-    if (workingWasmPath && workingDbPath) {
-      setDbError(`Files found at:\nWASM: ${workingWasmPath}\nDB: ${workingDbPath}\nTry using these paths.`);
-    } else {
-      const wasmStatus = wasmResults.map(r => r.path + ': ' + (r.exists ? '✓' : '✗')).join(', ');
-      const dbStatus = dbResults.map(r => r.path + ': ' + (r.exists ? '✓' : '✗')).join(', ');
-      setDbError('Files not found. Check that sql-wasm.wasm and data.db are in the correct location.\n' +
-        'WASM: ' + wasmStatus + '\n' +
-        'DB: ' + dbStatus);
-    }
-  };
-
   // Function to update pie chart data based on actual scores
   const updatePieChartData = (data: FeedbackItem[]) => {
     // Count the number of each score (1-5)
@@ -868,17 +822,13 @@ export default function FeedbackPlatform() {
                 <CardContent className="p-6">
                   <div className="text-red-800 whitespace-pre-line">{dbError || "No data found with current filters."}</div>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <Button onClick={checkSqliteFiles} variant="outline" size="sm">
-                      Check SQLite Files
-                    </Button>
                     <Button onClick={resetFilters} variant="outline" size="sm">
                       Reset Filters
                     </Button>
                   </div>
                   <div className="mt-4 p-4 bg-yellow-50 rounded-md">
                     <p className="text-sm text-yellow-800">
-                      <strong>Troubleshooting:</strong> Make sure the <code>sql-wasm.wasm</code> file and <code>data.db</code> files 
-                      are in the correct location (typically in the <code>public</code> folder). If the database is not loading,
+                      <strong>Troubleshooting:</strong> If the database is not loading,
                       the platform is showing sample data instead.
                     </p>
                   </div>
