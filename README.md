@@ -78,7 +78,7 @@ npm -v
 
 ### Make Sure Python Is Installed
 
-Once you're in the project folder, check if Python is installed by running:
+Once you're in the project folder, check if Python is installed by copying this into your terminal:
 
 ```bash
 python3 --version
