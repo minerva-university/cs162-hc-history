@@ -18,7 +18,7 @@ def main():
     args = parser.parse_args()
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.abspath(os.path.join(script_dir, "..", "pulling_data", "data.db"))
+    db_path = os.path.abspath(os.path.join(script_dir, "..", "backend", "data.db"))
 
 
     try:
