@@ -430,16 +430,10 @@ export default function FeedbackPlatform() {
   // AI-generated summary (simulated)
   const aiSummary = {
     pros: [
-      "Clear explanations during lectures",
-      "Well-organized course materials",
-      "Helpful examples and applications",
-      "Responsive to student questions",
+      "No AI summary was generated",
     ],
     cons: [
-      "Assignment instructions sometimes unclear",
-      "Feedback timing could be improved",
-      "Some concepts need more detailed explanations",
-      "More practice problems would be helpful",
+      "No AI summary was generated",
     ],
   }
 
