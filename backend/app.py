@@ -64,8 +64,7 @@ def get_feedback():
             # Convert to string first in case it's an int/float
             weight_numeric = float(str(weight_raw).replace('x', '')) if weight_raw is not None else 1.0
         except (ValueError, TypeError, AttributeError) as e:
-            logger.error(f"Error converting weight '{weight_raw}' to float: {e}")
-            weight_numeric = 1.0
+            weight_numeric = weight_raw
 
         # Parse score safely
         if score_value is None:
