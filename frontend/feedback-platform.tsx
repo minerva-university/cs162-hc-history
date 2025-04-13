@@ -71,8 +71,7 @@ import { AnimatedScoreCard } from "./animated-score-card"
  * - By Course
  * - Overall performance
  * 
- * It uses mock data for demonstration purposes but is designed to connect
- * to a real data source in production.
+ * It fails to show data if the database is not found and redirects the user to the README.
  */
 
 interface FeedbackItem {
@@ -787,9 +786,7 @@ export default function FeedbackPlatform() {
                   </div>
                   <div className="mt-4 p-4 bg-yellow-50 rounded-md">
                     <p className="text-sm text-yellow-800">
-                      <strong>Troubleshooting:</strong> Make sure the <code>sql-wasm.wasm</code> file and <code>data.db</code> files 
-                      are in the correct location (typically in the <code>public</code> folder). If the database is not loading,
-                      the platform is showing sample data instead.
+                      <strong>Troubleshooting:</strong> Follow setup steps in README to ensure backend is running.
                     </p>
                   </div>
                 </CardContent>
@@ -1000,9 +997,7 @@ export default function FeedbackPlatform() {
                             <div className="text-center p-4">
                             <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
                              <p className="text-sm text-gray-600">
-                               No data available. Please ensure:
-                              <br />1. data.db exists in the public folder
-                              <br />2. Follow setup steps in README
+                               No data available. Please ensure that you follow setup steps in README to ensure backend is running
                             </p>
                           </div>
                         </div>
@@ -1071,10 +1066,8 @@ export default function FeedbackPlatform() {
                             <div className="text-center p-4">
                             <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
                              <p className="text-sm text-gray-600">
-                               No data available. Please ensure:
-                              <br />1. data.db exists in the public folder
-                              <br />2. Follow setup steps in README
-                            </p>
+                             No data available. Please ensure that you follow setup steps in README to ensure backend is running
+                             </p>
                           </div>
                         </div>
                             )}
@@ -1118,10 +1111,8 @@ export default function FeedbackPlatform() {
                             <div className="text-center p-4">
                             <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
                              <p className="text-sm text-gray-600">
-                               No data available. Please ensure:
-                              <br />1. data.db exists in the public folder
-                              <br />2. Follow setup steps in README
-                            </p>
+                             No data available. Please ensure that you follow setup steps in README to ensure backend is running
+                             </p>
                           </div>
                         </div>
                             )}
@@ -1220,10 +1211,8 @@ export default function FeedbackPlatform() {
                           <div className="text-center p-4">
                             <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
                              <p className="text-sm text-gray-600">
-                               No data available. Please ensure:
-                              <br />1. data.db exists in the public folder
-                              <br />2. Follow setup steps in README
-                            </p>
+                             No data available. Please ensure that you follow setup steps in README to ensure backend is running
+                             </p>
                           </div>
                           
                         </div>
