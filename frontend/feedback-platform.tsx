@@ -85,8 +85,9 @@ interface FeedbackItem {
   course_code: string;
   term_title: string;
   created_on: string;
+  weight: string;           // e.g., "8x"
+  weight_numeric?: number;   // e.g., 8
 }
-
 
 export default function FeedbackPlatform() {
   const [activeTab, setActiveTab] = useState<string>("byHC")
@@ -181,6 +182,7 @@ export default function FeedbackPlatform() {
         const mockData: FeedbackItem[] = [
           {
             score: 4,
+            weight: "1x",
             comment: "The student demonstrated strong engagement with the material.",
             outcome_name: "Professionalism",
             assignment_title: "Final Project",
@@ -191,6 +193,7 @@ export default function FeedbackPlatform() {
           },
           {
             score: 3,
+            weight: "3x",
             comment: "Good work, but could improve organization.",
             outcome_name: "Communication",
             assignment_title: "Midterm Presentation",
@@ -201,6 +204,7 @@ export default function FeedbackPlatform() {
           },
           {
             score: 5,
+            weight: "2x",
             comment: "Excellent analysis and critical thinking skills.",
             outcome_name: "ProblemSolving",
             assignment_title: "Case Study",
@@ -211,6 +215,7 @@ export default function FeedbackPlatform() {
           },
           {
             score: 2,
+            weight: "4x",
             comment: "Needs more attention to detail in implementation.",
             outcome_name: "TechnicalCompetence",
             assignment_title: "Coding Assignment",
@@ -221,6 +226,7 @@ export default function FeedbackPlatform() {
           },
           {
             score: 4,
+            weight: "1x",
             comment: "Shows good teamwork and collaborative skills.",
             outcome_name: "Teamwork",
             assignment_title: "Group Project",
@@ -287,52 +293,6 @@ export default function FeedbackPlatform() {
     } catch (error) {
       console.error(`Error checking for file at ${url}:`, error);
       return false;
-    }
-  };
-
-  // Function to check for SQLite files
-  const checkSqliteFiles = async () => {
-    // Try different paths where WASM and DB might be located
-    const wasmPaths = [
-      './sql-wasm.wasm',
-      '/sql-wasm.wasm',
-      '../sql-wasm.wasm',
-      '/public/sql-wasm.wasm',
-      './public/sql-wasm.wasm'
-    ];
-    
-    const dbPaths = [
-      './data.db',
-      '/data.db',
-      '../data.db',
-      '/public/data.db',
-      './public/data.db'
-    ];
-    
-    const wasmResults = await Promise.all(wasmPaths.map(async path => ({
-      path,
-      exists: await checkFileExists(path)
-    })));
-    
-    const dbResults = await Promise.all(dbPaths.map(async path => ({
-      path,
-      exists: await checkFileExists(path)
-    })));
-    
-    console.log('WASM file check results:', wasmResults);
-    console.log('DB file check results:', dbResults);
-    
-    const workingWasmPath = wasmResults.find(result => result.exists)?.path;
-    const workingDbPath = dbResults.find(result => result.exists)?.path;
-    
-    if (workingWasmPath && workingDbPath) {
-      setDbError(`Files found at:\nWASM: ${workingWasmPath}\nDB: ${workingDbPath}\nTry using these paths.`);
-    } else {
-      const wasmStatus = wasmResults.map(r => r.path + ': ' + (r.exists ? '✓' : '✗')).join(', ');
-      const dbStatus = dbResults.map(r => r.path + ': ' + (r.exists ? '✓' : '✗')).join(', ');
-      setDbError('Files not found. Check that sql-wasm.wasm and data.db are in the correct location.\n' +
-        'WASM: ' + wasmStatus + '\n' +
-        'DB: ' + dbStatus);
     }
   };
 
@@ -476,16 +436,10 @@ export default function FeedbackPlatform() {
   // AI-generated summary (simulated)
   const aiSummary = {
     pros: [
-      "Clear explanations during lectures",
-      "Well-organized course materials",
-      "Helpful examples and applications",
-      "Responsive to student questions",
+      "No AI summary was generated",
     ],
     cons: [
-      "Assignment instructions sometimes unclear",
-      "Feedback timing could be improved",
-      "Some concepts need more detailed explanations",
-      "More practice problems would be helpful",
+      "No AI summary was generated",
     ],
   }
 
@@ -868,17 +822,13 @@ export default function FeedbackPlatform() {
                 <CardContent className="p-6">
                   <div className="text-red-800 whitespace-pre-line">{dbError || "No data found with current filters."}</div>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <Button onClick={checkSqliteFiles} variant="outline" size="sm">
-                      Check SQLite Files
-                    </Button>
                     <Button onClick={resetFilters} variant="outline" size="sm">
                       Reset Filters
                     </Button>
                   </div>
                   <div className="mt-4 p-4 bg-yellow-50 rounded-md">
                     <p className="text-sm text-yellow-800">
-                      <strong>Troubleshooting:</strong> Make sure the <code>sql-wasm.wasm</code> file and <code>data.db</code> files 
-                      are in the correct location (typically in the <code>public</code> folder). If the database is not loading,
+                      <strong>Troubleshooting:</strong> If the database is not loading,
                       the platform is showing sample data instead.
                     </p>
                   </div>
@@ -1685,7 +1635,7 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
   const handleAssignmentClick = (item: FeedbackItem) => {
     // In the future, this could navigate to an assignment page or open a modal with details
     // For now, we'll just show an alert with the assignment details
-    alert(`Assignment: ${item.assignment_title}\nCourse: ${item.course_title}\n\nThis is a placeholder for future assignment link functionality.`);
+    alert(`Assignment: ${item.assignment_title}\nCourse: ${item.course_title}\n\nThis is a placeholder for future link functionality.`);
   };
 
   // Toggle sort direction
@@ -1731,8 +1681,10 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
         <thead>
           <tr className="bg-[#F1F5F9] border-b border-[#E2E8F0]">
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Score</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Outcome</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Course</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Assignment</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Weight</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Term</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
               <div className="flex items-center">
@@ -1748,17 +1700,29 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
               <td className="px-6 py-4 whitespace-nowrap">
                 <ScoreDisplay score={item.score} />
               </td>
+              <td className="px-6 py-4 whitespace-normal text-[#334155] font-medium">
+                {item.outcome_name}
+              </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="font-medium text-[#0F172A]">{item.course_code}</div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-6 py-4 whitespace-normal">
                 <div 
                   className="text-[#334155] hover:text-[#3A4DB9] hover:underline cursor-pointer flex items-center gap-1.5"
                   onClick={() => handleAssignmentClick(item)}
                 >
-                  <BookOpen className="h-3.5 w-3.5" />
-                  {item.assignment_title}
+                  <BookOpen className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
+                  {item.assignment_title === "poll"
+                    ? "Poll"
+                    : item.assignment_title === "video"
+                    ? "Class Recording"
+                    : item.assignment_title === "preclass_assignment"
+                    ? "Pre-Class Work"
+                    : item.assignment_title}
                 </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-[#334155] font-medium">
+                {item.weight || "1x"}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-[#334155]">{item.term_title}</div>

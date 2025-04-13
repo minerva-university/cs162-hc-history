@@ -57,9 +57,28 @@ requirements.txt     setup.py          backend
 run.py
 ```
 
+---
+
+### Install Node.js (Required for Frontend)
+
+The frontend uses Next.js, which requires Node.js and npm. Follow these steps to install them:
+
+1. Go to the official Node.js website: [https://nodejs.org/en/download](https://nodejs.org/en/download)
+2. Download the **LTS (Long-Term Support)** version for your operating system.
+3. Run the installer and follow the instructions. Make sure to check the box that says **"Add to PATH"** if prompted.
+
+To confirm the installation worked, open your terminal and run:
+
+```bash
+node -v
+npm -v
+```
+
+---
+
 ### Make Sure Python Is Installed
 
-Once you're in the project folder, check if Python is installed by running:
+Once you're in the project folder, check if Python is installed by copying this into your terminal:
 
 ```bash
 python3 --version
@@ -121,6 +140,24 @@ You should see a version like `Python 3.x.x`.
 
 ---
 
+### Create and Activate a Virtual Environment (Recommended)
+
+Before installing Python packages, create and activate a virtual environment:
+
+#### On Mac/Linux:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+#### On Windows:
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+---
+
 ## Project Overview
 
 This project pulls feedback data from Forum using your active browser session, stores it in a local database (`data.db`), and lets you view or summarize that data.
@@ -165,7 +202,7 @@ https://platform.openai.com/account/billing
 
 ## How to Set Up the Project (`setup.py`)
 
-Run this the first time to set everything up:
+Run this the first time to set everything up. This will automatically run the project as well:
 
 ```bash
 python3 setup.py
@@ -176,12 +213,13 @@ What it does:
 - Authenticates using your browser session  
 - Pulls data from Forum and stores it in `data.db`  
 - Optionally runs AI summarization using OpenAI  
+- Runs the website
 
 ---
 
-## How to Run the Project (`run.py`)
+## How to Run the Project Again (`run.py`)
 
-Once everything is set up, run this to start the platform:
+Once everything is set up, run this to start the platform again:
 
 ```bash
 python3 run.py
@@ -195,7 +233,7 @@ What it does:
 
 ## Accessing the Website
 
-Once you’ve run `run.py`, open your browser and go to:
+Once you’ve run `setup.py` or `run.py`, open your browser and go to:
 
 http://localhost:3000
 

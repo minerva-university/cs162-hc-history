@@ -7,7 +7,7 @@ def run_setup():
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     sql_path = os.path.join(script_dir, "db_schema", "setup.sql")
-    db_path = os.path.abspath(os.path.join(script_dir, "..", "pulling_data", "data.db"))
+    db_path = os.path.abspath(os.path.join(script_dir, "..", "backend", "data.db"))
 
     # Make sure the parent folder for data.db exists
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
