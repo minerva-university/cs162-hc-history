@@ -89,9 +89,6 @@ def get_feedback():
     return jsonify(feedback_data)
 
 
-@app.route('/favicon.ico')
-def favicon():
-    return "", 204  # No content
 
 
 if __name__ == '__main__':
