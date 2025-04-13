@@ -118,7 +118,7 @@ You can explore the database contents using:
 1. [DB Browser for SQLite](https://sqlitebrowser.org/)
 2. Built-in HTML visualizer (`db_visualizer.html`)
    - Open it in your browser after summaries are generated.
-   - You can also run pulling_data/db_visualizer.py
+   - You can also run backend/db_visualizer.py
 
 ---
 
