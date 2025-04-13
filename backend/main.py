@@ -224,47 +224,7 @@ def main():
     # Absolute paths for DB and schema files
     DB_NAME = os.path.join(script_dir, "data.db")
     SCHEMA_FILE = os.path.join(script_dir, "schema.sql")
-    initialize_database(DB_NAME, SCHEMA_FILE)
     
-    # Fetch data from APIs
-    lo_trees = fetch_data_from_api(f"{BASE_URL}lo-trees", headers)
-    terms = fetch_data_from_api(f"{BASE_URL}terms", headers)
-    outcomes = fetch_data_from_api(f"{BASE_URL}outcome-assessments", headers)
-    colleges = fetch_data_from_api(f"{BASE_URL}colleges", headers)
-
-    if not lo_trees or not terms or not outcomes or not colleges:
-        print("❌ No data returned from the API.")
-        return  # Exit if no data is returned from the API
-    
-    # Insert data into the database
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-
-    insert_outcome_assessments(cursor, outcomes)
-    insert_courses(cursor, lo_trees)
-    insert_learning_outcomes(cursor, lo_trees)
-    insert_terms(cursor, terms)
-    insert_colleges(cursor, colleges)
-
-    # Commit and close connection
-    conn.commit()
-    conn.close()
-
-    # Insert data into the database again, since assignments needs access to the data
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-
-    # Fetch assignment ids from the database
-    assignment_ids = get_assignment_ids(DB_NAME)
-    if not assignment_ids:
-        return  # Exit if no assignment IDs are found
-
-    # Process assignments
-    process_assignments(BASE_URL, headers, DB_NAME, assignment_ids)
-
-    # Commit and close connection
-    conn.commit()
-    conn.close()
 
     # Create the assignment_scores table
     VIEWS_FILE = os.path.join(script_dir, "views.sql")

@@ -55,7 +55,7 @@ A Python-based client for interacting with the Minerva API. This tool fetches da
 1. Open your console and navigate to the repository.
 2. Pull the latest changes and switch to the appropriate folder:
     ```bash
-    git pull && cd pulling_data
+    git pull && cd backend
     ```
 3. Run the setup script to fetch data and store it:
     ```bash
@@ -154,24 +154,24 @@ This will display the data in an interactive HTML table format.
 
 1. **Create a virtual environment and install dependencies**:
     ```bash
-    cd pulling_data
+    cd backend
     python -m venv venv
     source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
     pip install -r requirements.txt
     ```
 
 2. **Set up your database**:
-   - **Option A**: Use your own `data.db` file. Place it in the `pulling_data` directory and name it `data.db`.
+   - **Option A**: Use your own `data.db` file. Place it in the `backend` directory and name it `data.db`.
    - **Option B**: Create a new database with sample data:
      ```bash
-     cd pulling_data
+     cd backend
      sqlite3 data.db < schema.sql
      sqlite3 data.db < sample_data.sql
      ```
 
 3. **Start the Flask backend**:
     ```bash
-    cd pulling_data
+    cd backend
     python app.py
     ```
     The backend API will be available at `http://localhost:5001/api/feedback`.
