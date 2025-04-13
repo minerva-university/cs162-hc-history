@@ -85,8 +85,9 @@ interface FeedbackItem {
   course_code: string;
   term_title: string;
   created_on: string;
+  weight: string;           // e.g., "8x"
+  weight_numeric?: number;   // e.g., 8
 }
-
 
 export default function FeedbackPlatform() {
   const [activeTab, setActiveTab] = useState<string>("byHC")
@@ -181,6 +182,7 @@ export default function FeedbackPlatform() {
         const mockData: FeedbackItem[] = [
           {
             score: 4,
+            weight: "1x",
             comment: "The student demonstrated strong engagement with the material.",
             outcome_name: "Professionalism",
             assignment_title: "Final Project",
@@ -191,6 +193,7 @@ export default function FeedbackPlatform() {
           },
           {
             score: 3,
+            weight: "3x",
             comment: "Good work, but could improve organization.",
             outcome_name: "Communication",
             assignment_title: "Midterm Presentation",
@@ -201,6 +204,7 @@ export default function FeedbackPlatform() {
           },
           {
             score: 5,
+            weight: "2x",
             comment: "Excellent analysis and critical thinking skills.",
             outcome_name: "ProblemSolving",
             assignment_title: "Case Study",
@@ -211,6 +215,7 @@ export default function FeedbackPlatform() {
           },
           {
             score: 2,
+            weight: "4x",
             comment: "Needs more attention to detail in implementation.",
             outcome_name: "TechnicalCompetence",
             assignment_title: "Coding Assignment",
@@ -221,6 +226,7 @@ export default function FeedbackPlatform() {
           },
           {
             score: 4,
+            weight: "1x",
             comment: "Shows good teamwork and collaborative skills.",
             outcome_name: "Teamwork",
             assignment_title: "Group Project",
@@ -1629,7 +1635,7 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
   const handleAssignmentClick = (item: FeedbackItem) => {
     // In the future, this could navigate to an assignment page or open a modal with details
     // For now, we'll just show an alert with the assignment details
-    alert(`Assignment: ${item.assignment_title}\nCourse: ${item.course_title}\n\nThis is a placeholder for future assignment link functionality.`);
+    alert(`Assignment: ${item.assignment_title}\nCourse: ${item.course_title}\n\nThis is a placeholder for future link functionality.`);
   };
 
   // Toggle sort direction
@@ -1675,8 +1681,10 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
         <thead>
           <tr className="bg-[#F1F5F9] border-b border-[#E2E8F0]">
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Score</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Outcome</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Course</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Assignment</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Weight</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Term</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
               <div className="flex items-center">
@@ -1692,17 +1700,29 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
               <td className="px-6 py-4 whitespace-nowrap">
                 <ScoreDisplay score={item.score} />
               </td>
+              <td className="px-6 py-4 whitespace-normal text-[#334155] font-medium">
+                {item.outcome_name}
+              </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="font-medium text-[#0F172A]">{item.course_code}</div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-6 py-4 whitespace-normal">
                 <div 
                   className="text-[#334155] hover:text-[#3A4DB9] hover:underline cursor-pointer flex items-center gap-1.5"
                   onClick={() => handleAssignmentClick(item)}
                 >
-                  <BookOpen className="h-3.5 w-3.5" />
-                  {item.assignment_title}
+                  <BookOpen className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
+                  {item.assignment_title === "poll"
+                    ? "Poll"
+                    : item.assignment_title === "video"
+                    ? "Class Recording"
+                    : item.assignment_title === "preclass_assignment"
+                    ? "Pre-Class Work"
+                    : item.assignment_title}
                 </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-[#334155] font-medium">
+                {item.weight || "1x"}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-[#334155]">{item.term_title}</div>

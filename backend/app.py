@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_file
+from flask import Flask, jsonify, send_file, request
 from flask_cors import CORS
 import sqlite3
 import os
@@ -32,22 +32,16 @@ def get_feedback():
     logger.debug(f"Available tables in database: {[table['name'] for table in tables]}")
     
     try:
-        # Try to query the assignment_scores table first
-        logger.debug("Attempting to query assignment_scores table")
+        # Query the all_scores view
+        logger.debug("Attempting to query all_scores view")
         cursor.execute('''
-            SELECT score, comment, outcome_name, assignment_title, 
-            course_title, course_code, term_title, created_on
-            FROM assignment_scores
+            SELECT score, weight, comment, outcome_name, assignment_title, 
+                   course_title, course_code, term_title, created_on
+            FROM all_scores
         ''')
     except sqlite3.OperationalError as e:
-        logger.debug(f"Error querying assignment_scores: {e}")
-        # If that fails, try the feedback table
-        logger.debug("Falling back to feedback table")
-        cursor.execute('''
-            SELECT score, comment, outcome_name, assignment_title, 
-            course_title, course_code, term_title, created_on
-            FROM feedback
-        ''')
+        logger.debug(f"Error querying all_scores: {e}")
+        return jsonify([])  # Return empty list on failure
     
     rows = cursor.fetchall()
     logger.debug(f"Retrieved {len(rows)} rows from database")
@@ -62,6 +56,18 @@ def get_feedback():
     for row in rows:
         # Handle potential None values safely
         score_value = row['score']
+        weight_str = row['weight'] or "1x"  # fallback if None
+
+        # Parse numeric weight
+        weight_raw = row['weight']
+        try:
+            # Convert to string first in case it's an int/float
+            weight_numeric = float(str(weight_raw).replace('x', '')) if weight_raw is not None else 1.0
+        except (ValueError, TypeError, AttributeError) as e:
+            logger.error(f"Error converting weight '{weight_raw}' to float: {e}")
+            weight_numeric = 1.0
+
+        # Parse score safely
         if score_value is None:
             logger.debug(f"Found null score value in row: {dict(row)}")
             score = 0.0
@@ -71,9 +77,11 @@ def get_feedback():
             except (ValueError, TypeError) as e:
                 logger.error(f"Error converting score '{score_value}' to float: {e}")
                 score = 0.0
-        
+
         feedback_data.append({
             'score': score,
+            'weight': weight_str,          # keep original (e.g., "8x")
+            'weight_numeric': weight_numeric,  # new numeric field (e.g., 8.0)
             'comment': row['comment'] or "",
             'outcome_name': row['outcome_name'] or "",
             'assignment_title': row['assignment_title'] or "",
@@ -82,15 +90,14 @@ def get_feedback():
             'term_title': row['term_title'] or "",
             'created_on': row['created_on'] or ""
         })
-    
+
+
     conn.close()
     return jsonify(feedback_data)
 
 
 @app.route('/api/export', methods=['GET'])
 def export_data():
-    from flask import request
-    
     # Get filter parameters
     hc = request.args.get('hc', '')
     course = request.args.get('course', '')
@@ -104,9 +111,9 @@ def export_data():
     try:
         # Base query
         query = '''
-            SELECT score, comment, outcome_name, assignment_title, 
-            course_title, course_code, term_title, created_on
-            FROM assignment_scores
+            SELECT score, weight, comment, outcome_name, assignment_title, 
+                   course_title, course_code, term_title, created_on
+            FROM all_scores
             WHERE 1=1
         '''
         params = []
@@ -136,37 +143,8 @@ def export_data():
         logger.debug(f"Exporting filtered data with query: {query} and params: {params}")
         cursor.execute(query, params)
     except sqlite3.OperationalError as e:
-        logger.debug(f"Error querying assignment_scores: {e}")
-        # If that fails, try the feedback table with filters
-        try:
-            query = '''
-                SELECT score, comment, outcome_name, assignment_title, 
-                course_title, course_code, term_title, created_on
-                FROM feedback
-                WHERE 1=1
-            '''
-            # Add the same filters
-            if hc:
-                query += ' AND outcome_name = ?'
-            
-            if course:
-                query += ' AND course_code = ?'
-                
-            if term:
-                query += ' AND term_title = ?'
-                
-            if min_score > 0:
-                query += ' AND score >= ?'
-                
-            if max_score < 5:
-                query += ' AND score <= ?'
-            
-            logger.debug(f"Falling back to feedback table with query: {query} and params: {params}")
-            cursor.execute(query, params)
-        except sqlite3.OperationalError as e:
-            logger.debug(f"Error querying feedback with filters: {e}")
-            # Return empty CSV if both queries fail
-            rows = []
+        logger.debug(f"Error querying all_scores: {e}")
+        rows = []
     
     rows = cursor.fetchall()
     logger.debug(f"Retrieved {len(rows)} rows for filtered export")
@@ -176,20 +154,23 @@ def export_data():
     writer = csv.writer(output)
     
     # Write header
-    writer.writerow(['Score', 'Comment', 'Outcome Name', 'Assignment Title', 
-                    'Course Title', 'Course Code', 'Term Title', 'Created On'])
+    writer.writerow([
+        'Outcome Name', 'Score', 'Comment', 'Weight', 'Assignment Title',
+        'Course Code', 'Course Title', 'Term Title'
+    ])
+
     
     # Write data rows
     for row in rows:
         writer.writerow([
+            row['outcome_name'] or "",
             row['score'],
             row['comment'] or "",
-            row['outcome_name'] or "",
+            row['weight'],
             row['assignment_title'] or "",
-            row['course_title'] or "",
             row['course_code'] or "",
-            row['term_title'] or "",
-            row['created_on'] or ""
+            row['course_title'] or "",
+            row['term_title'] or ""
         ])
     
     # Prepare the response
@@ -216,22 +197,16 @@ def export_all_data():
     cursor = conn.cursor()
     
     try:
-        # Query the assignment_scores view without any filters
-        logger.debug("Exporting all data from assignment_scores view")
+        # Query the all_scores view without any filters
+        logger.debug("Exporting all data from all_scores view")
         cursor.execute('''
-            SELECT score, comment, outcome_name, assignment_title, 
-            course_title, course_code, term_title, created_on
-            FROM assignment_scores
+            SELECT score, weight, comment, outcome_name, assignment_title, 
+                   course_title, course_code, term_title, created_on
+            FROM all_scores
         ''')
     except sqlite3.OperationalError as e:
-        logger.debug(f"Error querying assignment_scores: {e}")
-        # If that fails, try the feedback table
-        logger.debug("Falling back to feedback table")
-        cursor.execute('''
-            SELECT score, comment, outcome_name, assignment_title, 
-            course_title, course_code, term_title, created_on
-            FROM feedback
-        ''')
+        logger.debug(f"Error querying all_scores: {e}")
+        rows = []
     
     rows = cursor.fetchall()
     logger.debug(f"Retrieved {len(rows)} rows for full export")
@@ -241,13 +216,14 @@ def export_all_data():
     writer = csv.writer(output)
     
     # Write header
-    writer.writerow(['Score', 'Comment', 'Outcome Name', 'Assignment Title', 
-                    'Course Title', 'Course Code', 'Term Title', 'Created On'])
+    writer.writerow(['Score', 'Weight', 'Comment', 'Outcome Name', 'Assignment Title', 
+                     'Course Title', 'Course Code', 'Term Title', 'Created On'])
     
     # Write data rows
     for row in rows:
         writer.writerow([
             row['score'],
+            row['weight'],
             row['comment'] or "",
             row['outcome_name'] or "",
             row['assignment_title'] or "",
@@ -273,7 +249,6 @@ def export_all_data():
         as_attachment=True,
         download_name=filename
     )
-
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
