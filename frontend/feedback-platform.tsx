@@ -67,8 +67,7 @@ import { AnimatedScoreCard } from "./animated-score-card"
  * - Interactive elements and animations
  * 
  * The dashboard displays academic feedback data with multiple views:
- * - By HC (Higher Criteria)
- * - By LO (Learning Outcomes)
+ * - By HC or LO
  * - By Course
  * - Overall performance
  * 
@@ -175,104 +174,15 @@ export default function FeedbackPlatform() {
       } catch (error) {
         console.error("Error loading data from API:", error);
         setDbError(`Error loading data: ${String(error)}`);
+
+        setUniqueHCs([]);
+        setUniqueCourses([]);
+        setUniqueTerms([]);
+        setFeedbackData([]);
+        setFilteredData([]);
         
-        // FALLBACK: Use mock data since we couldn't load from API
-        console.log("Loading mock data as fallback...");
-        const mockData: FeedbackItem[] = [
-          {
-            score: 4,
-            comment: "The student demonstrated strong engagement with the material.",
-            outcome_name: "Professionalism",
-            assignment_title: "Final Project",
-            course_title: "Computer Science Fundamentals",
-            course_code: "CS101",
-            term_title: "Spring 2023",
-            created_on: "2023-05-15"
-          },
-          {
-            score: 3,
-            comment: "Good work, but could improve organization.",
-            outcome_name: "Communication",
-            assignment_title: "Midterm Presentation",
-            course_title: "Data Structures",
-            course_code: "CS162",
-            term_title: "Fall 2023",
-            created_on: "2023-11-10"
-          },
-          {
-            score: 5,
-            comment: "Excellent analysis and critical thinking skills.",
-            outcome_name: "ProblemSolving",
-            assignment_title: "Case Study",
-            course_title: "Algorithm Design",
-            course_code: "CS250",
-            term_title: "Winter 2024",
-            created_on: "2024-02-20"
-          },
-          {
-            score: 2,
-            comment: "Needs more attention to detail in implementation.",
-            outcome_name: "TechnicalCompetence",
-            assignment_title: "Coding Assignment",
-            course_title: "Web Development",
-            course_code: "CS330",
-            term_title: "Spring 2024",
-            created_on: "2024-04-05"
-          },
-          {
-            score: 4,
-            comment: "Shows good teamwork and collaborative skills.",
-            outcome_name: "Teamwork",
-            assignment_title: "Group Project",
-            course_title: "Software Engineering",
-            course_code: "CS401",
-            term_title: "Fall 2024",
-            created_on: "2024-10-15"
-          }
-        ];
-        
-        // Extract unique values for filters from mock data
-        const hcs = [...new Set(mockData.map(item => item.outcome_name))];
-        
-        // Sort HCs alphabetically, just like with real data
-        const sortedHCs = hcs.sort((a, b) => {
-          // Check if either item is an LO (contains a hyphen and course code)
-          const aIsLO = a.includes('-');
-          const bIsLO = b.includes('-');
-          
-          // If both are HCs or both are LOs, sort alphabetically
-          if ((aIsLO && bIsLO) || (!aIsLO && !bIsLO)) {
-            return a.localeCompare(b);
-          }
-          
-          // If only one is an LO, place HCs first
-          return aIsLO ? 1 : -1;
-        });
-        
-        // Create combined course information for mock data
-        const coursesMap = new Map<string, string>();
-        mockData.forEach((item) => {
-          if (item.course_code && !coursesMap.has(item.course_code)) {
-            coursesMap.set(item.course_code, `${item.course_code} - ${item.course_title}`);
-          }
-        });
-        const courses = Array.from(coursesMap.keys());
-        
-        const terms = [...new Set(mockData.map(item => item.term_title))];
-        
-        console.log("Using mock data with:");
-        console.log("Unique HCs/LOs:", sortedHCs);
-        console.log("Unique Courses:", courses);
-        console.log("Unique Terms:", terms);
-        
-        setUniqueHCs(sortedHCs);
-        setUniqueCourses(courses);
-        setUniqueTerms(terms);
-        setFeedbackData(mockData);
-        setFilteredData(mockData);
-        
-        // Update pie chart data based on mock data
-        updatePieChartData(mockData);
+        // Update pie chart data based on data
+        updatePieChartData([]);
       }
     }
   
@@ -925,7 +835,8 @@ export default function FeedbackPlatform() {
                         </CardDescription>
                       </div>
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button variant="outline" size="sm" className="text-white border-white hover:bg-[#1E293B]">
+                        <Button variant="outline" size="sm" className="text-[#0F172A] border-[#0F172A] hover:text-white hover:border-white hover:bg-[#1E293B]"
+                        onClick={() => window.open('https://my.minerva.edu/academics/hc-resources/hc-handbook/', '_blank')}>
                           HC Handbook
                           <ArrowUpRight className="ml-1 h-3 w-3" />
                         </Button>
@@ -1019,6 +930,7 @@ export default function FeedbackPlatform() {
                     </CardHeader>
                     <CardContent className="p-4 h-[330px]">
                       <ResponsiveContainer width="100%" height="100%">
+                      {filteredData.length > 0 ? (
                         <LineChart 
                           data={timeSeriesData}
                           margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
@@ -1082,7 +994,19 @@ export default function FeedbackPlatform() {
                           
                           {/* Reference lines for score levels */}
                           <ReferenceLine y={3} stroke="#64748B" strokeDasharray="3 3" />
-                        </LineChart>
+                          </LineChart>
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center">
+                            <div className="text-center p-4">
+                            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                             <p className="text-sm text-gray-600">
+                               No data available. Please ensure:
+                              <br />1. data.db exists in the public folder
+                              <br />2. Follow setup steps in README
+                            </p>
+                          </div>
+                        </div>
+                            )}
                       </ResponsiveContainer>
                     </CardContent>
                   </Card>
@@ -1099,6 +1023,7 @@ export default function FeedbackPlatform() {
                     </CardHeader>
                     <CardContent className="p-4 h-[330px]">
                         <ResponsiveContainer width="100%" height="100%">
+                        {filteredData.length > 0 ? (
                         <BarChart
                           data={generateScoreDistributionData}
                           margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
@@ -1140,7 +1065,19 @@ export default function FeedbackPlatform() {
                                 />
                               ))}
                           </Bar>
-                        </BarChart>
+                          </BarChart>
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center">
+                            <div className="text-center p-4">
+                            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                             <p className="text-sm text-gray-600">
+                               No data available. Please ensure:
+                              <br />1. data.db exists in the public folder
+                              <br />2. Follow setup steps in README
+                            </p>
+                          </div>
+                        </div>
+                            )}
                         </ResponsiveContainer>
                     </CardContent>
                   </Card>
@@ -1158,6 +1095,7 @@ export default function FeedbackPlatform() {
                     <CardContent className="p-4 h-[330px]">
                       {radarData.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
+                          {filteredData.length > 0 ? (
                           <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                             <PolarGrid stroke="#E2E8F0" />
                             <PolarAngleAxis dataKey="subject" tick={{ fill: "#64748B", fontSize: 12 }} />
@@ -1175,6 +1113,18 @@ export default function FeedbackPlatform() {
                               labelFormatter={(label) => `HC/LO: ${label}`}
                             />
                           </RadarChart>
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center">
+                            <div className="text-center p-4">
+                            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                             <p className="text-sm text-gray-600">
+                               No data available. Please ensure:
+                              <br />1. data.db exists in the public folder
+                              <br />2. Follow setup steps in README
+                            </p>
+                          </div>
+                        </div>
+                            )}
                         </ResponsiveContainer>
                       ) : (
                         <div className="h-full flex items-center justify-center">
@@ -1213,7 +1163,7 @@ export default function FeedbackPlatform() {
                       </div>
                     </CardHeader>
                     <CardContent className="p-4 h-[330px]">
-                      {generateClassComparisonData.length > 0 ? (
+                      {filteredData.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart 
                             data={generateClassComparisonData} 
@@ -1267,7 +1217,15 @@ export default function FeedbackPlatform() {
                         </ResponsiveContainer>
                       ) : (
                         <div className="h-full flex items-center justify-center">
-                          <p className="text-[#64748B]">No data available</p>
+                          <div className="text-center p-4">
+                            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                             <p className="text-sm text-gray-600">
+                               No data available. Please ensure:
+                              <br />1. data.db exists in the public folder
+                              <br />2. Follow setup steps in README
+                            </p>
+                          </div>
+                          
                         </div>
                       )}
                     </CardContent>
