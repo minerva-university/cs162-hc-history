@@ -408,6 +408,7 @@ export default function FeedbackPlatform() {
     return map;
   }, [radarData]);
   
+  // Filter radar data based on HC/LO type
   const filteredRadarData = useMemo(() => {
     return radarData.filter(item => {
       const isLO = item.subject.includes("-");
@@ -1075,8 +1076,11 @@ export default function FeedbackPlatform() {
                             <PolarAngleAxis
                               dataKey="subject"
                               tick={({ payload, x, y, textAnchor }) => {
-                                const value = payload.value;
+                                const value = payload.value; // this is still the full name like "cs142-topic"
                                 const label = labelMap.get(value) || "";
+
+                                const isLO = value.includes("-"); // Check full value, not label
+                                const displayLabel = isLO ? label.toUpperCase() : label;
 
                                 return label ? (
                                   <text
@@ -1086,7 +1090,7 @@ export default function FeedbackPlatform() {
                                     fill="#64748B"
                                     fontSize={12}
                                   >
-                                    {label}
+                                    {displayLabel}
                                   </text>
                                 ) : null;
                               }}
