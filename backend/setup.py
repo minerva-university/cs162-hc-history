@@ -22,14 +22,16 @@ def scrape_and_save_cookies():
     from webdriver_manager.chrome import ChromeDriverManager
     options = webdriver.ChromeOptions()
     options.add_argument("user-data-dir=selenium")  # persistent browser session
+    options.add_experimental_option("detach", True)  # keep browser open after script ends
 
     try:
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        options.add_argument("--incognito")  # Open browser in incognito mode
+        driver = webdriver.Chrome(options=options)
     except WebDriverException as e:
         print("❌ Failed to initialize Chrome WebDriver.")
         print(str(e))
         manual_cookie_entry()
-        return
+        
 
     try:
         driver.get("https://forum.minerva.edu")

@@ -53,6 +53,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { GradeLegend } from "./grade-legend"
 import { AnimatedScoreCard } from "./animated-score-card"
+import { MultiSelect } from "./components/multi-select"
 
 
 /**
@@ -87,21 +88,33 @@ interface FeedbackItem {
   weight_numeric?: number;   // e.g., 8
 }
 
+// Add new interface for AI summaries
+interface AISummary {
+  outcome_name: string;
+  outcome_id: number;
+  outcome_description: string;
+  strengths_text: string;
+  improvement_text: string;
+  last_updated: string;
+}
+
 export default function FeedbackPlatform() {
   const [activeTab, setActiveTab] = useState<string>("byHC")
   const [animateCharts, setAnimateCharts] = useState(false)
   const [feedbackData, setFeedbackData] = useState<FeedbackItem[]>([]);
   const [filteredData, setFilteredData] = useState<FeedbackItem[]>([]);
-  const [selectedHC, setSelectedHC] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState("");
-  const [selectedTerm, setSelectedTerm] = useState("");
+  const [selectedHCs, setSelectedHCs] = useState<string[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+  const [selectedTerms, setSelectedTerms] = useState<string[]>([]);
   const [minScore, setMinScore] = useState<number>(1);
   const [maxScore, setMaxScore] = useState<number>(5);
   const [uniqueHCs, setUniqueHCs] = useState<string[]>([]);
   const [uniqueCourses, setUniqueCourses] = useState<string[]>([]);
   const [uniqueTerms, setUniqueTerms] = useState<string[]>([]);
   const [dbError, setDbError] = useState<string>("");
-  const [classComparisonHC, setClassComparisonHC] = useState<string>("");
+  const [classComparisonHCs, setClassComparisonHCs] = useState<string[]>([]);
+  // Add state for AI summaries
+  const [aiSummaries, setAiSummaries] = useState<AISummary[]>([]);
 
   const handleMinScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -111,6 +124,14 @@ export default function FeedbackPlatform() {
   const handleMaxScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     setMaxScore(value <= 5 && value >= minScore ? value : 5);
+  };
+
+  // Add this function inside the FeedbackPlatform component, next to your other handler functions
+  const handleMultiSelectChange = (
+    setterFunction: React.Dispatch<React.SetStateAction<string[]>>,
+    values: string[]
+  ) => {
+    setterFunction(values);
   };
 
   // Fetch data from database
@@ -171,6 +192,11 @@ export default function FeedbackPlatform() {
         
         // Clear any previous errors
         setDbError("");
+
+        // New AI summaries fetch
+        const summariesResponse = await fetch('http://localhost:5001/api/ai-summaries');
+        const summariesValues = await summariesResponse.json();
+        setAiSummaries(summariesValues);
       } catch (error) {
         console.error("Error loading data from API:", error);
         setDbError(`Error loading data: ${String(error)}`);
@@ -241,21 +267,21 @@ export default function FeedbackPlatform() {
   useEffect(() => {
     let filtered = feedbackData;
 
-    if (selectedHC) {
-      filtered = filtered.filter(item => item.outcome_name === selectedHC);
+    if (selectedHCs.length > 0) {
+      filtered = filtered.filter(item => selectedHCs.includes(item.outcome_name));
     }
-    if (selectedCourse) {
-      filtered = filtered.filter(item => item.course_code === selectedCourse);
+    if (selectedCourses.length > 0) {
+      filtered = filtered.filter(item => selectedCourses.includes(item.course_code));
     }
-    if (selectedTerm) {
-      filtered = filtered.filter(item => item.term_title === selectedTerm);
+    if (selectedTerms.length > 0) {
+      filtered = filtered.filter(item => selectedTerms.includes(item.term_title));
     }
     filtered = filtered.filter(item => item.score >= minScore && item.score <= maxScore);
     
     console.log("Filtering applied:", {
-      selectedHC,
-      selectedCourse,
-      selectedTerm,
+      selectedHCs,
+      selectedCourses,
+      selectedTerms,
       minScore,
       maxScore
     });
@@ -265,7 +291,7 @@ export default function FeedbackPlatform() {
     
     // Also update pie chart when filters change
     updatePieChartData(filtered);
-  }, [feedbackData, selectedHC, selectedCourse, selectedTerm, minScore, maxScore]);
+  }, [feedbackData, selectedHCs, selectedCourses, selectedTerms, minScore, maxScore]);
 
   // Trigger animations after initial load
   useEffect(() => {
@@ -337,16 +363,6 @@ export default function FeedbackPlatform() {
     { score: 5, Yr1: 6, Yr2: 8, Yr3: 10 },
   ]
 
-  // AI-generated summary (simulated)
-  const aiSummary = {
-    pros: [
-      "No AI summary was generated",
-    ],
-    cons: [
-      "No AI summary was generated",
-    ],
-  }
-
   // Generate radar chart data based on filtered data only
   const generateRadarChartData = useMemo(() => {
     if (!filteredData.length) return [];
@@ -401,9 +417,9 @@ export default function FeedbackPlatform() {
 
   // Add reset filters functionality
   const resetFilters = () => {
-    setSelectedHC("");
-    setSelectedCourse("");
-    setSelectedTerm("");
+    setSelectedHCs([]);
+    setSelectedCourses([]);
+    setSelectedTerms([]);
     setMinScore(1);
     setMaxScore(5);
     // Reset the filtered data to show all data
@@ -485,13 +501,11 @@ export default function FeedbackPlatform() {
 
   // Generate class comparison data
   const generateClassComparisonData = useMemo(() => {
-    // Start with the currently filtered data, not the entire dataset
-    // This ensures all top filters (term, course, score range) are respected
     let dataToUse = filteredData;
     
-    // If a specific HC is selected in the class comparison filter, further filter by that
-    if (classComparisonHC) {
-      dataToUse = dataToUse.filter(item => item.outcome_name === classComparisonHC);
+    // Filter by selected HCs in class comparison if any are selected
+    if (classComparisonHCs.length > 0) {
+      dataToUse = dataToUse.filter(item => classComparisonHCs.includes(item.outcome_name));
     }
     
     // Get unique course codes from the filtered data
@@ -513,7 +527,7 @@ export default function FeedbackPlatform() {
         count: courseItems.length // Include count for reference
       };
     }).sort((a, b) => a.course.localeCompare(b.course)); // Sort alphabetically by course code
-  }, [filteredData, classComparisonHC]); // Now depends on filteredData instead of feedbackData
+  }, [filteredData, classComparisonHCs]); // Now depends on filteredData instead of feedbackData
 
   // First let's add a function to generate bar chart data for score distribution
   const generateScoreDistributionData = useMemo(() => {
@@ -539,6 +553,45 @@ export default function FeedbackPlatform() {
       { score: 5, count: scoreCounts[4], color: "#8B6BF2", name: "Profound knowledge" },
     ];
   }, [filteredData]);
+
+  // Replace the hardcoded aiSummary object with a function that gets the correct summary
+  const getCurrentAISummary = () => {
+    if (selectedHCs.length === 0) {
+      return {
+        pros: ["Select an HC/LO to see AI-generated insights"],
+        cons: ["Select an HC/LO to see AI-generated insights"]
+      };
+    }
+
+    // Just use the first selected HC for the summary
+    // This could be enhanced to show combined summaries
+    const firstHC = selectedHCs[0];
+    
+    const summary = aiSummaries.find(s => s.outcome_name === firstHC);
+    if (!summary) {
+      return {
+        pros: ["No AI summary available for this HC/LO"],
+        cons: ["No AI summary available for this HC/LO"]
+      };
+    }
+
+    // Split the text and remove leading dashes and spaces
+    const pros = summary.strengths_text 
+      ? summary.strengths_text
+          .split('\n')
+          .filter(Boolean)
+          .map(text => text.replace(/^[-\s]+/, ''))
+      : [];
+    
+    const cons = summary.improvement_text 
+      ? summary.improvement_text
+          .split('\n')
+          .filter(Boolean)
+          .map(text => text.replace(/^[-\s]+/, ''))
+      : [];
+
+    return { pros, cons };
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
@@ -622,17 +675,12 @@ export default function FeedbackPlatform() {
                       <BookOpen className="h-3.5 w-3.5" />
                       HC/LO Type
                     </label>
-                    <Select defaultValue="All" onValueChange={(value) => setSelectedHC(value === "All" ? "" : value)}>
-                      <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All">All</SelectItem>
-                        {uniqueHCs.map(hc => (
-                          <SelectItem key={hc} value={hc}>{hc}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <MultiSelect
+                      options={uniqueHCs.map(hc => ({ value: hc, label: hc }))}
+                      selected={selectedHCs}
+                      onChange={(values) => handleMultiSelectChange(setSelectedHCs, values)}
+                      placeholder="Select HC/LO types"
+                    />
                   </div>
                   
                   {/* Course filter */}
@@ -641,26 +689,18 @@ export default function FeedbackPlatform() {
                       <BookOpen className="h-3.5 w-3.5" />
                       Course
                     </label>
-                    <Select defaultValue="All" onValueChange={(value) => setSelectedCourse(value === "All" ? "" : value)}>
-                      <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
-                        <SelectValue placeholder="Select course" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All">All Courses</SelectItem>
-                        {uniqueCourses.map(courseCode => {
-                          // Find the course title for this code
-                          const courseItem = feedbackData.find(item => item.course_code === courseCode);
-                          const displayText = courseItem ? 
-                            `${courseCode} - ${courseItem.course_title}` : 
-                            courseCode;
-                          return (
-                            <SelectItem key={courseCode} value={courseCode}>
-                              {displayText}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
+                    <MultiSelect
+                      options={uniqueCourses.map(courseCode => {
+                        const courseItem = feedbackData.find(item => item.course_code === courseCode);
+                        const displayText = courseItem ? 
+                          `${courseCode} - ${courseItem.course_title}` : 
+                          courseCode;
+                        return { value: courseCode, label: displayText };
+                      })}
+                      selected={selectedCourses}
+                      onChange={(values) => handleMultiSelectChange(setSelectedCourses, values)}
+                      placeholder="Select courses"
+                    />
                   </div>
                   
                   {/* Term filter */}
@@ -669,17 +709,12 @@ export default function FeedbackPlatform() {
                       <Calendar className="h-3.5 w-3.5" />
                       Term
                     </label>
-                    <Select defaultValue="All" onValueChange={(value) => setSelectedTerm(value === "All" ? "" : value)}>
-                      <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
-                        <SelectValue placeholder="Select term" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All">All Terms</SelectItem>
-                        {uniqueTerms.map(term => (
-                          <SelectItem key={term} value={term}>{term}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <MultiSelect
+                      options={uniqueTerms.map(term => ({ value: term, label: term }))}
+                      selected={selectedTerms}
+                      onChange={(values) => handleMultiSelectChange(setSelectedTerms, values)}
+                      placeholder="Select terms"
+                    />
                   </div>
                   
                   {/* Score Range filter - now in the fourth column */}
@@ -762,12 +797,16 @@ export default function FeedbackPlatform() {
                     <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4 flex flex-row items-center justify-between">
                       <div>
                         <CardTitle className="text-xl font-bold">
-                          {selectedHC || "All HCs/LOs"} - Average Score: {
-                            selectedHC 
+                          {selectedHCs.length > 0 
+                            ? selectedHCs.length === 1 
+                              ? selectedHCs[0] 
+                              : `${selectedHCs.length} HCs/LOs selected`
+                            : "All HCs/LOs"} - Average Score: {
+                            selectedHCs.length > 0 
                               ? (filteredData
-                                  .filter(item => item.outcome_name === selectedHC)
+                                  .filter(item => selectedHCs.includes(item.outcome_name))
                                   .reduce((sum, item) => sum + item.score, 0) / 
-                                filteredData.filter(item => item.outcome_name === selectedHC).length).toFixed(1)
+                                filteredData.filter(item => selectedHCs.includes(item.outcome_name)).length).toFixed(1)
                               : (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(1)
                           }
                         </CardTitle>
@@ -793,7 +832,7 @@ export default function FeedbackPlatform() {
                             <h3 className="font-semibold text-[#0F172A]">Strengths:</h3>
                           </div>
                           <ul className="space-y-2">
-                            {aiSummary.pros.map((item, index) => (
+                            {getCurrentAISummary().pros.map((item, index) => (
                               <motion.li
                                 key={item}
                                 className="flex items-start gap-2"
@@ -801,7 +840,7 @@ export default function FeedbackPlatform() {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.5 + index * 0.1 }}
                               >
-                                <div className="mt-1 rounded-full bg-[#73C173]/20 p-0.5 shadow-[0_0_8px_rgba(115,193,115,0.5)]">
+                                <div className="mt-1 rounded-full bg-[#73C173]/20 p-0.5">
                                   <Check className="h-3 w-3 text-[#73C173]" />
                                 </div>
                                 <span className="text-sm text-[#334155]">{item}</span>
@@ -815,7 +854,7 @@ export default function FeedbackPlatform() {
                             <h3 className="font-semibold text-[#0F172A]">Areas for Improvement:</h3>
                           </div>
                           <ul className="space-y-2">
-                            {aiSummary.cons.map((item, index) => (
+                            {getCurrentAISummary().cons.map((item, index) => (
                               <motion.li
                                 key={item}
                                 className="flex items-start gap-2"
@@ -823,7 +862,7 @@ export default function FeedbackPlatform() {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.5 + index * 0.1 }}
                               >
-                                <div className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5 shadow-[0_0_8px_rgba(232,154,93,0.5)]">
+                                <div className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5">
                                   <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
                                 </div>
                                 <span className="text-sm text-[#334155]">{item}</span>
@@ -1083,20 +1122,12 @@ export default function FeedbackPlatform() {
                         <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
                           Class Comparison
                       </CardTitle>
-                        <Select 
-                          value={classComparisonHC || "All"} 
-                          onValueChange={(value) => setClassComparisonHC(value === "All" ? "" : value)}
-                        >
-                          <SelectTrigger className="w-[180px] h-8 text-xs border-[#E2E8F0] focus:ring-[#38BDF8]">
-                            <SelectValue placeholder="Select HC/LO" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="All">All HC/LOs</SelectItem>
-                            {uniqueHCs.map(hc => (
-                              <SelectItem key={hc} value={hc}>{hc}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <MultiSelect 
+                          options={uniqueHCs.map(hc => ({ value: hc, label: hc }))}
+                          selected={classComparisonHCs}
+                          onChange={(values) => setClassComparisonHCs(values)}
+                          placeholder="Select HC/LO for comparison"
+                        />
                       </div>
                     </CardHeader>
                     <CardContent className="p-4 h-[330px]">
@@ -1184,9 +1215,9 @@ export default function FeedbackPlatform() {
                         onClick={() => {
                           // Build query parameters based on current filters
                           const params = new URLSearchParams();
-                          if (selectedHC) params.append('hc', selectedHC);
-                          if (selectedCourse) params.append('course', selectedCourse);
-                          if (selectedTerm) params.append('term', selectedTerm);
+                          if (selectedHCs.length > 0) params.append('hc', selectedHCs.join(','));
+                          if (selectedCourses.length > 0) params.append('course', selectedCourses.join(','));
+                          if (selectedTerms.length > 0) params.append('term', selectedTerms.join(','));
                           params.append('minScore', minScore.toString());
                           params.append('maxScore', maxScore.toString());
                           
