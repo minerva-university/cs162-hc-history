@@ -53,6 +53,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { GradeLegend } from "./grade-legend"
 import { AnimatedScoreCard } from "./animated-score-card"
+import { MultiSelect, MultiSelectOption } from "./multi-select"
 
 
 /**
@@ -92,9 +93,12 @@ export default function FeedbackPlatform() {
   const [animateCharts, setAnimateCharts] = useState(false)
   const [feedbackData, setFeedbackData] = useState<FeedbackItem[]>([]);
   const [filteredData, setFilteredData] = useState<FeedbackItem[]>([]);
-  const [selectedHC, setSelectedHC] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState("");
-  const [selectedTerm, setSelectedTerm] = useState("");
+  
+  // Change single selection states to arrays for multiple selections
+  const [selectedHCs, setSelectedHCs] = useState<string[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+  const [selectedTerms, setSelectedTerms] = useState<string[]>([]);
+  
   const [minScore, setMinScore] = useState<number>(1);
   const [maxScore, setMaxScore] = useState<number>(5);
   const [uniqueHCs, setUniqueHCs] = useState<string[]>([]);
@@ -103,6 +107,28 @@ export default function FeedbackPlatform() {
   const [dbError, setDbError] = useState<string>("");
   const [classComparisonHC, setClassComparisonHC] = useState<string>("");
   const [showHCs, setShowHCs] = useState(true); //tracks whether HCs or LOs should be displayed in radar chart
+
+  // Convert to MultiSelectOption format for dropdowns
+  const hcOptions = useMemo(() => 
+    uniqueHCs.map(hc => ({ value: hc, label: hc })),
+    [uniqueHCs]
+  );
+  
+  const courseOptions = useMemo(() => 
+    uniqueCourses.map(courseCode => {
+      const courseItem = feedbackData.find(item => item.course_code === courseCode);
+      const displayText = courseItem ? 
+        `${courseCode} - ${courseItem.course_title}` : 
+        courseCode;
+      return { value: courseCode, label: displayText };
+    }),
+    [uniqueCourses, feedbackData]
+  );
+  
+  const termOptions = useMemo(() => 
+    uniqueTerms.map(term => ({ value: term, label: term })),
+    [uniqueTerms]
+  );
 
   const handleMinScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -242,21 +268,25 @@ export default function FeedbackPlatform() {
   useEffect(() => {
     let filtered = feedbackData;
 
-    if (selectedHC) {
-      filtered = filtered.filter(item => item.outcome_name === selectedHC);
+    // Update filtering logic to handle arrays of selections
+    if (selectedHCs.length > 0) {
+      filtered = filtered.filter(item => selectedHCs.includes(item.outcome_name));
     }
-    if (selectedCourse) {
-      filtered = filtered.filter(item => item.course_code === selectedCourse);
+    
+    if (selectedCourses.length > 0) {
+      filtered = filtered.filter(item => selectedCourses.includes(item.course_code));
     }
-    if (selectedTerm) {
-      filtered = filtered.filter(item => item.term_title === selectedTerm);
+    
+    if (selectedTerms.length > 0) {
+      filtered = filtered.filter(item => selectedTerms.includes(item.term_title));
     }
+    
     filtered = filtered.filter(item => item.score >= minScore && item.score <= maxScore);
     
     console.log("Filtering applied:", {
-      selectedHC,
-      selectedCourse,
-      selectedTerm,
+      selectedHCs,
+      selectedCourses,
+      selectedTerms,
       minScore,
       maxScore
     });
@@ -266,7 +296,7 @@ export default function FeedbackPlatform() {
     
     // Also update pie chart when filters change
     updatePieChartData(filtered);
-  }, [feedbackData, selectedHC, selectedCourse, selectedTerm, minScore, maxScore]);
+  }, [feedbackData, selectedHCs, selectedCourses, selectedTerms, minScore, maxScore]);
 
   // Trigger animations after initial load
   useEffect(() => {
@@ -276,6 +306,20 @@ export default function FeedbackPlatform() {
 
     return () => clearTimeout(timer)
   }, [])
+
+  // Add reset filters functionality
+  const resetFilters = () => {
+    setSelectedHCs([]);
+    setSelectedCourses([]);
+    setSelectedTerms([]);
+    setMinScore(1);
+    setMaxScore(5);
+    // Reset the filtered data to show all data
+    setFilteredData(feedbackData);
+    
+    // Also update pie chart with all data
+    updatePieChartData(feedbackData);
+  };
 
   // Generate time series data from actual feedback data
   const generateTimeSeriesData = (data: FeedbackItem[]) => {
@@ -438,20 +482,6 @@ export default function FeedbackPlatform() {
     { name: "Organization", score1: 3, score2: 12, score3: 25, score4: 45, score5: 15 },
     { name: "Resources", score1: 7, score2: 15, score3: 30, score4: 35, score5: 13 },
   ]
-
-  // Add reset filters functionality
-  const resetFilters = () => {
-    setSelectedHC("");
-    setSelectedCourse("");
-    setSelectedTerm("");
-    setMinScore(1);
-    setMaxScore(5);
-    // Reset the filtered data to show all data
-    setFilteredData(feedbackData);
-    
-    // Also update pie chart with all data
-    updatePieChartData(feedbackData);
-  };
 
   // Generate year comparison data from actual feedback data
   const generateYearComparisonData = useMemo(() => {
@@ -656,70 +686,46 @@ export default function FeedbackPlatform() {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {/* HC/LO Type filter */}
+                  {/* HC/LO Type filter - updated to MultiSelect */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
                       <BookOpen className="h-3.5 w-3.5" />
                       HC/LO Type
                     </label>
-                    <Select defaultValue="All" onValueChange={(value) => setSelectedHC(value === "All" ? "" : value)}>
-                      <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All">All</SelectItem>
-                        {uniqueHCs.map(hc => (
-                          <SelectItem key={hc} value={hc}>{hc}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <MultiSelect
+                      options={hcOptions}
+                      selected={selectedHCs}
+                      onChange={setSelectedHCs}
+                      placeholder="Select HC/LO types"
+                    />
                   </div>
                   
-                  {/* Course filter */}
+                  {/* Course filter - updated to MultiSelect */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
                       <BookOpen className="h-3.5 w-3.5" />
                       Course
                     </label>
-                    <Select defaultValue="All" onValueChange={(value) => setSelectedCourse(value === "All" ? "" : value)}>
-                      <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
-                        <SelectValue placeholder="Select course" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All">All Courses</SelectItem>
-                        {uniqueCourses.map(courseCode => {
-                          // Find the course title for this code
-                          const courseItem = feedbackData.find(item => item.course_code === courseCode);
-                          const displayText = courseItem ? 
-                            `${courseCode} - ${courseItem.course_title}` : 
-                            courseCode;
-                          return (
-                            <SelectItem key={courseCode} value={courseCode}>
-                              {displayText}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
+                    <MultiSelect
+                      options={courseOptions}
+                      selected={selectedCourses}
+                      onChange={setSelectedCourses}
+                      placeholder="Select courses"
+                    />
                   </div>
                   
-                  {/* Term filter */}
+                  {/* Term filter - updated to MultiSelect */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-[#334155] flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5" />
                       Term
                     </label>
-                    <Select defaultValue="All" onValueChange={(value) => setSelectedTerm(value === "All" ? "" : value)}>
-                      <SelectTrigger className="w-full border-[#E2E8F0] focus:ring-[#38BDF8]">
-                        <SelectValue placeholder="Select term" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All">All Terms</SelectItem>
-                        {uniqueTerms.map(term => (
-                          <SelectItem key={term} value={term}>{term}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <MultiSelect
+                      options={termOptions}
+                      selected={selectedTerms}
+                      onChange={setSelectedTerms}
+                      placeholder="Select terms"
+                    />
                   </div>
                   
                   {/* Score Range filter - now in the fourth column */}
@@ -802,12 +808,17 @@ export default function FeedbackPlatform() {
                     <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4 flex flex-row items-center justify-between">
                       <div>
                         <CardTitle className="text-xl font-bold">
-                          {selectedHC || "All HCs/LOs"} - Average Score: {
-                            selectedHC 
+                          {selectedHCs.length === 1 
+                            ? selectedHCs[0] 
+                            : selectedHCs.length > 1 
+                              ? `${selectedHCs.length} HCs/LOs Selected` 
+                              : "All HCs/LOs"} 
+                          - Average Score: {
+                            selectedHCs.length === 1 
                               ? (filteredData
-                                  .filter(item => item.outcome_name === selectedHC)
+                                  .filter(item => item.outcome_name === selectedHCs[0])
                                   .reduce((sum, item) => sum + item.score, 0) / 
-                                filteredData.filter(item => item.outcome_name === selectedHC).length).toFixed(1)
+                                filteredData.filter(item => item.outcome_name === selectedHCs[0]).length).toFixed(1)
                               : (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(1)
                           }
                         </CardTitle>
@@ -1089,24 +1100,25 @@ export default function FeedbackPlatform() {
                             <PolarGrid stroke="#E2E8F0" />
                             <PolarAngleAxis
                               dataKey="subject"
-                              tick={({ payload, x, y, textAnchor }) => {
-                                const value = payload.value; // this is still the full name like "cs142-topic"
+                              tick={(props) => {
+                                const { payload, x, y, textAnchor } = props;
+                                const value = payload.value;
                                 const label = labelMap.get(value) || "";
-
-                                const isLO = value.includes("-"); // Check full value, not label
+                                
+                                const isLO = value.includes("-");
                                 const displayLabel = isLO ? label.toUpperCase() : label;
-
-                                return label ? (
+                                
+                                return (
                                   <text
                                     x={x}
                                     y={y}
                                     textAnchor={textAnchor}
                                     fill="#64748B"
-                                    fontSize={10} //made smaller to make text more readable
+                                    fontSize={10}
                                   >
                                     {displayLabel}
                                   </text>
-                                ) : null;
+                                );
                               }}
                             />
                             <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: "#64748B", fontSize: 10 }} />
@@ -1255,9 +1267,9 @@ export default function FeedbackPlatform() {
                         onClick={() => {
                           // Build query parameters based on current filters
                           const params = new URLSearchParams();
-                          if (selectedHC) params.append('hc', selectedHC);
-                          if (selectedCourse) params.append('course', selectedCourse);
-                          if (selectedTerm) params.append('term', selectedTerm);
+                          if (selectedHCs.length > 0) params.append('hc', selectedHCs.join(','));
+                          if (selectedCourses.length > 0) params.append('course', selectedCourses.join(','));
+                          if (selectedTerms.length > 0) params.append('term', selectedTerms.join(','));
                           params.append('minScore', minScore.toString());
                           params.append('maxScore', maxScore.toString());
                           
