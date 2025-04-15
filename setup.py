@@ -3,6 +3,9 @@ import os
 import sys
 import time
 import platform
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 # Function to run a shell command and check for errors
 def run_command(command):
@@ -74,6 +77,14 @@ def run_frontend():
             'gnome-terminal', '--', 'bash', '-c',
             f'{launch_command}; exec bash'
         ])
+
+# Function to initialize a Selenium WebDriver
+def initialize_webdriver(options):
+    driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager(version="latest").install()),
+        options=options
+    )
+    return driver
 
 # Main setup function
 def main():
