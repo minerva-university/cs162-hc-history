@@ -102,7 +102,7 @@ export default function FeedbackPlatform() {
   const [uniqueTerms, setUniqueTerms] = useState<string[]>([]);
   const [dbError, setDbError] = useState<string>("");
   const [classComparisonHC, setClassComparisonHC] = useState<string>("");
-  const [showHCs, setShowHCs] = useState(true);
+  const [showHCs, setShowHCs] = useState(true); //tracks whether HCs or LOs should be displayed in radar chart
 
   const handleMinScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -391,6 +391,8 @@ export default function FeedbackPlatform() {
     return data;
   }, [generateRadarChartData]);
 
+  //Detects and groups LO labels by course prefix (e.g. CS162)
+  //Only show one label per course, centered in the group
   const labelMap = useMemo(() => {
     const courseGroups = new Map<string, number[]>(); // course -> list of radarData indices
   
@@ -1100,7 +1102,7 @@ export default function FeedbackPlatform() {
                                     y={y}
                                     textAnchor={textAnchor}
                                     fill="#64748B"
-                                    fontSize={10}
+                                    fontSize={10} //made smaller to make text more readable
                                   >
                                     {displayLabel}
                                   </text>
