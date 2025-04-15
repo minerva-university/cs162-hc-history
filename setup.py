@@ -42,26 +42,37 @@ def run_backend():
 
 # Function to run the frontend in a new terminal window
 def run_frontend():
-    print("🚀 Starting frontend in a new console window...")
+    print("🚀 Starting frontend setup...")
 
     frontend_path = os.path.join(os.getcwd(), "frontend")
-    launch_command = (
-        f"cd {frontend_path} && npm install && npm run build && npm start"
-    )
+    
+    # First, clean previous builds and node_modules
+    print("🧹 Cleaning previous builds...")
+    if os.path.exists(os.path.join(frontend_path, '.next')):
+        run_command(['rm', '-rf', os.path.join(frontend_path, '.next')])
+    if os.path.exists(os.path.join(frontend_path, 'node_modules')):
+        run_command(['rm', '-rf', os.path.join(frontend_path, 'node_modules')])
+
+    # Then do a fresh install and build
+    print("📦 Installing dependencies and building...")
+    run_command(['npm', 'install', '--prefix', frontend_path])
+    run_command(['npm', 'run', 'build', '--prefix', frontend_path])
+
+    print("🚀 Starting production server in a new console window...")
+    launch_command = f"cd {frontend_path} && npm start"
 
     system = platform.system()
-
-    if system == "Windows":
+    if system == "Darwin":  # macOS
+        subprocess.Popen([
+            'osascript', '-e',
+            f'tell application "Terminal" to do script "{launch_command}"'
+        ])
+    elif system == "Windows":
         subprocess.Popen(
             f'start cmd /K "{launch_command}"',
             cwd=frontend_path,
             shell=True
         )
-    elif system == "Darwin":  # macOS
-        subprocess.Popen([
-            'osascript', '-e',
-            f'tell application "Terminal" to do script "{launch_command}"'
-        ])
     else:  # Linux
         subprocess.Popen([
             'gnome-terminal', '--', 'bash', '-c',

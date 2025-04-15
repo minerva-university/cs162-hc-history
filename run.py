@@ -17,13 +17,12 @@ def run_command(command):
 def check_required_files():
     missing = []
 
-    # Paths to check
     required_paths = [
         "./backend/data.db",
         "./backend/app.py",
-        "./ai-summary/ai_summary.py",
-        "./ai-summary/init_db.py",
-        "./ai-summary/setup.py",
+        "./ai-summary/main.py",
+        "./ai-summary/db.py",
+        "./ai-summary/generate.py",
         "./frontend",
         ".env"
     ]

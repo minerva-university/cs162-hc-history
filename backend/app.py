@@ -249,5 +249,34 @@ def export_all_data():
         download_name=filename
     )
 
+
+@app.route('/api/ai-summaries', methods=['GET'])
+def get_ai_summaries():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('''
+            SELECT outcome_name, outcome_id, outcome_description,
+                   strengths_text, improvement_text, last_updated
+            FROM all_scores_ai_summaries
+        ''')
+        
+        summaries = cursor.fetchall()
+        return jsonify([{
+            'outcome_name': row['outcome_name'],
+            'outcome_id': row['outcome_id'],
+            'outcome_description': row['outcome_description'],
+            'strengths_text': row['strengths_text'],
+            'improvement_text': row['improvement_text'],
+            'last_updated': row['last_updated']
+        } for row in summaries])
+        
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return jsonify([])
+    finally:
+        conn.close()
+
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
