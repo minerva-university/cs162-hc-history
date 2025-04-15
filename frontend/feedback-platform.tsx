@@ -392,21 +392,33 @@ export default function FeedbackPlatform() {
   }, [generateRadarChartData]);
 
   const labelMap = useMemo(() => {
-    const seen = new Set<string>();
+    const courseGroups = new Map<string, number[]>(); // course -> list of radarData indices
+  
+    radarData.forEach((item, idx) => {
+      if (!item.subject.includes("-")) return; // skip HCs
+      const course = item.subject.split("-")[0];
+      if (!courseGroups.has(course)) courseGroups.set(course, []);
+      courseGroups.get(course)!.push(idx);
+    });
+  
     const map = new Map<string, string>();
   
+    // Determine center index of each group
+    courseGroups.forEach((indices, course) => {
+      const centerIndex = indices[Math.floor(indices.length / 2)];
+      indices.forEach((idx, i) => {
+        map.set(radarData[idx].subject, i === Math.floor(indices.length / 2) ? course : "");
+      });
+    });
+  
+    // Pass through HCs unchanged
     radarData.forEach(item => {
-      const course = item.subject.includes("-") ? item.subject.split("-")[0] : item.subject;
-      if (!seen.has(course)) {
-        map.set(item.subject, course); // label only first LO per course
-        seen.add(course);
-      } else {
-        map.set(item.subject, ""); // skip others
-      }
+      if (!item.subject.includes("-")) map.set(item.subject, item.subject);
     });
   
     return map;
   }, [radarData]);
+  
   
   // Filter radar data based on HC/LO type
   const filteredRadarData = useMemo(() => {
@@ -1088,7 +1100,7 @@ export default function FeedbackPlatform() {
                                     y={y}
                                     textAnchor={textAnchor}
                                     fill="#64748B"
-                                    fontSize={12}
+                                    fontSize={10}
                                   >
                                     {displayLabel}
                                   </text>
