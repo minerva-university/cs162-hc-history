@@ -201,14 +201,14 @@ def fetch_assignment_data(BASE_URL, headers, assignment_id):
     else:
         return None
 
-def create_assignment_scores_table(db_path, sql_file):
-    """Executes the SQL script to create the assignment_scores table."""
+def create_views(db_path, sql_file):
+    """Executes the SQL script to create the two views."""
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
         with open(sql_file, "r") as f:
             sql_script = f.read()
         cursor.executescript(sql_script)
-        print("✅ Assignment Scores table created successfully!")
+        print("✅ Assignment Scores and All Scores tables created successfully!")
 
 # Main function to tie everything together
 def main():
@@ -224,11 +224,51 @@ def main():
     # Absolute paths for DB and schema files
     DB_NAME = os.path.join(script_dir, "data.db")
     SCHEMA_FILE = os.path.join(script_dir, "schema.sql")
+    initialize_database(DB_NAME, SCHEMA_FILE)
     
+    # Fetch data from APIs
+    lo_trees = fetch_data_from_api(f"{BASE_URL}lo-trees", headers)
+    terms = fetch_data_from_api(f"{BASE_URL}terms", headers)
+    outcomes = fetch_data_from_api(f"{BASE_URL}outcome-assessments", headers)
+    colleges = fetch_data_from_api(f"{BASE_URL}colleges", headers)
 
-    # Create the assignment_scores table
+    if not lo_trees or not terms or not outcomes or not colleges:
+        print("❌ No data returned from the API.")
+        return  # Exit if no data is returned from the API
+    
+    # Insert data into the database
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    insert_outcome_assessments(cursor, outcomes)
+    insert_courses(cursor, lo_trees)
+    insert_learning_outcomes(cursor, lo_trees)
+    insert_terms(cursor, terms)
+    insert_colleges(cursor, colleges)
+
+    # Commit and close connection
+    conn.commit()
+    conn.close()
+
+    # Insert data into the database again, since assignments needs access to the data
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    # Fetch assignment ids from the database
+    assignment_ids = get_assignment_ids(DB_NAME)
+    if not assignment_ids:
+        return  # Exit if no assignment IDs are found
+
+    # Process assignments
+    process_assignments(BASE_URL, headers, DB_NAME, assignment_ids)
+
+    # Commit and close connection
+    conn.commit()
+    conn.close()
+
+    # Create the views
     VIEWS_FILE = os.path.join(script_dir, "views.sql")
-    create_assignment_scores_table(DB_NAME, VIEWS_FILE)
+    create_views(DB_NAME, VIEWS_FILE)
 
     print("✅ Data successfully stored in data.db")
 
