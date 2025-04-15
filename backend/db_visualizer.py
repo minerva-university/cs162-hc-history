@@ -2,6 +2,9 @@ import sqlite3
 import webbrowser
 import os
 
+# Update the database path to be absolute
+db_name = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.db")
+
 # Function to get all table and view names in a database
 def get_table_names(db_name):
     conn = sqlite3.connect(db_name)
@@ -163,8 +166,6 @@ def visualize_database(db_name, table_name):
 
 # User selection menu
 if __name__ == "__main__":
-    db_name = "../backend/data.db"
-
     # Get tables and views
     tables = get_table_names(db_name)
     if not tables:
