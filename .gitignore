@@ -13,3 +13,5 @@ clickable-files/.DS_Store
 .DS_Store
 *.DS_Store
 *.log
+__pycache__
+.pytest_cache
