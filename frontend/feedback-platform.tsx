@@ -112,8 +112,8 @@ export default function FeedbackPlatform() {
   const [uniqueTerms, setUniqueTerms] = useState<string[]>([]);
   const [dbError, setDbError] = useState<string>("");
   const [classComparisonHC, setClassComparisonHC] = useState<string>("");
-  // Add state for AI summaries
   const [aiSummaries, setAiSummaries] = useState<AISummary[]>([]);
+  const [showHCs, setShowHCs] = useState(true); //tracks whether HCs or LOs should be displayed in radar chart
 
   const handleMinScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -396,6 +396,45 @@ export default function FeedbackPlatform() {
     
     return data;
   }, [generateRadarChartData]);
+
+  //Detects and groups LO labels by course prefix (e.g. CS162)
+  //Only show one label per course, centered in the group
+  const labelMap = useMemo(() => {
+    const courseGroups = new Map<string, number[]>(); // course -> list of radarData indices
+  
+    radarData.forEach((item, idx) => {
+      if (!item.subject.includes("-")) return; // skip HCs
+      const course = item.subject.split("-")[0];
+      if (!courseGroups.has(course)) courseGroups.set(course, []);
+      courseGroups.get(course)!.push(idx);
+    });
+  
+    const map = new Map<string, string>();
+  
+    // Determine center index of each group
+    courseGroups.forEach((indices, course) => {
+      const centerIndex = indices[Math.floor(indices.length / 2)];
+      indices.forEach((idx, i) => {
+        map.set(radarData[idx].subject, i === Math.floor(indices.length / 2) ? course : "");
+      });
+    });
+  
+    // Pass through HCs unchanged
+    radarData.forEach(item => {
+      if (!item.subject.includes("-")) map.set(item.subject, item.subject);
+    });
+  
+    return map;
+  }, [radarData]);
+  
+  
+  // Filter radar data based on HC/LO type
+  const filteredRadarData = useMemo(() => {
+    return radarData.filter(item => {
+      const isLO = item.subject.includes("-");
+      return showHCs ? !isLO : isLO;
+    });
+  }, [radarData, showHCs]);  
 
   // Score distribution by category
   const scoreDistributionData = [
@@ -1067,19 +1106,50 @@ export default function FeedbackPlatform() {
                 {/* HC/LO Performance Radar */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
                   <Card className="border-none shadow-lg overflow-hidden h-[400px]">
-                    <CardHeader className="p-4 border-b border-[#E2E8F0]">
-                      <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                        <Activity className="h-4 w-4 text-[#8B6BF2]" />
-                        HC/LO Performance Radar
-                      </CardTitle>
-                    </CardHeader>
+                  <CardHeader className="p-4 border-b border-[#E2E8F0]">
+                    <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-[#8B6BF2]" />
+                      {showHCs ? "HC Performance Radar" : "LO Performance Radar"}
+                    </CardTitle>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs text-[#334155] border-[#E2E8F0]"
+                        onClick={() => setShowHCs(prev => !prev)}
+                      >
+                        {showHCs ? "Switch to LOs" : "Switch to HCs"}
+                      </Button>
+                    </div>
+                  </CardHeader>
                     <CardContent className="p-4 h-[330px]">
                       {radarData.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                           {filteredData.length > 0 ? (
-                          <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                          <RadarChart cx="50%" cy="50%" outerRadius="80%" data={filteredRadarData}>
                             <PolarGrid stroke="#E2E8F0" />
-                            <PolarAngleAxis dataKey="subject" tick={{ fill: "#64748B", fontSize: 12 }} />
+                            <PolarAngleAxis
+                              dataKey="subject"
+                              tick={({ payload, x, y, textAnchor }) => {
+                                const value = payload.value; // this is still the full name like "cs142-topic"
+                                const label = labelMap.get(value) || "";
+
+                                const isLO = value.includes("-"); // Check full value, not label
+                                const displayLabel = isLO ? label.toUpperCase() : label;
+
+                                return label ? (
+                                  <text
+                                    x={x}
+                                    y={y}
+                                    textAnchor={textAnchor}
+                                    fill="#64748B"
+                                    fontSize={10} //made smaller to make text more readable
+                                  >
+                                    {displayLabel}
+                                  </text>
+                                ) : null;
+                              }}
+                            />
                             <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: "#64748B", fontSize: 10 }} />
                             <Radar
                               name="Average Score"
@@ -1091,7 +1161,7 @@ export default function FeedbackPlatform() {
                             />
                             <Tooltip 
                               formatter={(value) => [`${value}`, 'Score']} 
-                              labelFormatter={(label) => `HC/LO: ${label}`}
+                              labelFormatter={(label) => `${label}`}
                             />
                           </RadarChart>
                         ) : (

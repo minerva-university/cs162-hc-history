@@ -1,9 +1,9 @@
 python-dotenv==1.0.1
 requests==2.32.3
-selenium
-webdriver-manager
+selenium==4.10.0
+webdriver-manager==3.8.6
 flask==3.0.2
 flask-cors==4.0.0
-openai>=1.0.0
-python-dotenv
+openai==0.27.8
 psycopg2-binary
+pytest==7.4.2
