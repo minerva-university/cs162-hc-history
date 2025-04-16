@@ -47,12 +47,14 @@ export function MultiSelect({
       onChange([...selected, value]);
     }
 
-    // Scroll to the end of the container when a new item is added
-    setTimeout(() => {
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
-      }
-    }, 10);
+    // Client-side only scrolling effect
+    if (typeof window !== 'undefined') {
+      setTimeout(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
+        }
+      }, 10);
+    }
   };
 
   // Remove a selected item
@@ -67,12 +69,15 @@ export function MultiSelect({
     onChange([]);
   };
 
-  // Ensure focus is maintained correctly
+  // Ensure focus is maintained correctly - client-side only
   useEffect(() => {
     if (open && inputRef.current) {
       inputRef.current.focus();
     }
   }, [open]);
+
+  // Fixed badge limit to ensure consistent rendering
+  const showAsBadges = selectedLabels.length <= 2;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -81,23 +86,22 @@ export function MultiSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between relative group", className)}
+          className={cn("w-full justify-between relative", className)}
         >
           <div className="flex items-center justify-start w-full overflow-hidden">
-            {selected.length === 0 && (
+            {selectedLabels.length === 0 && (
               <span className="text-muted-foreground truncate">{placeholder}</span>
             )}
             
-            {selected.length > 0 && (
+            {selectedLabels.length > 0 && (
               <>
-                {/* For small number of selections, show badges */}
-                {selected.length <= 2 ? (
+                {showAsBadges ? (
                   <div className="flex flex-wrap gap-1 max-w-[calc(100%-24px)]">
                     {selectedLabels.map((label, i) => (
-                      <Badge key={i} variant="secondary" className="px-1 py-0 h-6 animate-in fade-in-0 slide-in-from-left-3">
+                      <Badge key={i} variant="secondary" className="px-1 py-0 h-6">
                         {label}
-                        <button
-                          className="ml-1 text-muted-foreground rounded-full outline-none focus:ring-2 ring-primary"
+                        <span
+                          className="ml-1 text-muted-foreground rounded-full outline-none cursor-pointer"
                           onMouseDown={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -108,24 +112,18 @@ export function MultiSelect({
                           }}
                         >
                           <X className="h-3 w-3" />
-                        </button>
+                        </span>
                       </Badge>
                     ))}
                   </div>
                 ) : (
-                  // For larger selections, show count with horizontal scrolling preview
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="px-2 py-0 h-6">
-                      {selected.length} selected
+                      {selectedLabels.length} selected
                     </Badge>
-                    {/* Horizontal scrolling container for badges */}
                     <div 
                       ref={scrollContainerRef}
-                      className="flex flex-nowrap gap-1 overflow-x-auto max-w-[calc(100%-120px)] scrollbar-hide"
-                      style={{ 
-                        msOverflowStyle: "none", 
-                        scrollbarWidth: "none" 
-                      }}
+                      className="flex flex-nowrap gap-1 overflow-x-auto max-w-[calc(100%-120px)] no-scrollbar"
                     >
                       {selectedLabels.map((label, i) => (
                         <Badge 
@@ -192,15 +190,15 @@ export function MultiSelect({
   );
 }
 
-// Add global style for hiding scrollbars on scrolling containers
+// Styles with safer class name
 export const MultiSelectStyles = `
   /* Hide scrollbar for Chrome, Safari and Opera */
-  .scrollbar-hide::-webkit-scrollbar {
+  .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
   
   /* Hide scrollbar for IE, Edge and Firefox */
-  .scrollbar-hide {
+  .no-scrollbar {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
