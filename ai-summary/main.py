@@ -2,13 +2,15 @@ import os
 import argparse
 import time
 from dotenv import load_dotenv
-from openai import OpenAI
+import openai
 
 from db import create_ai_summaries_table, fetch_grouped_comments, fetch_outcome_metadata, store_summary
 from generate import generate_summary_parts
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+openai.api_key = os.getenv("OPENAI_API_KEY")
+# Define client as the openai module
+client = openai
 
 def main():
     parser = argparse.ArgumentParser(description="Generate AI summaries grouped by outcome_name from all_scores.")
