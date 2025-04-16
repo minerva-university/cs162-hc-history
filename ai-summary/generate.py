@@ -1,6 +1,6 @@
-from openai import OpenAI
+import openai
 
-def generate_summary_parts(client: OpenAI, outcome_name, outcome_description, all_comments):
+def generate_summary_parts(client, outcome_name, outcome_description, all_comments):
     prompt = f"""
 You are analyzing student feedback for the following learning outcome:
 
@@ -21,7 +21,7 @@ Return only the bullet points, clearly labeled with 'Strengths:' and 'Areas for 
 Ensure the language is appropriate for a college-level course and refers to an individual student as 'you' or 'your'.
 """
 
-    response = client.chat.completions.create(
+    response = client.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are an expert educational feedback summarizer."},
