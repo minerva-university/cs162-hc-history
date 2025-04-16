@@ -77,7 +77,7 @@ export function MultiSelect({
   }, [open]);
 
   // Fixed badge limit to ensure consistent rendering
-  const showAsBadges = selectedLabels.length <= 2;
+  const showAsBadges = selectedLabels.length <= 1;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
