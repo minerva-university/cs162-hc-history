@@ -24,51 +24,55 @@ def check_data_db():
         print("❌ data.db not found.")
         return False
 
-# Function to prompt the user for AI summary setup
+# Function to prompt the user for AI summary generation
 def prompt_ai_summary():
-    response = input("\n❓ Do you want to get an AI summary of your assignment feedback?\nThe process may take up to 10 minutes. You will need a paid OpenAI key. (yes/no): ").lower()
+    response = input("\n❓ Do you want to generate AI summaries for your assignment feedback?\nThis may take a few minutes and will use your OpenAI key. (yes/no): ").lower()
     return response in ['yes', 'y']
 
-# Function to install dependencies and run AI setup scripts
+# Function to run AI summary generation
 def run_ai_setup():
-    print("🚀 Running ai-summary/setup.py...")
-    run_command(["python3", "ai-summary/setup.py", "--yes"])
-
-    print("🚀 Initializing AI summary database...")
-    run_command(["python3", "ai-summary/init_db.py"])
-
-    print("🚀 Running AI summary script...")
-    run_command(["python3", "ai-summary/ai_summary.py"])
+    print("🚀 Running AI summary generation...")
+    run_command(["python3", "ai-summary/main.py"])
 
 # Function to run the backend
 def run_backend():
     print("🚀 Starting backend...")
-    # Run the backend in the same terminal (non-blocking)
     backend_process = subprocess.Popen(["python3", "backend/app.py"])
     return backend_process
 
-# Function to run the frontend in a new terminal window (cross-platform)
+# Function to run the frontend in a new terminal window
 def run_frontend():
-    print("🚀 Starting frontend in a new console window...")
+    print("🚀 Starting frontend setup...")
 
     frontend_path = os.path.join(os.getcwd(), "frontend")
-    launch_command = (
-        f"cd {frontend_path} && npm install && npm run build && npm start"
-    )
+    
+    # First, clean previous builds and node_modules
+    print("🧹 Cleaning previous builds...")
+    if os.path.exists(os.path.join(frontend_path, '.next')):
+        run_command(['rm', '-rf', os.path.join(frontend_path, '.next')])
+    if os.path.exists(os.path.join(frontend_path, 'node_modules')):
+        run_command(['rm', '-rf', os.path.join(frontend_path, 'node_modules')])
+
+    # Then do a fresh install and build
+    print("📦 Installing dependencies and building...")
+    run_command(['npm', 'install', '--prefix', frontend_path])
+    run_command(['npm', 'run', 'build', '--prefix', frontend_path])
+
+    print("🚀 Starting production server in a new console window...")
+    launch_command = f"cd {frontend_path} && npm start"
 
     system = platform.system()
-
-    if system == "Windows":
+    if system == "Darwin":  # macOS
+        subprocess.Popen([
+            'osascript', '-e',
+            f'tell application "Terminal" to do script "{launch_command}"'
+        ])
+    elif system == "Windows":
         subprocess.Popen(
             f'start cmd /K "{launch_command}"',
             cwd=frontend_path,
             shell=True
         )
-    elif system == "Darwin":  # macOS
-        subprocess.Popen([
-            'osascript', '-e',
-            f'tell application "Terminal" to do script "{launch_command}"'
-        ])
     else:  # Linux
         subprocess.Popen([
             'gnome-terminal', '--', 'bash', '-c',
@@ -86,23 +90,21 @@ def main():
     print("🚀 Running backend/setup.py...")
     run_command(["python3", "backend/setup.py"])
 
-    # Step 2: Check if data.db file is created
+    # Step 2: Check if data.db exists
     if not check_data_db():
         print("❌ Exiting setup due to missing data.db file.")
         sys.exit(1)
 
-    # Step 3: Ask the user if they want to run the AI summary setup
+    # Step 3: Prompt for AI summary generation
     if prompt_ai_summary():
-        # Step 4: Run AI summary setup if user agrees
         run_ai_setup()
 
-    # Step 5: Run the backend (in the original terminal)
+    # Step 4: Run backend
     backend_process = run_backend()
 
-    # Step 6: Run the frontend (in a new terminal window)
+    # Step 5: Run frontend
     run_frontend()
 
-    # Optional: Wait for the backend to finish if you need to ensure it continues running
     backend_process.wait()
 
 if __name__ == "__main__":

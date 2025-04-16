@@ -87,6 +87,16 @@ interface FeedbackItem {
   weight_numeric?: number;   // e.g., 8
 }
 
+// Add new interface for AI summaries
+interface AISummary {
+  outcome_name: string;
+  outcome_id: number;
+  outcome_description: string;
+  strengths_text: string;
+  improvement_text: string;
+  last_updated: string;
+}
+
 export default function FeedbackPlatform() {
   const [activeTab, setActiveTab] = useState<string>("byHC")
   const [animateCharts, setAnimateCharts] = useState(false)
@@ -102,6 +112,7 @@ export default function FeedbackPlatform() {
   const [uniqueTerms, setUniqueTerms] = useState<string[]>([]);
   const [dbError, setDbError] = useState<string>("");
   const [classComparisonHC, setClassComparisonHC] = useState<string>("");
+  const [aiSummaries, setAiSummaries] = useState<AISummary[]>([]);
   const [showHCs, setShowHCs] = useState(true); //tracks whether HCs or LOs should be displayed in radar chart
 
   const handleMinScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,6 +183,11 @@ export default function FeedbackPlatform() {
         
         // Clear any previous errors
         setDbError("");
+
+        // New AI summaries fetch
+        const summariesResponse = await fetch('http://localhost:5001/api/ai-summaries');
+        const summariesValues = await summariesResponse.json();
+        setAiSummaries(summariesValues);
       } catch (error) {
         console.error("Error loading data from API:", error);
         setDbError(`Error loading data: ${String(error)}`);
@@ -337,16 +353,6 @@ export default function FeedbackPlatform() {
     { score: 4, Yr1: 12, Yr2: 15, Yr3: 18 },
     { score: 5, Yr1: 6, Yr2: 8, Yr3: 10 },
   ]
-
-  // AI-generated summary (simulated)
-  const aiSummary = {
-    pros: [
-      "No AI summary was generated",
-    ],
-    cons: [
-      "No AI summary was generated",
-    ],
-  }
 
   // Generate radar chart data based on filtered data only
   const generateRadarChartData = useMemo(() => {
@@ -579,6 +585,41 @@ export default function FeedbackPlatform() {
       { score: 5, count: scoreCounts[4], color: "#8B6BF2", name: "Profound knowledge" },
     ];
   }, [filteredData]);
+
+  // Replace the hardcoded aiSummary object with a function that gets the correct summary
+  const getCurrentAISummary = () => {
+    if (!selectedHC) {
+      return {
+        pros: ["Select an HC/LO to see AI-generated insights"],
+        cons: ["Select an HC/LO to see AI-generated insights"]
+      };
+    }
+
+    const summary = aiSummaries.find(s => s.outcome_name === selectedHC);
+    if (!summary) {
+      return {
+        pros: ["No AI summary available for this HC/LO"],
+        cons: ["No AI summary available for this HC/LO"]
+      };
+    }
+
+    // Split the text and remove leading dashes and spaces
+    const pros = summary.strengths_text 
+      ? summary.strengths_text
+          .split('\n')
+          .filter(Boolean)
+          .map(text => text.replace(/^[-\s]+/, ''))
+      : [];
+    
+    const cons = summary.improvement_text 
+      ? summary.improvement_text
+          .split('\n')
+          .filter(Boolean)
+          .map(text => text.replace(/^[-\s]+/, ''))
+      : [];
+
+    return { pros, cons };
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
@@ -833,7 +874,7 @@ export default function FeedbackPlatform() {
                             <h3 className="font-semibold text-[#0F172A]">Strengths:</h3>
                           </div>
                           <ul className="space-y-2">
-                            {aiSummary.pros.map((item, index) => (
+                            {getCurrentAISummary().pros.map((item, index) => (
                               <motion.li
                                 key={item}
                                 className="flex items-start gap-2"
@@ -841,7 +882,7 @@ export default function FeedbackPlatform() {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.5 + index * 0.1 }}
                               >
-                                <div className="mt-1 rounded-full bg-[#73C173]/20 p-0.5 shadow-[0_0_8px_rgba(115,193,115,0.5)]">
+                                <div className="mt-1 rounded-full bg-[#73C173]/20 p-0.5">
                                   <Check className="h-3 w-3 text-[#73C173]" />
                                 </div>
                                 <span className="text-sm text-[#334155]">{item}</span>
@@ -855,7 +896,7 @@ export default function FeedbackPlatform() {
                             <h3 className="font-semibold text-[#0F172A]">Areas for Improvement:</h3>
                           </div>
                           <ul className="space-y-2">
-                            {aiSummary.cons.map((item, index) => (
+                            {getCurrentAISummary().cons.map((item, index) => (
                               <motion.li
                                 key={item}
                                 className="flex items-start gap-2"
@@ -863,7 +904,7 @@ export default function FeedbackPlatform() {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.5 + index * 0.1 }}
                               >
-                                <div className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5 shadow-[0_0_8px_rgba(232,154,93,0.5)]">
+                                <div className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5">
                                   <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
                                 </div>
                                 <span className="text-sm text-[#334155]">{item}</span>
