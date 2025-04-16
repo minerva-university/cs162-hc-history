@@ -53,8 +53,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { GradeLegend } from "./grade-legend"
 import { AnimatedScoreCard } from "./animated-score-card"
-import { MultiSelect, MultiSelectOption } from "./multi-select"
+import { MultiSelect, MultiSelectOption, MultiSelectStyles } from "./multi-select"
 
+// Add the styles to a <style> element in the component
+function MultiSelectStyleInjector() {
+  return (
+    <style dangerouslySetInnerHTML={{ __html: MultiSelectStyles }} />
+  );
+}
 
 /**
  * Academic Feedback Platform
@@ -612,6 +618,9 @@ export default function FeedbackPlatform() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
+      {/* Inject the styles for the MultiSelect component */}
+      <MultiSelectStyleInjector />
+      
       {/* Header with navigation tabs */}
       <header className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white shadow-lg fixed top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-2 flex flex-col items-center">
