@@ -30,6 +30,7 @@ export function MultiSelect({
 }: MultiSelectProps) {
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Get labels for selected values
   const selectedLabels = options
@@ -45,6 +46,13 @@ export function MultiSelect({
     } else {
       onChange([...selected, value]);
     }
+
+    // Scroll to the end of the container when a new item is added
+    setTimeout(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
+      }
+    }, 10);
   };
 
   // Remove a selected item
@@ -73,39 +81,68 @@ export function MultiSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between", className)}
+          className={cn("w-full justify-between relative group", className)}
         >
-          <div className="flex gap-1 flex-wrap">
-            {selected.length === 0 && <span className="text-muted-foreground">{placeholder}</span>}
-            {selectedLabels.length > 0 && (
-              <div className="flex flex-wrap gap-1 max-w-[90%] overflow-hidden">
-                {selectedLabels.slice(0, displayLimit).map((label, i) => (
-                  <Badge key={i} variant="secondary" className="px-1 py-0 h-6">
-                    {label}
-                    <button
-                      className="ml-1 text-muted-foreground rounded-full outline-none focus:ring-2 ring-primary"
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                      onClick={(e) => {
-                        const value = options.find((option) => option.label === label)?.value || "";
-                        handleRemove(value, e);
+          <div className="flex items-center justify-start w-full overflow-hidden">
+            {selected.length === 0 && (
+              <span className="text-muted-foreground truncate">{placeholder}</span>
+            )}
+            
+            {selected.length > 0 && (
+              <>
+                {/* For small number of selections, show badges */}
+                {selected.length <= 2 ? (
+                  <div className="flex flex-wrap gap-1 max-w-[calc(100%-24px)]">
+                    {selectedLabels.map((label, i) => (
+                      <Badge key={i} variant="secondary" className="px-1 py-0 h-6 animate-in fade-in-0 slide-in-from-left-3">
+                        {label}
+                        <button
+                          className="ml-1 text-muted-foreground rounded-full outline-none focus:ring-2 ring-primary"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onClick={(e) => {
+                            const value = options.find((option) => option.label === label)?.value || "";
+                            handleRemove(value, e);
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  // For larger selections, show count with horizontal scrolling preview
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="px-2 py-0 h-6">
+                      {selected.length} selected
+                    </Badge>
+                    {/* Horizontal scrolling container for badges */}
+                    <div 
+                      ref={scrollContainerRef}
+                      className="flex flex-nowrap gap-1 overflow-x-auto max-w-[calc(100%-120px)] scrollbar-hide"
+                      style={{ 
+                        msOverflowStyle: "none", 
+                        scrollbarWidth: "none" 
                       }}
                     >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-                {selectedLabels.length > displayLimit && (
-                  <Badge variant="secondary" className="px-1 py-0 h-6">
-                    +{selectedLabels.length - displayLimit} more
-                  </Badge>
+                      {selectedLabels.map((label, i) => (
+                        <Badge 
+                          key={i} 
+                          variant="outline" 
+                          className="px-1 py-0 h-6 whitespace-nowrap flex-shrink-0 text-xs border-dashed"
+                        >
+                          {label}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
                 )}
-              </div>
+              </>
             )}
           </div>
-          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50 absolute right-3" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
@@ -153,4 +190,18 @@ export function MultiSelect({
       </PopoverContent>
     </Popover>
   );
-} 
+}
+
+// Add global style for hiding scrollbars on scrolling containers
+export const MultiSelectStyles = `
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+`; 
