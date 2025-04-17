@@ -42,6 +42,8 @@ import {
   MoreVertical,
   AlertTriangle,
   BarChart2,
+  Play,
+  ClipboardList,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -984,7 +986,7 @@ export default function FeedbackPlatform() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <Card className="border-none shadow-lg overflow-hidden h-[400px]">
+                  <Card className="border-none shadow-lg overflow-hidden h-[450px]">
                     <CardHeader className="p-4 border-b border-[#E2E8F0]">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
@@ -1011,7 +1013,7 @@ export default function FeedbackPlatform() {
                         </DropdownMenu>
                       </div>
                     </CardHeader>
-                    <CardContent className="p-4 h-[330px]">
+                    <CardContent className="p-4 h-[380px]">
                       <ResponsiveContainer width="100%" height="100%">
                       {filteredData.length > 0 ? (
                         <LineChart 
@@ -1095,14 +1097,14 @@ export default function FeedbackPlatform() {
 
                 {/* Score Distribution bar chart */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-                  <Card className="border-none shadow-lg overflow-hidden h-[400px]">
+                  <Card className="border-none shadow-lg overflow-hidden h-[450px]">
                     <CardHeader className="p-4 border-b border-[#E2E8F0]">
                       <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
                         <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
                         Score Distribution
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-4 h-[330px]">
+                    <CardContent className="p-4 h-[380px]">
                         <ResponsiveContainer width="100%" height="100%">
                         {filteredData.length > 0 ? (
                         <BarChart
@@ -1164,7 +1166,7 @@ export default function FeedbackPlatform() {
 
                 {/* HC/LO Performance Radar */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
-                  <Card className="border-none shadow-lg overflow-hidden h-[400px]">
+                  <Card className="border-none shadow-lg overflow-hidden h-[450px]">
                   <CardHeader className="p-4 border-b border-[#E2E8F0]">
                     <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
@@ -1181,7 +1183,7 @@ export default function FeedbackPlatform() {
                       </Button>
                     </div>
                   </CardHeader>
-                    <CardContent className="p-4 h-[330px]">
+                    <CardContent className="p-4 h-[380px]">
                       {radarData.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                           {filteredData.length > 0 ? (
@@ -1248,7 +1250,7 @@ export default function FeedbackPlatform() {
 
                 {/* Class Comparison chart */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
-                  <Card className="border-none shadow-lg overflow-hidden h-[400px]">
+                  <Card className="border-none shadow-lg overflow-hidden h-[450px]">
                     <CardHeader className="p-4 border-b border-[#E2E8F0]">
                       <div className="flex items-center justify-between">
                       <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
@@ -1271,12 +1273,12 @@ export default function FeedbackPlatform() {
                         </Select>
                       </div>
                     </CardHeader>
-                    <CardContent className="p-4 h-[330px]">
+                    <CardContent className="p-4 h-[380px]">
                       {filteredData.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart 
                             data={generateClassComparisonData} 
-                            margin={{ top: 20, right: 20, left: 30, bottom: 75 }}
+                            margin={{ top: 20, right: 30, left: 40, bottom: 75 }}
                             barSize={30}
                           >
                             <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
@@ -1295,11 +1297,17 @@ export default function FeedbackPlatform() {
                             <YAxis 
                               domain={[0, 5]} 
                               ticks={[0, 1, 2, 3, 4, 5]} 
-                            stroke="#64748B"
-                            fontSize={12}
-                            tickLine={false}
-                            axisLine={{ stroke: "#E2E8F0" }}
-                              label={{ value: 'Average Score', angle: -90, position: 'insideLeft', offset: -15, fill: '#64748B' }}
+                              stroke="#64748B"
+                              fontSize={12}
+                              tickLine={false}
+                              axisLine={{ stroke: "#E2E8F0" }}
+                              label={{ 
+                                value: 'Average Score', 
+                                angle: -90, 
+                                position: 'center', 
+                                dx: -35, 
+                                fill: '#64748B' 
+                              }}
                             />
                             <Tooltip
                               formatter={(value) => [`${value}`, 'Average Score']}
@@ -1670,7 +1678,16 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
                     className="text-[#334155] hover:text-[#3A4DB9] hover:underline cursor-pointer flex items-center gap-1.5"
                     onClick={() => handleAssignmentClick(item)}
                   >
-                    <BookOpen className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
+                    {item.assignment_title === "poll" ? (
+                      // Use ClipboardList icon for polls
+                      <ClipboardList className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
+                    ) : item.assignment_title === "video" ? (
+                      // Use Play icon for class recordings
+                      <Play className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
+                    ) : (
+                      // Default to BookOpen for all other assignment types
+                      <BookOpen className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
+                    )}
                     {item.assignment_title === "poll"
                       ? "Poll"
                       : item.assignment_title === "video"
