@@ -68,7 +68,7 @@ def test_prompt_ai_summary_no(monkeypatch):
 # --- Tests for run_ai_setup() ---
 # We record the commands passed to run_command.
 
-def test_run_ai_setup(monkeypatch):
+def test_run_ai_setup(monkeypatch, capsys):
     calls = []
     def fake_run_command(command):
         calls.append(command)
@@ -76,12 +76,13 @@ def test_run_ai_setup(monkeypatch):
     
     setup.run_ai_setup()
     
+    # Updated to match the new implementation that calls main.py
     expected_calls = [
-        ["python3", "ai-summary/setup.py", "--yes"],
-        ["python3", "ai-summary/init_db.py"],
-        ["python3", "ai-summary/ai_summary.py"]
+        ["python3", "ai-summary/main.py"]
     ]
     assert calls == expected_calls
+    captured = capsys.readouterr().out
+    assert "🚀 Running AI summary generation..." in captured
 
 # --- Tests for run_backend() ---
 # We'll fake subprocess.Popen to capture the backend command and return a dummy process.
@@ -103,23 +104,93 @@ def test_run_backend(monkeypatch, capsys):
     assert isinstance(proc, DummyProcess)
 
 # --- Tests for run_frontend() ---
-# We test one branch (e.g., macOS/Darwin). Adjust similarly for Windows or Linux if needed.
+# Updated to test the new frontend setup process
 
-def test_run_frontend_darwin(monkeypatch, capsys):
-    calls = []
+def test_run_frontend(monkeypatch, capsys):
+    # Track command calls
+    run_command_calls = []
+    def fake_run_command(command):
+        run_command_calls.append(command)
+    monkeypatch.setattr(setup, "run_command", fake_run_command)
+    
+    # Track Popen calls
+    popen_calls = []
     def fake_popen(args, **kwargs):
-        calls.append((args, kwargs))
+        popen_calls.append((args, kwargs))
         return None
     monkeypatch.setattr(subprocess, "Popen", fake_popen)
-    # Force platform.system() to return "Darwin".
+    
+    # Mock os.path.exists for .next and node_modules checks
+    exists_calls = []
+    def fake_exists(path):
+        exists_calls.append(path)
+        # Simulate both directories exist to test removal
+        return '.next' in path or 'node_modules' in path
+    monkeypatch.setattr(os.path, "exists", fake_exists)
+    
+    # Mock os.getcwd
+    monkeypatch.setattr(os, "getcwd", lambda: "/fake/path")
+    
+    # Force platform.system() to return "Darwin" for this test
     monkeypatch.setattr(platform, "system", lambda: "Darwin")
     
+    # Run the function
     setup.run_frontend()
-    # Verify that one of the calls uses 'osascript' to launch Terminal.
-    found = any(isinstance(args, list) and args and args[0] == 'osascript' for args, _ in calls)
+    
+    # Verify output messages
     captured = capsys.readouterr().out
-    assert found, "Expected an osascript command for Darwin."
-    assert "🚀 Starting frontend in a new console window..." in captured
+    assert "🚀 Starting frontend setup..." in captured
+    assert "🧹 Cleaning previous builds..." in captured
+    assert "📦 Installing dependencies and building..." in captured
+    assert "🚀 Starting production server in a new console window..." in captured
+    
+    # Verify the right commands were called for cleaning
+    assert any(cmd[0] == 'rm' and '.next' in cmd[2] for cmd in run_command_calls)
+    assert any(cmd[0] == 'rm' and 'node_modules' in cmd[2] for cmd in run_command_calls)
+    
+    # Verify npm commands were called
+    assert any(cmd[0] == 'npm' and cmd[1] == 'install' for cmd in run_command_calls)
+    assert any(cmd[0] == 'npm' and cmd[1] == 'run' and cmd[2] == 'build' for cmd in run_command_calls)
+    
+    # Verify terminal was launched with osascript (for macOS)
+    assert any(isinstance(args, list) and args and args[0] == 'osascript' for args, _ in popen_calls)
+
+# Test for Windows platform
+def test_run_frontend_windows(monkeypatch, capsys):
+    # Mock necessary functions
+    monkeypatch.setattr(setup, "run_command", lambda cmd: None)
+    popen_calls = []
+    def fake_popen(args, **kwargs):
+        popen_calls.append((args, kwargs))
+        return None
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+    monkeypatch.setattr(os.path, "exists", lambda path: False)  # Skip cleanup
+    monkeypatch.setattr(os, "getcwd", lambda: "/fake/path")
+    monkeypatch.setattr(platform, "system", lambda: "Windows")
+    
+    setup.run_frontend()
+    
+    # Verify Windows-specific command was used
+    assert any(isinstance(args, str) and 'start cmd' in args for args, kwargs in popen_calls)
+    assert any('shell' in kwargs and kwargs['shell'] is True for args, kwargs in popen_calls)
+
+# Test for Linux platform
+def test_run_frontend_linux(monkeypatch, capsys):
+    # Mock necessary functions
+    monkeypatch.setattr(setup, "run_command", lambda cmd: None)
+    popen_calls = []
+    def fake_popen(args, **kwargs):
+        popen_calls.append((args, kwargs))
+        return None
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+    monkeypatch.setattr(os.path, "exists", lambda path: False)  # Skip cleanup
+    monkeypatch.setattr(os, "getcwd", lambda: "/fake/path")
+    monkeypatch.setattr(platform, "system", lambda: "Linux")
+    
+    setup.run_frontend()
+    
+    # Verify Linux-specific command was used
+    assert any(isinstance(args, list) and args and args[0] == 'gnome-terminal' for args, kwargs in popen_calls)
 
 # --- Tests for main() ---
 # Testing main() requires faking several functions to avoid side effects.
@@ -127,9 +198,18 @@ def test_run_frontend_darwin(monkeypatch, capsys):
 
 def test_main_missing_data_db(monkeypatch, capsys):
     # Simulate that the ./backend/data.db file is missing.
-    monkeypatch.setattr(os.path, "exists", lambda path: False)
+    def fake_exists(path):
+        if path == "requirements.txt":
+            return False  # Skip dependency installation
+        return False  # All other files don't exist
+    monkeypatch.setattr(os.path, "exists", fake_exists)
+    
+    # Mock run_command to avoid actual command execution
+    monkeypatch.setattr(setup, "run_command", lambda cmd: None)
+    
     # Make prompt_ai_summary return False (won't be used because main will exit earlier).
     monkeypatch.setattr(setup, "prompt_ai_summary", lambda: False)
+    
     with pytest.raises(SystemExit) as e:
         setup.main()
     assert e.value.code == 1
@@ -157,11 +237,10 @@ def test_main_success(monkeypatch, capsys):
     # Simulate user input to decline AI summary.
     monkeypatch.setattr(setup, "prompt_ai_summary", lambda: False)
     # Patch subprocess.run for the dependency installation.
-    monkeypatch.setattr(subprocess, "run", lambda cmd: None)
+    monkeypatch.setattr(subprocess, "run", lambda cmd, **kwargs: None)
     
     # Run main() which should complete without sys.exit.
     setup.main()
     captured = capsys.readouterr().out
     # Check that key prints occur.
     assert "🚀 Running backend/setup.py..." in captured
-
