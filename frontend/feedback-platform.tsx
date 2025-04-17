@@ -1481,6 +1481,28 @@ export default function FeedbackPlatform() {
                   </div>
                 </CardContent>
               </Card>
+              
+              {/* HC/LO Ranking Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Card className="border-none shadow-lg overflow-hidden">
+                  <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4">
+                    <CardTitle className="text-xl font-bold flex items-center gap-2">
+                      <Award className="h-5 w-5 text-yellow-300" />
+                      HC/LO Ranking
+                    </CardTitle>
+                    <CardDescription className="text-[#94A3B8] mt-1">
+                      Areas ranked from weakest to strongest based on average scores
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <RankingTable data={feedbackData} />
+                  </CardContent>
+                </Card>
+              </motion.div>
             </motion.div>
           )}
         </main>
@@ -1962,6 +1984,178 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
               <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Now let's add the RankingTable component at the end of the file
+
+function RankingTable({ data }: { readonly data: readonly FeedbackItem[] }): React.ReactElement {
+  const [showType, setShowType] = useState<'HC' | 'LO' | 'All'>('All');
+  const [sortAscending, setSortAscending] = useState<boolean>(true); // true = weakest first, false = strongest first
+  
+  // Generate a map of outcome_name to avg score and count
+  const outcomeStats = useMemo(() => {
+    const stats = new Map<string, { totalScore: number; count: number; isHC: boolean }>();
+    
+    data.forEach(item => {
+      if (!item.outcome_name) return;
+      
+      if (!stats.has(item.outcome_name)) {
+        // Determine if this is an HC (doesn't have a hyphen) or an LO (has a hyphen)
+        const isHC = !item.outcome_name.includes('-');
+        stats.set(item.outcome_name, { totalScore: 0, count: 0, isHC });
+      }
+      
+      const current = stats.get(item.outcome_name)!;
+      current.totalScore += item.score;
+      current.count += 1;
+    });
+    
+    return stats;
+  }, [data]);
+  
+  // Convert to array, calculate averages, and sort based on user preference
+  const rankedOutcomes = useMemo(() => {
+    return Array.from(outcomeStats.entries())
+      .map(([name, stats]) => ({
+        name,
+        avgScore: stats.count > 0 ? stats.totalScore / stats.count : 0,
+        count: stats.count,
+        isHC: stats.isHC
+      }))
+      .filter(outcome => {
+        if (showType === 'All') return true;
+        return showType === 'HC' ? outcome.isHC : !outcome.isHC;
+      })
+      .sort((a, b) => sortAscending ? 
+        a.avgScore - b.avgScore : // weakest first (ascending)
+        b.avgScore - a.avgScore   // strongest first (descending)
+      );
+  }, [outcomeStats, showType, sortAscending]);
+
+  // Function to get color class based on score
+  const getScoreColorClass = (score: number) => {
+    if (score >= 4.5) return "text-[#8B6BF2]"; // Excellent - Purple
+    if (score >= 3.5) return "text-[#3A4DB9]"; // Good - Blue
+    if (score >= 2.5) return "text-[#73C173]"; // Average - Green
+    if (score >= 1.5) return "text-[#E89A5D]"; // Fair - Orange
+    return "text-[#E85D5D]"; // Poor - Red
+  };
+  
+  // Toggle sort order
+  const toggleSortOrder = () => {
+    setSortAscending(prev => !prev);
+  };
+  
+  return (
+    <div className="overflow-x-auto">
+      <div className="flex flex-wrap items-center justify-between px-6 py-3 border-b border-[#E2E8F0] gap-3">
+        <h3 className="font-medium text-[#0F172A]">
+          Showing {rankedOutcomes.length} {showType === 'All' ? 'outcomes' : showType === 'HC' ? 'outcomes' : 'outcomes'}
+        </h3>
+        
+        <div className="flex flex-wrap gap-3">
+          {/* Filter buttons */}
+          <div className="flex space-x-2">
+            <Button 
+              variant={showType === 'All' ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setShowType('All')}
+              className={showType === 'All' ? "bg-[#0F172A]" : ""}
+            >
+              All
+            </Button>
+            <Button 
+              variant={showType === 'HC' ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setShowType('HC')}
+              className={showType === 'HC' ? "bg-[#0F172A]" : ""}
+            >
+              HCs
+            </Button>
+            <Button 
+              variant={showType === 'LO' ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setShowType('LO')}
+              className={showType === 'LO' ? "bg-[#0F172A]" : ""}
+            >
+              LOs
+            </Button>
+          </div>
+          
+          {/* Sort order toggle button */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={toggleSortOrder}
+            className="flex items-center gap-1 ml-2"
+          >
+            {sortAscending ? (
+              <>
+                <span className="text-red-500">⬇️</span> Weakest First
+              </>
+            ) : (
+              <>
+                <span className="text-green-500">⬆️</span> Strongest First
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+      
+      <table className="w-full">
+        <thead>
+          <tr className="bg-[#F1F5F9]">
+            <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">Rank</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">HC/LO</th>
+            <th className="px-6 py-3 text-right text-xs font-medium text-[#64748B] uppercase tracking-wider">Average Score</th>
+            <th className="px-6 py-3 text-right text-xs font-medium text-[#64748B] uppercase tracking-wider">Feedback Count</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-[#E2E8F0]">
+          {rankedOutcomes.map((outcome, index) => (
+            <tr 
+              key={outcome.name} 
+              className={`hover:bg-[#F8FAFC] ${sortAscending && index < 3 ? 'bg-red-50' : !sortAscending && index < 3 ? 'bg-green-50' : ''}`}
+            >
+              <td className="px-6 py-4 whitespace-nowrap">
+                {index + 1}
+                {index === 0 && (
+                  <span className="ml-2">
+                    {sortAscending ? <span className="text-red-500">⬇️</span> : <span className="text-green-500">⬆️</span>}
+                  </span>
+                )}
+              </td>
+              <td className="px-6 py-4 font-medium">
+                <div className="flex items-center gap-2">
+                  <span>{outcome.name}</span>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                    outcome.isHC ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
+                  }`}>
+                    {outcome.isHC ? 'HC' : 'LO'}
+                  </span>
+                </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-right font-bold">
+                <span className={getScoreColorClass(outcome.avgScore)}>
+                  {outcome.avgScore.toFixed(2)}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-right text-[#64748B]">
+                {outcome.count}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      {rankedOutcomes.length === 0 && (
+        <div className="py-12 text-center text-[#64748B]">
+          <AlertCircle className="h-12 w-12 mx-auto text-[#E2E8F0] mb-3" />
+          <p>No data available for the selected type</p>
         </div>
       )}
     </div>
