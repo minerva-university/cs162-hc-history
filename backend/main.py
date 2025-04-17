@@ -35,7 +35,7 @@ def initialize_database(db_name, schema_file):
 
 # Fetch data from endpoint and handle response
 def fetch_data_from_api(url, headers):
-    print(f"🔄 Fetching data from {url}...")
+    print(f"🔄 Please wait, fetching data from {url}...")
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         print("✅ Data fetched successfully.")
@@ -56,13 +56,14 @@ def insert_outcome_assessments(cursor, outcome_data):
         outcome_id = outcome.get("learning-outcome") 
         score = outcome.get("score")
         outcome_type = outcome.get("type")
-        target_assignment_group_id = outcome.get("target-assignment-group-id")
+        assignment_group_id = outcome.get("target-assignment-group-id")
+        user_id = outcome.get("target-user-id")
 
         cursor.execute("""
         INSERT OR IGNORE INTO outcome_assessments 
-        (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, type, target_assignment_group_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, outcome_type, target_assignment_group_id))
+        (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, type, assignment_group_id, user_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, outcome_type, assignment_group_id, user_id))
 
     print("✅ Outcome assessment data inserted.")
 

@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS outcome_assessments (
     outcome_id INTEGER,
     score REAL,
     type TEXT,
-    target_assignment_group_id INTEGER,
+    assignment_group_id INTEGER,
+    user_id TEXT,
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -55,4 +56,10 @@ CREATE TABLE IF NOT EXISTS assignments_data (
     weight INTEGER,
     makeup_assignment TEXT,
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_info (
+  id TEXT PRIMARY KEY,         
+  name TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
