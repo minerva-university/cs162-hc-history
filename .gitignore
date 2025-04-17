@@ -15,3 +15,7 @@ clickable-files/.DS_Store
 *.py[cod]
 __pycache__
 .pytest_cache
+frontend/node_modules
+node_modules
+
+
