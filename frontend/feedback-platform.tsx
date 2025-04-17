@@ -23,13 +23,9 @@ import {
   ReferenceLine,
 } from "recharts"
 import {
-  LogOut,
-  Search,
   Filter,
   Calendar,
-  User,
   BookOpen,
-  GraduationCap,
   ArrowUpRight,
   Download,
   TrendingUp,
@@ -37,20 +33,23 @@ import {
   MessageSquare,
   Clock,
   Lightbulb,
-  AlertCircle,
+  AlertCircle as AlertCircleIcon,
   Activity,
-  Award,
-  UserCheck,
+  Check,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  MoreVertical,
+  AlertTriangle,
+  BarChart2,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { GradeLegend } from "./grade-legend"
 import { AnimatedScoreCard } from "./animated-score-card"
 import { MultiSelect, MultiSelectOption, MultiSelectStyles } from "./multi-select"
@@ -60,6 +59,15 @@ function MultiSelectStyleInjector() {
   return (
     <style dangerouslySetInnerHTML={{ __html: MultiSelectStyles }} />
   );
+}
+
+// Helper functions used in the code
+function getTabLabel(tab: string): string {
+  switch (tab) {
+    case "byHC": return "By HC and LO";
+    case "byCourse": return "By Course";
+    default: return "Overall";
+  }
 }
 
 /**
@@ -826,7 +834,7 @@ export default function FeedbackPlatform() {
               <Card className="mb-6 border-none shadow-lg bg-red-50 overflow-hidden">
                 <CardHeader className="bg-red-500 text-white p-4">
                   <CardTitle className="text-lg font-medium flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircleIcon className="h-4 w-4" />
                     {filteredData.length === 0 ? "No Data Available" : "Database Error"}
                   </CardTitle>
                 </CardHeader>
@@ -943,7 +951,7 @@ export default function FeedbackPlatform() {
                         </div>
                         <div className="space-y-4">
                           <div className="flex items-center gap-2">
-                            <AlertCircle className="h-5 w-5 text-[#E89A5D]" />
+                            <AlertTriangle className="h-5 w-5 text-[#E89A5D]" />
                             <h3 className="font-semibold text-[#0F172A]">Areas for Improvement:</h3>
                           </div>
                           <ul className="space-y-2">
@@ -1073,7 +1081,7 @@ export default function FeedbackPlatform() {
                         ) : (
                           <div className="h-full w-full flex items-center justify-center">
                             <div className="text-center p-4">
-                            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                            <AlertCircleIcon className="h-8 w-8 text-red-500 mx-auto mb-2" />
                              <p className="text-sm text-gray-600">
                                No data available. Please ensure that you follow setup steps in README to ensure backend is running
                             </p>
@@ -1142,7 +1150,7 @@ export default function FeedbackPlatform() {
                         ) : (
                           <div className="h-full w-full flex items-center justify-center">
                             <div className="text-center p-4">
-                            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                            <AlertCircleIcon className="h-8 w-8 text-red-500 mx-auto mb-2" />
                              <p className="text-sm text-gray-600">
                              No data available. Please ensure that you follow setup steps in README to ensure backend is running
                              </p>
@@ -1219,7 +1227,7 @@ export default function FeedbackPlatform() {
                         ) : (
                           <div className="h-full w-full flex items-center justify-center">
                             <div className="text-center p-4">
-                            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                            <AlertCircleIcon className="h-8 w-8 text-red-500 mx-auto mb-2" />
                              <p className="text-sm text-gray-600">
                              No data available. Please ensure that you follow setup steps in README to ensure backend is running
                              </p>
@@ -1319,7 +1327,7 @@ export default function FeedbackPlatform() {
                       ) : (
                         <div className="h-full flex items-center justify-center">
                           <div className="text-center p-4">
-                            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                            <AlertCircleIcon className="h-8 w-8 text-red-500 mx-auto mb-2" />
                              <p className="text-sm text-gray-600">
                              No data available. Please ensure that you follow setup steps in README to ensure backend is running
                              </p>
@@ -1531,204 +1539,6 @@ export default function FeedbackPlatform() {
       </footer>
     </div>
   )
-}
-
-// Missing components
-function Settings({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  )
-}
-
-function PieChartIcon({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
-      <path d="M22 12A10 10 0 0 0 12 2v10z" />
-    </svg>
-  )
-}
-
-function BarChart2({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <line x1="18" x2="18" y1="20" y2="10" />
-      <line x1="12" x2="12" y1="20" y2="4" />
-      <line x1="6" x2="6" y1="20" y2="14" />
-    </svg>
-  )
-}
-
-function Check({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  )
-}
-
-function AlertTriangle({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-      <path d="M12 9v4" />
-      <path d="M12 17h.01" />
-    </svg>
-  )
-}
-
-function MoreVertical({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <circle cx="12" cy="12" r="1" />
-      <circle cx="12" cy="5" r="1" />
-      <circle cx="12" cy="19" r="1" />
-    </svg>
-  )
-}
-
-function TrendingDown({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <polyline points="22 17 13.5 8.5 8.5 13.5 2 7" />
-      <polyline points="16 17 22 17 22 11" />
-    </svg>
-  )
-}
-
-function ChevronLeft({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <path d="m15 18-6-6 6-6" />
-    </svg>
-  )
-}
-
-function ChevronRight({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <path d="m9 18 6-6-6-6" />
-    </svg>
-  )
-}
-
-function getTabLabel(tab: string): string {
-  switch (tab) {
-    case "byHC": return "By HC and LO";
-    case "byCourse": return "By Course";
-    default: return "Overall";
-  }
 }
 
 function ScoreDisplay({ score }: { readonly score: number }): React.ReactElement {
