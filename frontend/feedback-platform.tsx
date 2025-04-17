@@ -1289,26 +1289,38 @@ export default function FeedbackPlatform() {
                         <MessageSquare className="h-4 w-4 text-[#8B6BF2]" />
                         Recent Feedback
                       </CardTitle>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-[#334155] border-[#E2E8F0]"
-                        onClick={() => {
-                          // Build query parameters based on current filters
-                          const params = new URLSearchParams();
-                          if (selectedHC) params.append('hc', selectedHC);
-                          if (selectedCourse) params.append('course', selectedCourse);
-                          if (selectedTerm) params.append('term', selectedTerm);
-                          params.append('minScore', minScore.toString());
-                          params.append('maxScore', maxScore.toString());
-                          
-                          // Open the export URL with filters
-                          window.open(`http://localhost:5001/api/export?${params.toString()}`, '_blank');
-                        }}
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        Export
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-[#334155] border-[#E2E8F0]"
+                          >
+                            <Download className="mr-2 h-4 w-4" />
+                            Export Filtered Data
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => {
+                            // Build query parameters based on current filters
+                            const params = new URLSearchParams();
+                            if (selectedHC) params.append('hc', selectedHC);
+                            if (selectedCourse) params.append('course', selectedCourse);
+                            if (selectedTerm) params.append('term', selectedTerm);
+                            params.append('minScore', minScore.toString());
+                            params.append('maxScore', maxScore.toString());
+                            
+                            // Open the export URL with filters
+                            window.open(`http://localhost:5001/api/export?${params.toString()}`, '_blank');
+                          }}>
+                            <Download className="mr-2 h-4 w-4" />
+                            <span>Export as CSV</span>
+                          </DropdownMenuItem>
+                          <div className="px-2 py-1.5 text-xs text-gray-500">
+                            Exports only the data matching your current filters
+                          </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </CardHeader>
                   <CardContent className="p-0">
@@ -1316,15 +1328,7 @@ export default function FeedbackPlatform() {
                   </CardContent>
                   <CardFooter className="p-4 border-t border-[#E2E8F0] flex items-center justify-between">
                     <div className="text-sm text-[#64748B]">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-[#334155] border-[#E2E8F0]"
-                        onClick={() => window.open('http://localhost:5001/api/export-all', '_blank')}
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        Export All Data
-                      </Button>
+                      {/* "Export All Data" button removed from here */}
                     </div>
                   </CardFooter>
                 </Card>
@@ -1410,6 +1414,30 @@ export default function FeedbackPlatform() {
                         : "N/A"}
                     </h2>
                     <p className="text-[#64748B]">Average score across all learning outcomes and courses</p>
+                    
+                    {/* Add Export All Data button here */}
+                    <div className="mt-6">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            variant="outline"
+                            className="text-[#334155] border-[#E2E8F0]"
+                          >
+                            <Download className="mr-2 h-4 w-4" />
+                            Export Complete Dataset
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="center">
+                          <DropdownMenuItem onClick={() => window.open('http://localhost:5001/api/export-all', '_blank')}>
+                            <Download className="mr-2 h-4 w-4" />
+                            <span>Download CSV</span>
+                          </DropdownMenuItem>
+                          <div className="px-2 py-1.5 text-xs text-gray-500">
+                            Exports your entire dataset without any filters
+                          </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -1666,6 +1694,7 @@ function ScoreDisplay({ score }: { readonly score: number }): React.ReactElement
 function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): React.ReactElement {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortDirection, setSortDirection] = useState<'desc' | 'asc'>('desc'); // 'desc' means newest first (default)
+  const [expandedComments, setExpandedComments] = useState<{ [key: string]: boolean }>({});
   const itemsPerPage = 10;
   
   // Sort data by date according to sort direction
@@ -1700,6 +1729,14 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
     setCurrentPage(1);
   };
 
+  // Toggle comment expansion
+  const toggleCommentExpansion = (commentId: string) => {
+    setExpandedComments(prev => ({
+      ...prev,
+      [commentId]: !prev[commentId]
+    }));
+  };
+
   // Get current items from sorted data
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -1708,6 +1745,18 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
   // Change page
   const goToPage = (pageNumber: number) => {
     setCurrentPage(pageNumber);
+  };
+
+  // Function to truncate comment text
+  const truncateComment = (text: string, maxLength: number = 150) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  // Function to check if a comment is long enough to be truncated
+  const isCommentLong = (text: string, maxLength: number = 150) => {
+    return text && text.length > maxLength;
   };
 
   return (
@@ -1750,49 +1799,67 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
           </tr>
         </thead>
         <tbody className="divide-y divide-[#E2E8F0]">
-          {currentItems.map((item) => (
-            <tr key={`${item.course_code}-${item.created_on}`} className="hover:bg-[#F8FAFC]">
-              <td className="px-6 py-4 whitespace-nowrap">
-                <ScoreDisplay score={item.score} />
-              </td>
-              <td className="px-6 py-4 whitespace-normal text-[#334155] font-medium">
-                {item.outcome_name}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="font-medium text-[#0F172A]">{item.course_code}</div>
-              </td>
-              <td className="px-6 py-4 whitespace-normal">
-                <div 
-                  className="text-[#334155] hover:text-[#3A4DB9] hover:underline cursor-pointer flex items-center gap-1.5"
-                  onClick={() => handleAssignmentClick(item)}
-                >
-                  <BookOpen className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
-                  {item.assignment_title === "poll"
-                    ? "Poll"
-                    : item.assignment_title === "video"
-                    ? "Class Recording"
-                    : item.assignment_title === "preclass_assignment"
-                    ? "Pre-Class Work"
-                    : item.assignment_title}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-[#334155] font-medium">
-                {item.weight || "1x"}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-[#334155]">{item.term_title}</div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-[#64748B] flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5" />
-                  {formatDate(item.created_on)}
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <div className="text-sm text-[#334155] max-w-md">{item.comment}</div>
-              </td>
-            </tr>
-          ))}
+          {currentItems.map((item) => {
+            const commentId = `${item.course_code}-${item.created_on}-${item.outcome_name}`;
+            const isExpanded = expandedComments[commentId] || false;
+            const isLong = isCommentLong(item.comment);
+            
+            return (
+              <tr key={`${item.course_code}-${item.created_on}`} className="hover:bg-[#F8FAFC]">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <ScoreDisplay score={item.score} />
+                </td>
+                <td className="px-6 py-4 whitespace-normal text-[#334155] font-medium">
+                  {item.outcome_name}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="font-medium text-[#0F172A]">{item.course_code}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-normal">
+                  <div 
+                    className="text-[#334155] hover:text-[#3A4DB9] hover:underline cursor-pointer flex items-center gap-1.5"
+                    onClick={() => handleAssignmentClick(item)}
+                  >
+                    <BookOpen className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
+                    {item.assignment_title === "poll"
+                      ? "Poll"
+                      : item.assignment_title === "video"
+                      ? "Class Recording"
+                      : item.assignment_title === "preclass_assignment"
+                      ? "Pre-Class Work"
+                      : item.assignment_title}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-[#334155] font-medium">
+                  {item.weight || "1x"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-[#334155]">{item.term_title}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-[#64748B] flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5" />
+                    {formatDate(item.created_on)}
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-[#334155] max-w-md">
+                    <div className={`${!isExpanded && isLong ? 'line-clamp-2' : ''} whitespace-pre-line`}>
+                      {item.comment}
+                    </div>
+                    {isLong && (
+                      <button 
+                        onClick={() => toggleCommentExpansion(commentId)}
+                        className="mt-1 text-xs font-medium text-[#3A4DB9] hover:text-[#8B6BF2] transition-colors duration-200"
+                      >
+                        {isExpanded ? "Show less" : "View more"}
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       
