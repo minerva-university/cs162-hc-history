@@ -124,6 +124,18 @@ export default function FeedbackPlatform() {
   const [classComparisonHC, setClassComparisonHC] = useState<string>("");
   const [aiSummaries, setAiSummaries] = useState<AISummary[]>([]);
   const [showHCs, setShowHCs] = useState(true); //tracks whether HCs or LOs should be displayed in radar chart
+  
+  // Add state for currently displayed summary
+  const [currentSummaryHC, setCurrentSummaryHC] = useState<string>("");
+  
+  // Update currentSummaryHC when selectedHCs changes
+  useEffect(() => {
+    if (selectedHCs.length > 0) {
+      setCurrentSummaryHC(selectedHCs[0]);
+    } else {
+      setCurrentSummaryHC("");
+    }
+  }, [selectedHCs]);
 
   // Convert to MultiSelectOption format for dropdowns
   const hcOptions = useMemo(() => 
@@ -622,16 +634,16 @@ export default function FeedbackPlatform() {
     ];
   }, [filteredData]);
 
-  // Replace the hardcoded aiSummary object with a function that gets the correct summary
+  // Get current AI summary
   const getCurrentAISummary = () => {
-    if (!selectedHC) {
+    if (selectedHCs.length === 0) {
       return {
         pros: ["Select an HC/LO to see AI-generated insights"],
         cons: ["Select an HC/LO to see AI-generated insights"]
       };
     }
 
-    const summary = aiSummaries.find(s => s.outcome_name === selectedHC);
+    const summary = aiSummaries.find(s => s.outcome_name === currentSummaryHC);
     if (!summary) {
       return {
         pros: ["No AI summary available for this HC/LO"],
@@ -639,7 +651,6 @@ export default function FeedbackPlatform() {
       };
     }
 
-    // Split the text and remove leading dashes and spaces
     const pros = summary.strengths_text 
       ? summary.strengths_text
           .split('\n')
@@ -888,6 +899,26 @@ export default function FeedbackPlatform() {
                     </CardHeader>
                     <CardContent className="p-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {selectedHCs.length > 1 && (
+                          <div className="col-span-2 mb-4">
+                            <p className="text-sm text-[#64748B] mb-2">Select which AI summary to display among the selected HC/LOs:</p>
+                            <Select
+                              value={currentSummaryHC}
+                              onValueChange={setCurrentSummaryHC}
+                            >
+                              <SelectTrigger className="w-[400px]">
+                                <SelectValue placeholder="Choose an HC/LO" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {selectedHCs.map((hc) => (
+                                  <SelectItem key={hc} value={hc} className="pr-8">
+                                    {hc}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                         <div className="space-y-4">
                           <div className="flex items-center gap-2">
                             <Lightbulb className="h-5 w-5 text-[#73C173]" />
@@ -1881,4 +1912,3 @@ function FeedbackTable({ data }: { readonly data: readonly FeedbackItem[] }): Re
     </div>
   );
 }
-
