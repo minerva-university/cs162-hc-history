@@ -32,8 +32,8 @@ This project can run fully with just an OpenAI API key (optional, for AI summari
 
 ### How to Open a Terminal
 
-- On Mac: Press `Command + Space`, type “Terminal”, and hit `Enter`.
-- On Windows: Press `Windows Key`, type “cmd” or “Terminal”, and hit `Enter`.
+- On Mac: Press `Command + Space`, type "Terminal", and hit `Enter`.
+- On Windows: Press `Windows Key`, type "cmd" or "Terminal", and hit `Enter`.
 
 ### How to Navigate to the Code
 
@@ -215,6 +215,17 @@ What it does:
 - Optionally runs AI summarization using OpenAI  
 - Runs the website
 
+### About the Login Process
+
+During setup, a browser window will open for you to log in to Forum:
+
+1. **Sign in with your Minerva credentials** when the browser opens
+2. **Important:** You do NOT need to create a new profile, even if prompted (especially in incognito mode)
+3. After successful login, you may need to return to your terminal:
+   - **Some users:** The program continues automatically after login
+   - **Other users:** You may need to press Enter in the terminal to continue
+   - If nothing happens for a minute after login, try pressing Enter in your terminal
+
 ---
 
 ## How to Run the Project Again (`run.py`)
@@ -233,7 +244,7 @@ What it does:
 
 ## Accessing the Website
 
-Once you’ve run `setup.py` or `run.py`, open your browser and go to:
+Once you've run `setup.py` or `run.py`, open your browser and go to:
 
 http://localhost:3000
 

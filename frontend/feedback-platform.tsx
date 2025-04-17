@@ -1449,8 +1449,8 @@ export default function FeedbackPlatform() {
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center">
                     <h2 className="text-4xl font-bold text-[#334155]">
-                      {filteredData.length > 0
-                        ? (filteredData.reduce((sum, item) => sum + item.score, 0) / filteredData.length).toFixed(2)
+                      {feedbackData.length > 0
+                        ? (feedbackData.reduce((sum, item) => sum + item.score, 0) / feedbackData.length).toFixed(2)
                         : "N/A"}
                     </h2>
                     <p className="text-[#64748B]">Average score across all learning outcomes and courses</p>
