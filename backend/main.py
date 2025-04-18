@@ -12,7 +12,7 @@ def load_env_variables():
     BASE_URL = "https://forum.minerva.edu/api/v1/"
 
     if not CSRF_TOKEN or not SESSION_ID:
-        raise EnvironmentError("❌ Missing CSRF_TOKEN or SESSION_ID in your .env file.")
+        raise EnvironmentError("⚠️ Missing CSRF_TOKEN or SESSION_ID in your .env file.")
 
 
     return CSRF_TOKEN, SESSION_ID, BASE_URL
@@ -46,14 +46,14 @@ def fetch_data_from_api(url, headers):
         print("✅ Data fetched successfully.")
         return response.json()
     else:
-        print(f"❌ Error fetching from {url}")
+        print(f"⚠️ Error fetching from {url}")
         print(f"Status: {response.status_code}")
         print(f"Response: {response.text}")
         return None
 
 def assert_data_fetched(name, data):
     if not data:
-        raise RuntimeError(f"❌ Failed to fetch '{name}' from Forum")
+        raise RuntimeError(f"⚠️ Failed to fetch '{name}' from Forum")
 
 # Insert outcome assessments into the database
 def insert_outcome_assessments(cursor, outcome_data):
@@ -227,7 +227,7 @@ def fetch_outcome_index_items(BASE_URL, headers, term_id, outcome_type="lo"):
     if response.status_code == 200:
         return response.json()
     else:
-        print(f"❌ Failed to fetch outcome index items: {response.status_code} - {response.text}")
+        print(f"⚠️ Failed to fetch outcome index items: {response.status_code} - {response.text}")
         return []
 
 def insert_course_scores_per_term(BASE_URL, headers, db_path):
@@ -362,4 +362,4 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"\n❌ Unexpected error during setup: {e}")
+        print(f"\n⚠️ Unexpected error during setup: {e}")
