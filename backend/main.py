@@ -226,26 +226,32 @@ def insert_course_scores_per_term(BASE_URL, headers, db_path):
 
     for term_id in term_ids:
         print(f"🔄 Fetching course scores for term {term_id}...")
-        scores = fetch_outcome_index_items(BASE_URL, headers, term_id=term_id)
+        try:
+            scores = fetch_outcome_index_items(BASE_URL, headers, term_id=term_id)
 
-        if not scores:
-            print(f"⚠️ No data found for term {term_id}")
-            continue
+            if not scores:
+                print(f"⚠️ No data found for term {term_id}")
+                continue
 
-        for item in scores:
-            if "course" in item:
-                course_id = item["course"]
-                score = item["mean"]
+            for item in scores:
+                if "course" in item:
+                    course_id = item["course"]
+                    # Use get() to safely handle missing 'mean' key
+                    score = item.get("mean")
+                    if score is not None:
+                        cursor.execute("""
+                            INSERT OR REPLACE INTO course_scores (course_id, term_id, score)
+                            VALUES (?, ?, ?)
+                        """, (course_id, term_id, score))
 
-                cursor.execute("""
-                    INSERT OR REPLACE INTO course_scores (course_id, term_id, score)
-                    VALUES (?, ?, ?)
-                """, (course_id, term_id, score))
+            print(f"✅ Stored course scores for term {term_id}")
+            conn.commit()  # Commit after each term
+        except Exception as e:
+            print(f"⚠️ Error processing term {term_id}: {str(e)}")
+            continue  # Continue with next term even if current one fails
 
-        print(f"✅ Stored course scores for term {term_id}")
-
-    conn.commit()
     conn.close()
+    print("✅ Completed storing course scores")
 
 def create_views(db_path, sql_file):
     """Executes the SQL script to create the two views."""
