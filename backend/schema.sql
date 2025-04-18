@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS learning_outcomes (
 
 -- Schema for terms table
 CREATE TABLE IF NOT EXISTS terms (
-    term_id TEXT PRIMARY KEY,
+    term_id INTEGER PRIMARY KEY,
     term_title TEXT,
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -58,8 +58,9 @@ CREATE TABLE IF NOT EXISTS assignments_data (
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE user_info (
-  id TEXT PRIMARY KEY,         
-  name TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS course_scores (
+    course_id INTEGER PRIMARY KEY,
+    term_id INTEGER,
+    score REAL,
+    updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
