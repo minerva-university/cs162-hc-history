@@ -35,7 +35,7 @@ def initialize_database(db_name, schema_file):
 
 # Fetch data from endpoint and handle response
 def fetch_data_from_api(url, headers):
-    print(f"🔄 Fetching data from {url}...")
+    print(f"🔄 Please wait, fetching data from {url}...")
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         print("✅ Data fetched successfully.")
@@ -56,13 +56,14 @@ def insert_outcome_assessments(cursor, outcome_data):
         outcome_id = outcome.get("learning-outcome") 
         score = outcome.get("score")
         outcome_type = outcome.get("type")
-        target_assignment_group_id = outcome.get("target-assignment-group-id")
+        assignment_group_id = outcome.get("target-assignment-group-id")
+        user_id = outcome.get("target-user-id")
 
         cursor.execute("""
         INSERT OR IGNORE INTO outcome_assessments 
-        (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, type, target_assignment_group_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, outcome_type, target_assignment_group_id))
+        (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, type, assignment_group_id, user_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, outcome_type, assignment_group_id, user_id))
 
     print("✅ Outcome assessment data inserted.")
 
@@ -127,6 +128,7 @@ def insert_colleges(cursor, colleges):
             INSERT OR IGNORE INTO colleges (college_id, college_code, college_name)
             VALUES (?, ?, ?)
             """, (college_id, college_code, college_name))
+    print("✅ Colleges data inserted.")
 
 # Insert assignment data into the database
 def insert_assignment_data(cursor, assignment_data):
@@ -160,6 +162,7 @@ def get_assignment_ids(db_name):
     cursor.execute("SELECT assignment_id FROM outcome_assessments")
     assignment_ids = [row[0] for row in cursor.fetchall()]
     conn.close()
+    print(f"✅ Retrieved {len(assignment_ids)} assignment scores.")
     return assignment_ids
 
 # Process assignment data for each assignment ID
@@ -169,7 +172,7 @@ def process_assignments(BASE_URL, headers, db_name, assignment_ids):
     assignments_added = 0  # Counter for successfully inserted assignments
     processed_assignment_ids = set()  # Set to track processed assignment_ids
 
-    for assignment_id in assignment_ids:
+    for idx, assignment_id in enumerate(assignment_ids):
         # Skip if assignment_id has already been processed
         if assignment_id in processed_assignment_ids:
             continue
@@ -183,6 +186,9 @@ def process_assignments(BASE_URL, headers, db_name, assignment_ids):
         if assignment_data:
             if insert_assignment_data(cursor, assignment_data):
                 assignments_added += 1
+
+        if idx % 15 == 0:
+            print(f"🔄 Processed {idx}/{len(assignment_ids)} assignment scores...")
 
     conn.commit()
     conn.close()
@@ -201,6 +207,46 @@ def fetch_assignment_data(BASE_URL, headers, assignment_id):
     else:
         return None
 
+def fetch_outcome_index_items(BASE_URL, headers, term_id, outcome_type="lo"):
+    url = f"{BASE_URL}outcome-index-items?termId={term_id}&outcomeType={outcome_type}"
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"❌ Failed to fetch outcome index items: {response.status_code} - {response.text}")
+        return []
+
+def insert_course_scores_per_term(BASE_URL, headers, db_path):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Get all unique term_ids from the courses table
+    cursor.execute("SELECT DISTINCT term_id FROM courses WHERE term_id IS NOT NULL")
+    term_ids = [row[0] for row in cursor.fetchall()]
+
+    for term_id in term_ids:
+        print(f"🔄 Fetching course scores for term {term_id}...")
+        scores = fetch_outcome_index_items(BASE_URL, headers, term_id=term_id)
+
+        if not scores:
+            print(f"⚠️ No data found for term {term_id}")
+            continue
+
+        for item in scores:
+            if "course" in item:
+                course_id = item["course"]
+                score = item["mean"]
+
+                cursor.execute("""
+                    INSERT OR REPLACE INTO course_scores (course_id, term_id, score)
+                    VALUES (?, ?, ?)
+                """, (course_id, term_id, score))
+
+        print(f"✅ Stored course scores for term {term_id}")
+
+    conn.commit()
+    conn.close()
+
 def create_views(db_path, sql_file):
     """Executes the SQL script to create the two views."""
     with sqlite3.connect(db_path) as conn:
@@ -208,7 +254,7 @@ def create_views(db_path, sql_file):
         with open(sql_file, "r") as f:
             sql_script = f.read()
         cursor.executescript(sql_script)
-        print("✅ Assignment Scores and All Scores tables created successfully!")
+        print("✅ Scores tables created successfully!")
 
 # Main function to tie everything together
 def main():
@@ -242,7 +288,19 @@ def main():
 
     insert_outcome_assessments(cursor, outcomes)
     insert_courses(cursor, lo_trees)
+
+    # Commit and close so the scores function can re-open fresh
+    conn.commit()
+    conn.close()
+
+    # Insert course scores based on newly inserted course data
+    insert_course_scores_per_term(BASE_URL, headers, DB_NAME)
+
+    # Reopen for learning outcomes and rest of workflow
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
     insert_learning_outcomes(cursor, lo_trees)
+
     insert_terms(cursor, terms)
     insert_colleges(cursor, colleges)
 
@@ -270,7 +328,7 @@ def main():
     VIEWS_FILE = os.path.join(script_dir, "views.sql")
     create_views(DB_NAME, VIEWS_FILE)
 
-    print("✅ Data successfully stored in data.db")
+    print("✅ Data successfully stored in database")
 
 # Execute the main function
 if __name__ == "__main__":

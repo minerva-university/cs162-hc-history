@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS outcome_assessments (
     outcome_id INTEGER,
     score REAL,
     type TEXT,
-    target_assignment_group_id INTEGER,
+    assignment_group_id INTEGER,
+    user_id TEXT,
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -35,7 +36,7 @@ CREATE TABLE IF NOT EXISTS learning_outcomes (
 
 -- Schema for terms table
 CREATE TABLE IF NOT EXISTS terms (
-    term_id TEXT PRIMARY KEY,
+    term_id INTEGER PRIMARY KEY,
     term_title TEXT,
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -54,5 +55,12 @@ CREATE TABLE IF NOT EXISTS assignments_data (
     assignment_title TEXT,
     weight INTEGER,
     makeup_assignment TEXT,
+    updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS course_scores (
+    course_id INTEGER PRIMARY KEY,
+    term_id INTEGER,
+    score REAL,
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
