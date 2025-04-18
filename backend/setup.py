@@ -77,7 +77,7 @@ def main():
     print("🚀 Running main.py...")
     script_dir = os.path.dirname(os.path.abspath(__file__))
     main_path = os.path.join(script_dir, "main.py")
-    subprocess.run(["python3", main_path])
+    subprocess.run(["python3", main_path], check=True)
 
 if __name__ == "__main__":
     main()

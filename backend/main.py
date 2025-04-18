@@ -10,6 +10,11 @@ def load_env_variables():
     CSRF_TOKEN = os.getenv("CSRF_TOKEN")
     SESSION_ID = os.getenv("SESSION_ID")
     BASE_URL = "https://forum.minerva.edu/api/v1/"
+
+    if not CSRF_TOKEN or not SESSION_ID:
+        raise EnvironmentError("❌ Missing CSRF_TOKEN or SESSION_ID in your .env file.")
+
+
     return CSRF_TOKEN, SESSION_ID, BASE_URL
 
 # Headers for authentication
@@ -41,8 +46,14 @@ def fetch_data_from_api(url, headers):
         print("✅ Data fetched successfully.")
         return response.json()
     else:
-        print(f"❌ Error: {response.status_code} - {response.text}")
+        print(f"❌ Error fetching from {url}")
+        print(f"Status: {response.status_code}")
+        print(f"Response: {response.text}")
         return None
+
+def assert_data_fetched(name, data):
+    if not data:
+        raise RuntimeError(f"❌ Failed to fetch '{name}' from Forum")
 
 # Insert outcome assessments into the database
 def insert_outcome_assessments(cursor, outcome_data):
@@ -162,6 +173,9 @@ def get_assignment_ids(db_name):
     cursor.execute("SELECT assignment_id FROM outcome_assessments")
     assignment_ids = [row[0] for row in cursor.fetchall()]
     conn.close()
+    if not assignment_ids:
+        print("⚠️ No assignment IDs found in outcome_assessments. Skipping assignment processing.")
+
     print(f"✅ Retrieved {len(assignment_ids)} assignment scores.")
     return assignment_ids
 
@@ -278,11 +292,18 @@ def main():
     SCHEMA_FILE = os.path.join(script_dir, "schema.sql")
     initialize_database(DB_NAME, SCHEMA_FILE)
     
-    # Fetch data from APIs
+    # Fetch data from APIs and handle errors
     lo_trees = fetch_data_from_api(f"{BASE_URL}lo-trees", headers)
+    assert_data_fetched("lo-trees", lo_trees)
+
     terms = fetch_data_from_api(f"{BASE_URL}terms", headers)
+    assert_data_fetched("terms", terms)
+
     outcomes = fetch_data_from_api(f"{BASE_URL}outcome-assessments", headers)
+    assert_data_fetched("outcome-assessments", outcomes)
+
     colleges = fetch_data_from_api(f"{BASE_URL}colleges", headers)
+    assert_data_fetched("colleges", colleges)
 
     if not lo_trees or not terms or not outcomes or not colleges:
         print("❌ No data returned from the API.")
@@ -338,4 +359,7 @@ def main():
 
 # Execute the main function
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"\n❌ Unexpected error during setup: {e}")
