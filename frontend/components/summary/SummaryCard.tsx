@@ -1,14 +1,15 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion"; 
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent,
-  Button,
+  CardContent
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button"; 
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Lightbulb, AlertTriangle, Check, ArrowUpRight } from "lucide-react";
 
