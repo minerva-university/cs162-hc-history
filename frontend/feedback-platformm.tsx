@@ -12,16 +12,16 @@ import {
   MultiSelectStyleInjector,
 } from "@/components/ui/MultiSelect";
 
-import FiltersPanel from "../filters/FiltersPanel";
-import SummaryCard from "../summary/SummaryCard";
-import ErrorCard from "../summary/ErrorCard";
-import ScoreOverTimeChart from "./ScoreOverTimeChart";
-import ScoreDistributionChart from "./ScoreDistributionChart";
-import RadarPerformanceChart from "./RadarPerformanceChart";
-import ClassComparisonChart from "./ClassComparisonChart";
-import FeedbackTable from "../table/FeedbackTable";
-import ByCourseTable from "../table/ByCourseTable"
-import RankingTable from "../table/RankingTable";
+import FiltersPanel from "./components/filters/FiltersPanel";
+import SummaryCard from "./components/summary/SummaryCard";
+import ErrorCard from "./components/summary/ErrorCard";
+import ScoreOverTimeChart from "./components/charts/ScoreOverTimeChart";
+import ScoreDistributionChart from "./components/charts/ScoreDistributionChart";
+import RadarPerformanceChart from "./components/charts/RadarPerformanceChart";
+import ClassComparisonChart from "./components/charts/ClassComparisonChart";
+import FeedbackTable from "./components/table/FeedbackTable";
+import ByCourseTable from "./components/table/ByCourseTable"
+import RankingTable from "./components/table/RankingTable";
 
 
 
@@ -498,6 +498,7 @@ export default function FeedbackPlatform() {
                 onChangeSummaryHC={setCurrentSummaryHC}
                 aiSummaries={aiSummaries}
               />
+            </motion.div>
 
             {/* 2×2 Chart grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -566,19 +567,11 @@ export default function FeedbackPlatform() {
           <ByCourseTable filteredData={filteredData} />
         )}
 
-        {activeTab === "overall" && (
-          <>
-            <div className="flex flex-col items-center mb-6">
-              <h2 className="text-4xl font-bold text-[#334155]">
-                {feedbackData.length
-                  ? (feedbackData.reduce((s, x) => s + x.score, 0) / feedbackData.length).toFixed(2)
-                  : "N/A"}
-              </h2>
-              <p className="text-[#64748B]">Average score across all outcomes</p>
-            </div>
-            <RankingTable data={feedbackData} />
-          </>
-        )}
+          {activeTab === "overall" && (
+            <motion.div className="space-y-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+              <RankingTable data={feedbackData} />
+            </motion.div>
+          )}
       </div>
 
       {/* ─────────────── FOOTER ─────────────── */}

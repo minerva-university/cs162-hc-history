@@ -6,8 +6,8 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-  Button,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";  // Fixed import
 import { Input } from "@/components/ui/input";
 import {
   Filter as FilterIcon,
