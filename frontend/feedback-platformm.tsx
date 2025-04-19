@@ -563,17 +563,25 @@ export default function FeedbackPlatform() {
           )}
       </div>
 
-      {/* ─────────────── FOOTER ─────────────── */}
-      <footer className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-          <motion.img
-            src="https://…/mu-darkbg.png"
-            alt="Minerva Logo"
-            whileHover={{ scale: 1.05 }}
-            className="h-14 w-14 mb-4 md:mb-0"
-          />
-          <span className="font-semibold text-lg">HC and LO Feedback</span>
-          <div className="text-sm text-[#94A3B8]">© {new Date().getFullYear()} All rights reserved.</div>
+      {/* Footer */}
+      <footer className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white py-8 mt-auto">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center gap-4 mb-4 md:mb-0">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
+                <img 
+                  src="https://minerva-orgs.s3.us-west-2.amazonaws.com/production/e9fd1c3c-b16f-11e8-9bf9-0622cf94bff4/mu-darkbg.png?v=fc61135b6a13fea802d4c4373cd4dc420fee7850" 
+                  alt="Minerva Logo" 
+                  className="h-14 w-14" 
+                />
+              </motion.div>
+              <span className="font-semibold text-lg">HC and LO Feedback</span>
+            </div>
+            <div className="text-sm text-[#94A3B8]">© {new Date().getFullYear()} HC and LO Feedback. All rights reserved.</div>
+          </div>
         </div>
       </footer>
     </div>
