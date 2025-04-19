@@ -203,3 +203,12 @@ export const MultiSelectStyles = `
     scrollbar-width: none;  /* Firefox */
   }
 `; 
+export const MultiSelectStyleInjector = () => {
+  return (
+    <style
+      dangerouslySetInnerHTML={{
+        __html: MultiSelectStyles,
+      }}
+    />
+  );
+};

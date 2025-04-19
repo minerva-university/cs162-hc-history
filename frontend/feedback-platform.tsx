@@ -52,16 +52,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { GradeLegend } from "./grade-legend"
+import { GradeLegend } from "./components/ui/GradeLegend"
 import { AnimatedScoreCard } from "./animated-score-card"
-import { MultiSelect, MultiSelectOption, MultiSelectStyles } from "./multi-select"
 
-// Add the styles to a <style> element in the component
-function MultiSelectStyleInjector() {
-  return (
-    <style dangerouslySetInnerHTML={{ __html: MultiSelectStyles }} />
-  );
-}
+
 
 // Helper functions used in the code
 function getTabLabel(tab: string): string {
@@ -311,7 +305,6 @@ export default function FeedbackPlatform() {
   // Filter data based on selected criteria
   useEffect(() => {
     let filtered = feedbackData;
-
     // Update filtering logic to handle arrays of selections
     if (selectedHCs.length > 0) {
       filtered = filtered.filter(item => selectedHCs.includes(item.outcome_name));
@@ -1169,7 +1162,7 @@ export default function FeedbackPlatform() {
                   <Card className="border-none shadow-lg overflow-hidden h-[450px]">
                   <CardHeader className="p-4 border-b border-[#E2E8F0]">
                     <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                    <CardTitle className="text-lgx font-semibold text-[#0F172A] flex items-center gap-2">
                       <Activity className="h-4 w-4 text-[#8B6BF2]" />
                       {showHCs ? "HC Performance Radar" : "LO Performance Radar"}
                     </CardTitle>
