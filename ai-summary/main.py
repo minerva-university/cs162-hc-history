@@ -3,12 +3,26 @@ import argparse
 import time
 from dotenv import load_dotenv
 import openai
+from pathlib import Path
 
 from db import create_ai_summaries_table, fetch_grouped_comments, fetch_outcome_metadata, store_summary
 from generate import generate_summary_parts
 
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Load environment variables from the main .env file
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(env_path)
+
+# Check if OpenAI API key exists, if not prompt user
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    print("🔑 OpenAI API key not found in .env file.")
+    api_key = input("Please enter your OpenAI API key: ").strip()
+    # Save the key to .env file
+    with open(env_path, 'a') as f:
+        f.write(f"\nOPENAI_API_KEY={api_key}\n")
+    print("✅ OpenAI API key saved to .env file for future use.")
+
+openai.api_key = api_key
 # Define client as the openai module
 client = openai
 
