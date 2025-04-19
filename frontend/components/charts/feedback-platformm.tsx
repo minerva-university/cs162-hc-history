@@ -3,19 +3,27 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GradeLegend } from "@/components/ui/GradeLegend";
 import { Filter, Calendar, BookOpen, Star, ArrowUpRight, Download, MoreVertical, AlertCircle as AlertCircleIcon, TrendingUp, BarChart2, Activity, MessageSquare, Clock, Lightbulb, Check, AlertTriangle, Award } from "lucide-react";
+import {
+  MultiSelectStyleInjector,
+} from "@/components/ui/MultiSelect";
 
-import FiltersPanel from "./filters/FiltersPanel";
-import GradeLegend from "./ui/GradeLegend";
-import SummaryCard from "./summary/SummaryCard";
-import ErrorCard from "./summary/ErrorCard";
-import ScoreOverTimeChart from "./charts/ScoreOverTimeChart";
-import ScoreDistributionChart from "./charts/ScoreDistributionChart";
-import RadarPerformanceChart from "./charts/RadarPerformanceChart";
-import ClassComparisonChart from "./charts/ClassComparisonChart";
-import FeedbackTable from "./table/FeedbackTable";
-import RankingTable from "./table/RankingTable";
+import FiltersPanel from "../filters/FiltersPanel";
+import SummaryCard from "../summary/SummaryCard";
+import ErrorCard from "../summary/ErrorCard";
+import ScoreOverTimeChart from "./ScoreOverTimeChart";
+import ScoreDistributionChart from "./ScoreDistributionChart";
+import RadarPerformanceChart from "./RadarPerformanceChart";
+import ClassComparisonChart from "./ClassComparisonChart";
+import FeedbackTable from "../table/FeedbackTable";
+import ByCourseTable from "../table/ByCourseTable"
+import RankingTable from "../table/RankingTable";
+
+
 
 interface FeedbackItem {
   score: number;
@@ -186,7 +194,36 @@ export default function FeedbackPlatform() {
     return () => clearTimeout(timer)
   }, [])
 
+  function getTabLabel(tab: string): string {
+    switch (tab) {
+      case "byHC": return "By HC and LO";
+      case "byCourse": return "By Course";
+      default: return "Overall";
+    }
+  }
+
   // ─── Handlers ───────────────────────────────────────────────────────────────
+  const hcOptions = useMemo(() => 
+    uniqueHCs.map(hc => ({ value: hc, label: hc })),
+    [uniqueHCs]
+  );
+  
+  const courseOptions = useMemo(() => 
+    uniqueCourses.map(courseCode => {
+      const courseItem = feedbackData.find(item => item.course_code === courseCode);
+      const displayText = courseItem ? 
+        `${courseCode} - ${courseItem.course_title}` : 
+        courseCode;
+      return { value: courseCode, label: displayText };
+    }),
+    [uniqueCourses, feedbackData]
+  );
+  
+  const termOptions = useMemo(() => 
+    uniqueTerms.map(term => ({ value: term, label: term })),
+    [uniqueTerms]
+  );
+  
   const handleMinScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     setMinScore(value >= 1 && value <= maxScore ? value : 1);
@@ -310,16 +347,9 @@ export default function FeedbackPlatform() {
     }));
   }, [filteredData]);
 
-  // Radar chart data with fallback to sample data if needed
+  // Radar chart placeholder
   const radarData = generateRadarChartData;
 
-  // Filter radar data based on HC/LO type
-  const filteredRadarData = useMemo(() => {
-    return radarData.filter(item => {
-      const isLO = item.subject.includes("-");
-      return showHCs ? !isLO : isLO;
-    });
-  }, [radarData, showHCs]);  
 
   const generateClassComparisonData = useMemo(() => {
     // Start with the currently filtered data, not the entire dataset
@@ -413,9 +443,9 @@ export default function FeedbackPlatform() {
           transition={{ delay: 0.2 }}
         >
           <FiltersPanel
-            hcOptions={uniqueHCs}
-            courseOptions={uniqueCourses}
-            termOptions={uniqueTerms}
+            hcOptions={hcOptions}
+            courseOptions={courseOptions}
+            termOptions={termOptions}
             selectedHCs={selectedHCs}
             selectedCourses={selectedCourses}
             selectedTerms={selectedTerms}
@@ -483,17 +513,57 @@ export default function FeedbackPlatform() {
                 data={generateClassComparisonData}
                 selectedHC={classComparisonHC}
                 onChangeHC={setClassComparisonHC}
+                uniqueHCs={uniqueHCs}
                 animate={animateCharts}
               />
             </div>
 
-            {/* Recent feedback table */}
-            <FeedbackTable data={filteredData} />
-          </>
+            {/* Recent Feedback table */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
+              <Card className="border-none shadow-lg overflow-hidden">
+                <CardHeader className="p-4 border-b border-[#E2E8F0]">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4 text-[#8B6BF2]" />
+                      Recent Feedback
+                    </CardTitle>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-[#334155] border-[#E2E8F0]"
+                      onClick={() => {
+                        // Build query parameters based on current filters
+                        const params = new URLSearchParams();
+                        if (selectedHCs.length > 0) params.append('hc', selectedHCs.join(','));
+                        if (selectedCourses.length > 0) params.append('course', selectedCourses.join(','));
+                        if (selectedTerms.length > 0) params.append('term', selectedTerms.join(','));
+                        params.append('minScore', minScore.toString());
+                        params.append('maxScore', maxScore.toString());
+
+                        // Open the export URL with filters
+                        window.open(`http://localhost:5001/api/export?${params.toString()}`, '_blank');
+                      }}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Export
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <FeedbackTable data={filteredData} />
+                </CardContent>
+                <CardFooter className="p-4 border-t border-[#E2E8F0] flex items-center justify-between">
+                  <div className="text-sm text-[#64748B]">
+                    {/* "Export All Data" button removed from here */}
+                  </div>
+                </CardFooter>
+              </Card>
+            </motion.div>
+          </div>
         )}
 
         {activeTab === "byCourse" && (
-          <FeedbackTable data={filteredData} />
+          <ByCourseTable filteredData={filteredData} />
         )}
 
         {activeTab === "overall" && (
