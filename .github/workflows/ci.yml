@@ -1,0 +1,84 @@
+name: CI Automatic Notification and Test Owner Assignment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issues:
+    types: [opened, reopened]
+
+jobs:
+  process-pr:
+    name: Process Pull Request
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Check for critical file changes
+        id: filter
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            critical:
+              - 'setup.py'
+              - 'run.py'
+              - 'backend/app.py'
+      
+      - name: Notify test owners about critical changes
+        if: steps.filter.outputs.critical == 'true'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const testOwners = ['${{ vars.TEST_OWNER_1 }}', '${{ vars.TEST_OWNER_2 }}'].filter(owner => owner);
+            
+            if (testOwners.length === 0) {
+              console.log('No test owners configured. Skipping notification.');
+              return;
+            }
+            
+            const changedFiles = [];
+            if ('${{ contains(github.event.pull_request.body, 'setup.py') }}' === 'true') changedFiles.push('setup.py');
+            if ('${{ contains(github.event.pull_request.body, 'run.py') }}' === 'true') changedFiles.push('run.py');
+            if ('${{ contains(github.event.pull_request.body, 'backend/app.py') }}' === 'true') changedFiles.push('backend/app.py');
+            
+            const message = `## ⚠️ Critical Files Changed\n\n` +
+                           `This PR contains changes to files that may require test updates:\n` +
+                           `${changedFiles.map(file => `- \`${file}\``).join('\n')}\n\n` +
+                           `${testOwners.map(owner => `@${owner}`).join(' ')} please review these changes and update tests if necessary.`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+
+  notify-issue:
+    name: Notify About New Issue
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues'
+    
+    steps:
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: New Issue Created - ${{ github.event.issue.title }}
+          body: |
+            A new issue has been created in the ${{ github.repository }} repository.
+            
+            Title: ${{ github.event.issue.title }}
+            Created by: ${{ github.event.issue.user.login }}
+            Link: ${{ github.event.issue.html_url }}
+            
+            Issue Description:
+            ${{ github.event.issue.body }}
+          to: ${{ vars.NOTIFICATION_EMAIL }}
+          from: GitHub Actions
