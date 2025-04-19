@@ -281,19 +281,8 @@ export default function FeedbackPlatform() {
   const timeSeriesData = useMemo(() => {
     const generatedData = generateTimeSeriesData(filteredData);
     
-    // If we have real data, use it; otherwise fall back to sample data
-    return generatedData.length > 0 ? generatedData : [
-      { month: "Jan", score: 2.1 },
-      { month: "Feb", score: 2.4 },
-      { month: "Mar", score: 2.2 },
-      { month: "Apr", score: 2.6 },
-      { month: "May", score: 3.1 },
-      { month: "Jun", score: 3.2 },
-      { month: "Jul", score: 3.0 },
-      { month: "Aug", score: 3.1 },
-      { month: "Sep", score: 3.2 },
-    ];
-  }, [filteredData]);
+    return generatedData.length > 0 ? generatedData : [];
+}, [filteredData]);
 
   const generateScoreDistributionData = useMemo(() => {
     if (!filteredData.length) return [];
