@@ -9,14 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Filter, Calendar, BookOpen, Star } from "lucide-react";
 import {
   MultiSelect,
-  MultiSelectOption,
   MultiSelectStyleInjector,
 } from "@/components/ui/MultiSelect";
 
 interface FiltersProps {
-  uniqueHCs: string[];
-  uniqueCourses: string[];
-  uniqueTerms: string[];
+  hcOptions: Option[];
+  courseOptions: Option[];
+  termOptions: Option[];
   selectedHCs: string[];
   setSelectedHCs: React.Dispatch<React.SetStateAction<string[]>>;
   selectedCourses: string[];
@@ -31,9 +30,9 @@ interface FiltersProps {
 }
 
 export default function Filters({
-  uniqueHCs,
-  uniqueCourses,
-  uniqueTerms,
+  hcOptions,
+  courseOptions,
+  termOptions,
   selectedHCs,
   setSelectedHCs,
   selectedCourses,
@@ -46,18 +45,6 @@ export default function Filters({
   setMaxScore,
   resetFilters,
 }: FiltersProps) {
-  const hcOptions: MultiSelectOption[] = useMemo(
-    () => uniqueHCs.map((hc) => ({ value: hc, label: hc })),
-    [uniqueHCs]
-  );
-  const courseOptions: MultiSelectOption[] = useMemo(
-    () => uniqueCourses.map((c) => ({ value: c, label: c })),
-    [uniqueCourses]
-  );
-  const termOptions: MultiSelectOption[] = useMemo(
-    () => uniqueTerms.map((t) => ({ value: t, label: t })),
-    [uniqueTerms]
-  );
 
   function handleMinScoreChange(e: React.ChangeEvent<HTMLInputElement>) {
     const v = Number(e.target.value);
