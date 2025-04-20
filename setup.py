@@ -86,9 +86,9 @@ def main():
         print("📦 Installing dependencies from requirements.txt...")
         subprocess.run(["pip3", "install", "-r", "requirements.txt"])
 
-    # Step 1: Run backend/setup.py
-    print("🚀 Running backend/setup.py...")
-    run_command(["python3", "backend/setup.py"])
+    # Step 1: Run backend/scrape.py
+    print("🚀 Running backend/scrape.py...")
+    run_command(["python3", "backend/scrape.py"])
 
     # Step 2: Check if data.db exists
     if not check_data_db():
