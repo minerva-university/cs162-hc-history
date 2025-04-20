@@ -80,5 +80,5 @@ jobs:
             
             Issue Description:
             ${{ github.event.issue.body }}
-          to: rawan@uni.minerva.edu, lina@uni.minerva.edu, tanatswa@uni.minerva.edu, anusha@uni.minerva.edu, priscilla@uni.minerva.edu, hayk@uni.minerva.edu, miray@uni.minerva.edu
+          to: rawan@uni.minerva.edu,lina@uni.minerva.edu,tanatswa@uni.minerva.edu,anusha@uni.minerva.edu,priscilla@uni.minerva.edu,hayk@uni.minerva.edu,miray@uni.minerva.edu
           from: GitHub Actions
