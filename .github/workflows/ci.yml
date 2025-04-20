@@ -3,8 +3,6 @@ name: CI Automatic Notification and Test Owner Assignment
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-  issues:
-    types: [opened, reopened]
 
 jobs:
   process-pr:
@@ -72,29 +70,3 @@ jobs:
               repo: context.repo.repo,
               body: message
             });
-
-  notify-issue:
-    name: Notify About New Issue
-    runs-on: ubuntu-latest
-    if: github.event_name == 'issues'
-    
-    steps:
-      - name: Send email notification
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: New Issue Created - ${{ github.event.issue.title }}
-          body: |
-            A new issue has been created in the ${{ github.repository }} repository.
-            
-            Title: ${{ github.event.issue.title }}
-            Created by: ${{ github.event.issue.user.login }}
-            Link: ${{ github.event.issue.html_url }}
-            
-            Issue Description:
-            ${{ github.event.issue.body }}
-          to: ${{ vars.NOTIFICATION_EMAIL }}
-          from: GitHub Actions
