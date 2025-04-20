@@ -94,6 +94,36 @@ def get_feedback():
     conn.close()
     return jsonify(feedback_data)
 
+@app.route('/api/course-scores', methods=['GET'])
+def get_course_scores():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Join course_scores with courses to get course_code
+        cursor.execute("""
+            SELECT c.course_code, cs.score
+            FROM course_scores cs
+            JOIN courses c ON cs.course_id = c.course_id
+        """)
+        rows = cursor.fetchall()
+
+        course_scores = [
+            {
+                "course_code": row["course_code"],
+                "course_score": row["score"]
+            }
+            for row in rows
+        ]
+        return jsonify(course_scores)
+
+    except sqlite3.Error as e:
+        logger.error(f"❌ Error fetching course scores: {e}")
+        return jsonify([]), 500
+
+    finally:
+        conn.close()
+
 
 @app.route('/api/export', methods=['GET'])
 def export_data():
@@ -248,7 +278,6 @@ def export_all_data():
         as_attachment=True,
         download_name=filename
     )
-
 
 @app.route('/api/ai-summaries', methods=['GET'])
 def get_ai_summaries():
