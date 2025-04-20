@@ -48,12 +48,30 @@ def run_backend():
 def run_frontend():
     print("🚀 Starting frontend in a new console window...")
 
-    if platform.system() == "Windows":
-        subprocess.Popen("start cmd /K npm run dev", cwd=os.path.join(os.getcwd(), "frontend"), shell=True)
-    elif platform.system() == "Darwin":
-        subprocess.Popen(['osascript', '-e', 'tell application "Terminal" to do script "cd ' + os.path.join(os.getcwd(), "frontend") + ' && npm run dev"'])
+    frontend_path = os.path.join(os.getcwd(), "frontend")
+    next_path = os.path.join(frontend_path, ".next")
+
+    # Run build steps if .next is missing
+    if not os.path.exists(next_path):
+        print("🧱 .next/ folder not found. Running build steps...")
+        run_command(["npm", "install"], cwd=frontend_path)
+        run_command(["npm", "run", "build"], cwd=frontend_path)
     else:
-        subprocess.Popen(['gnome-terminal', '--', 'bash', '-c', f'cd {os.path.join(os.getcwd(), "frontend")} && npm run dev; exec bash'])
+        print("✅ Frontend already built.")
+
+    # Launch frontend dev server in new terminal
+    if platform.system() == "Windows":
+        subprocess.Popen("start cmd /K npm run dev", cwd=frontend_path, shell=True)
+    elif platform.system() == "Darwin":
+        subprocess.Popen([
+            'osascript', '-e',
+            f'tell application "Terminal" to do script "cd {frontend_path} && npm run dev"'
+        ])
+    else:
+        subprocess.Popen([
+            'gnome-terminal', '--', 'bash', '-c',
+            f'cd {frontend_path} && npm run dev; exec bash'
+        ])
 
 def main():
     # Step 1: Check for all required files
