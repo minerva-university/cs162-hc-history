@@ -309,3 +309,4 @@ def get_ai_summaries():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
+#testing if the CI workflow is working by adding this comment
