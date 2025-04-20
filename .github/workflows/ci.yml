@@ -63,7 +63,7 @@ jobs:
     if: github.event_name == 'issues'
     
     steps:
-      - name: Send email notification
+      name: Send email notification
       uses: dawidd6/action-send-mail@v3
       with:
         server_address: smtp.gmail.com
