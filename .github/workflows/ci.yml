@@ -16,6 +16,21 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run tests with pytest
+        run: |
+          pytest tests/ --maxfail=3 --disable-warnings -q
       
       - name: Check for critical file changes
         id: filter
