@@ -41,6 +41,7 @@ jobs:
               - 'setup.py'
               - 'run.py'
               - 'backend/app.py'
+              - 'backend/main.py'
       
       - name: Notify test owners about critical changes
         if: steps.filter.outputs.critical == 'true'

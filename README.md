@@ -222,7 +222,7 @@ During setup, a browser window will open for you to log in to Forum:
 1. **Sign in with your Minerva credentials** when the browser opens
 2. **Important:** You do NOT need to create a new profile, even if prompted (especially in incognito mode)
 3. After successful login, you may need to return to your terminal:
-   - **Important note:** If you are running `setup.py` for the first time, once you enter your email and password for Google Login, DON'T close the window or navigate anywhere unless you hit Enter in the terminal. Otherwise, the session gets interrupted and it will show an error. 
+   - **Important note:** If you are running `setup.py` for the first time, once you enter your email and password for Google Login, **DON'T close the window or navigate anywhere** unless you hit **Enter** in the terminal. Otherwise, the session gets interrupted and it will show an error. 
    - If you ran `setup.py` before, but for some reason you ran it again, you won't need to press enter as it will automatically remember your last login.
 
   
