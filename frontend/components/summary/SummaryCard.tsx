@@ -126,9 +126,9 @@ export default function SummaryCard({
       </CardHeader>
 
       <CardContent className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6">
           {selectedHCs.length > 1 && (
-            <div className="ol-span-2 mb-4">
+            <div className="w-full">
               <p className="text-sm text-[#64748B] mb-2">
                 Select which AI summary to display among your chosen HC/LOs:
               </p>
@@ -147,40 +147,42 @@ export default function SummaryCard({
             </div>
           )}
 
-          {/* Strengths */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 ">
-              <Lightbulb className="h-5 w-5 text-[#73C173]" />
-              <h3 className="font-semibold text-[#0F172A]">Strengths</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Strengths */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 ">
+                <Lightbulb className="h-5 w-5 text-[#73C173]" />
+                <h3 className="font-semibold text-[#0F172A]">Strengths</h3>
+              </div>
+              <ul className="space-y-2">
+                {pros.map((item, i) => (
+                  <motion.li key={`pro-${i}`} className="flex items-start gap-2">
+                    <span className="mt-1 rounded-full bg-[#73C173]/20 p-0.5">
+                      <Check className="h-3 w-3 text-[#73C173]" />
+                    </span>
+                    <span className="text-sm text-[#334155]">{item}</span>
+                  </motion.li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-2">
-              {pros.map((item, i) => (
-                <motion.li key={`pro-${i}`} className="flex items-start gap-2">
-                  <span className="mt-1 rounded-full bg-[#73C173]/20 p-0.5">
-                    <Check className="h-3 w-3 text-[#73C173]" />
-                  </span>
-                  <span className="text-sm text-[#334155]">{item}</span>
-                </motion.li>
-              ))}
-            </ul>
-          </div>
 
-          {/* Areas for improvement */}
-          <div>
-            <div className="flex items-center gap-2 ">
-              <AlertTriangle className="h-5 w-5 text-[#E89A5D]" />
-              <h3 className="font-semibold text-[#0F172A]">Areas for Improvement</h3>
+            {/* Areas for improvement */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 ">
+                <AlertTriangle className="h-5 w-5 text-[#E89A5D]" />
+                <h3 className="font-semibold text-[#0F172A]">Areas for Improvement</h3>
+              </div>
+              <ul className="space-y-2">
+                {cons.map((item, i) => (
+                  <motion.li key={`con-${i}`} className="flex items-start gap-2">
+                    <span className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5">
+                      <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
+                    </span>
+                    <span className="text-sm text-[#334155]">{item}</span>
+                  </motion.li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-2">
-              {cons.map((item, i) => (
-                <motion.li key={`con-${i}`} className="flex items-start gap-2">
-                  <span className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5">
-                    <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
-                  </span>
-                  <span className="text-sm text-[#334155]">{item}</span>
-                </motion.li>
-              ))}
-            </ul>
           </div>
         </div>
       </CardContent>
