@@ -129,21 +129,77 @@ export default function SummaryCard({
         <div className="flex flex-col gap-6">
           {selectedHCs.length > 1 && (
             <div className="w-full">
-              <p className="text-sm text-[#64748B] mb-2">
-                Select which AI summary to display among your chosen HC/LOs:
-              </p>
-              <Select value={currentSummaryHC} onValueChange={onChangeSummaryHC}>
-                <SelectTrigger className="w-[260px]">
-                  <SelectValue placeholder="Choose an HC/LO" />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedHCs.map(hc => (
-                    <SelectItem key={hc} value={hc} className="pr-8">
-                      {hc}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex flex-col gap-2 mb-4">
+                <p className="text-sm text-[#64748B]">
+                  Showing AI summary for: <span className="font-medium text-[#334155]">{currentSummaryHC}</span>
+                </p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {/* Previous Button with Preview */}
+                    {(() => {
+                      const sortedHCs = [...selectedHCs].sort();
+                      const currentIndex = sortedHCs.indexOf(currentSummaryHC);
+                      const hasPrevious = currentIndex > 0;
+                      const previousHC = hasPrevious ? sortedHCs[currentIndex - 1] : undefined;
+
+                      return (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (hasPrevious && previousHC) {
+                              onChangeSummaryHC(previousHC);
+                            }
+                          }}
+                          disabled={!hasPrevious}
+                          className="text-[#64748B] hover:text-[#334155] relative group"
+                        >
+                          Previous
+                          {previousHC && (
+                            <div className="absolute top-full left-0 mt-1 hidden group-hover:block bg-white shadow-sm border border-gray-100 rounded-md px-2 py-1 text-[11px] text-gray-600 whitespace-nowrap z-10">
+                              {previousHC}
+                            </div>
+                          )}
+                        </Button>
+                      );
+                    })()}
+
+                    {/* Next Button with Preview */}
+                    {(() => {
+                      const sortedHCs = [...selectedHCs].sort();
+                      const currentIndex = sortedHCs.indexOf(currentSummaryHC);
+                      const hasNext = currentIndex < sortedHCs.length - 1;
+                      const nextHC = hasNext ? sortedHCs[currentIndex + 1] : undefined;
+
+                      return (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (hasNext && nextHC) {
+                              onChangeSummaryHC(nextHC);
+                            }
+                          }}
+                          disabled={!hasNext}
+                          className="text-[#64748B] hover:text-[#334155] relative group"
+                        >
+                          Next
+                          {nextHC && (
+                            <div className="absolute top-full left-0 mt-1 hidden group-hover:block bg-white shadow-sm border border-gray-100 rounded-md px-2 py-1 text-[11px] text-gray-600 whitespace-nowrap z-10">
+                              {nextHC}
+                            </div>
+                          )}
+                        </Button>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Navigation Progress */}
+                  <span className="text-xs text-[#64748B]">
+                    {[...selectedHCs].sort().indexOf(currentSummaryHC) + 1} of {selectedHCs.length} HC/LOs
+                  </span>
+                </div>
+              </div>
             </div>
           )}
 
