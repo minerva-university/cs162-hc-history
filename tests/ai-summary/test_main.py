@@ -7,14 +7,23 @@ from pathlib import Path
 # Add the ai-summary directory to the Python path
 sys.path.append(str(Path(__file__).parent.parent.parent / 'ai-summary'))
 
-import main
-from main import create_ai_summaries_table, fetch_grouped_comments, store_summary
+# Mock environment variables before importing main
+with patch.dict(os.environ, {'OPENAI_API_KEY': 'test-key-123'}):
+    import main
+    from main import create_ai_summaries_table, fetch_grouped_comments, store_summary
 
 # Test data
 TEST_OUTCOME = "Test Outcome"
 TEST_COMMENTS = "Test comment 1\nTest comment 2"
 TEST_STRENGTHS = "Test strength"
 TEST_IMPROVEMENT = "Test improvement"
+
+@pytest.fixture(autouse=True)
+def mock_env_and_input():
+    """Mock environment variables and input function"""
+    with patch.dict(os.environ, {'OPENAI_API_KEY': 'test-key-123'}), \
+         patch('builtins.input', return_value='test-key-123'):
+        yield
 
 @pytest.fixture
 def mock_db_functions():
