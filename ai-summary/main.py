@@ -14,7 +14,7 @@ load_dotenv(env_path)
 
 # Check if OpenAI API key exists, if not prompt user
 api_key = os.getenv("OPENAI_API_KEY")
-if not api_key and not os.environ.get('CI'):  # Only prompt if not in CI
+if not api_key:
     print("🔑 OpenAI API key not found in .env file.")
     api_key = input("Please enter your OpenAI API key: ").strip()
     # Save the key to .env file
@@ -22,7 +22,7 @@ if not api_key and not os.environ.get('CI'):  # Only prompt if not in CI
         f.write(f"\nOPENAI_API_KEY={api_key}\n")
     print("✅ OpenAI API key saved to .env file for future use.")
 
-openai.api_key = api_key or 'dummy-key-for-testing'
+openai.api_key = api_key
 # Define client as the openai module
 client = openai
 

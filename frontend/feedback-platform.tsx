@@ -83,10 +83,10 @@ export default function FeedbackPlatform() {
         const response = await fetch('http://localhost:5001/api/feedback');
         if (!response.ok) throw new Error(`HTTP error! Status ${response.status}`);
         const values = await response.json() as FeedbackItem[];
-        
+
         // extract uniques for filters
         const hcs = [...new Set(values.map((item: FeedbackItem) => item.outcome_name))].filter(Boolean);
-        
+
         const sortedHCs = hcs.sort((a, b) => {
           // Check if either item is an LO (contains a hyphen and course code)
           const aIsLO = a.includes('-');
@@ -108,7 +108,7 @@ export default function FeedbackPlatform() {
             coursesMap.set(item.course_code, `${item.course_code} - ${item.course_title}`);
           }
         });
-        
+
         const courses = Array.from(coursesMap.keys());
         const terms = [...new Set(values.map((item: FeedbackItem) => item.term_title))].filter(Boolean);
 
@@ -121,7 +121,7 @@ export default function FeedbackPlatform() {
         setUniqueTerms(terms);
         setFeedbackData(values);
         setFilteredData(values);
-        
+
         // Clear any previous errors
         setDbError("");
 
@@ -138,7 +138,7 @@ export default function FeedbackPlatform() {
         setUniqueTerms([]);
         setFeedbackData([]);
         setFilteredData([]);
-        
+
 
       }
     }
@@ -160,7 +160,7 @@ export default function FeedbackPlatform() {
     if (selectedHCs.length > 0) {
       filtered = filtered.filter(item => selectedHCs.includes(item.outcome_name));
     }
-
+    
     if (selectedCourses.length > 0) {
       filtered = filtered.filter(item => selectedCourses.includes(item.course_code));
     }
@@ -281,7 +281,7 @@ export default function FeedbackPlatform() {
     const generatedData = generateTimeSeriesData(filteredData);
     
     return generatedData.length > 0 ? generatedData : [];
-  }, [filteredData]);
+}, [filteredData]);
 
   const generateScoreDistributionData = useMemo(() => {
     if (!filteredData.length) return [];
@@ -415,16 +415,16 @@ export default function FeedbackPlatform() {
           </div>
         </div>
       </header>
-      
+
       {/* ─────────────── MAIN ─────────────── */}
       <div className="pt-[8.5rem] flex-1 max-w-7xl mx-auto px-4 py-6">
         {/* Filters with animation*/}
-          <motion.div 
-            className="mt-4"
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.2 }}
-          >
+        <motion.div
+          className="mt-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
           <FiltersPanel
             hcOptions={hcOptions}
             courseOptions={courseOptions}
@@ -441,18 +441,18 @@ export default function FeedbackPlatform() {
             onMaxScoreChange={handleMaxScoreChange}
             onReset={resetFilters}
           />
-          </motion.div>
+        </motion.div>
 
         {/* Debug Section (error or empty state) */}
-          {(dbError || filteredData.length === 0) && (
+        {(dbError || filteredData.length === 0) && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
             <ErrorCard error={dbError} onReset={resetFilters} />
-            </motion.div>
-          )}
+          </motion.div>
+        )}
 
         {/* Grade legend */}
         <motion.div
@@ -460,20 +460,20 @@ export default function FeedbackPlatform() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-            <GradeLegend />
-          </motion.div>
+          <GradeLegend />
+        </motion.div>
+        
 
-          
         {/* Tab content */}
-          {activeTab === "byHC" && (
-            <div className="space-y-6">
+        {activeTab === "byHC" && (
+          <div className="space-y-6">
             {/* AI Summary & Stats */}
-                <motion.div
-                className="w-full"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
+            <motion.div
+              className="w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
               <SummaryCard
                 filteredData={filteredData}
                 selectedHCs={selectedHCs}
@@ -481,10 +481,10 @@ export default function FeedbackPlatform() {
                 onChangeSummaryHC={setCurrentSummaryHC}
                 aiSummaries={aiSummaries}
               />
-                </motion.div>
+            </motion.div>
 
             {/* 2×2 Chart grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <ScoreOverTimeChart data={timeSeriesData} animate={animateCharts} />
               <ScoreDistributionChart data={generateScoreDistributionData} animate={animateCharts} />
               <RadarPerformanceChart
@@ -494,58 +494,58 @@ export default function FeedbackPlatform() {
                 animate={animateCharts}
               />
               <ClassComparisonChart
-                            data={generateClassComparisonData} 
+                data={generateClassComparisonData}
                 animate={animateCharts}
               />
-                          </div>
-                          
+            </div>
+
             {/* Recent Feedback table */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
-                <Card className="border-none shadow-lg overflow-hidden">
-                  <CardHeader className="p-4 border-b border-[#E2E8F0]">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-[#8B6BF2]" />
-                        Recent Feedback
-                      </CardTitle>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-[#334155] border-[#E2E8F0]"
-                        onClick={() => {
-                          // Build query parameters based on current filters
-                          const params = new URLSearchParams();
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
+              <Card className="border-none shadow-lg overflow-hidden">
+                <CardHeader className="p-4 border-b border-[#E2E8F0]">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4 text-[#8B6BF2]" />
+                      Recent Feedback
+                    </CardTitle>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-[#334155] border-[#E2E8F0]"
+                      onClick={() => {
+                        // Build query parameters based on current filters
+                        const params = new URLSearchParams();
                         if (selectedHCs.length > 0) params.append('hc', selectedHCs.join(','));
                         if (selectedCourses.length > 0) params.append('course', selectedCourses.join(','));
                         if (selectedTerms.length > 0) params.append('term', selectedTerms.join(','));
-                          params.append('minScore', minScore.toString());
-                          params.append('maxScore', maxScore.toString());
-                          
-                          // Open the export URL with filters
-                          window.open(`http://localhost:5001/api/export?${params.toString()}`, '_blank');
-                        }}
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        Export
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <FeedbackTable data={filteredData} />
-                  </CardContent>
-                  <CardFooter className="p-4 border-t border-[#E2E8F0] flex items-center justify-between">
-                    <div className="text-sm text-[#64748B]">
-                    {/* "Export All Data" button removed from here */}
-                    </div>
-                  </CardFooter>
-                </Card>
-              </motion.div>
-            </div>
-          )}
+                        params.append('minScore', minScore.toString());
+                        params.append('maxScore', maxScore.toString());
 
-          {activeTab === "byCourse" && (
+                        // Open the export URL with filters
+                        window.open(`http://localhost:5001/api/export?${params.toString()}`, '_blank');
+                      }}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Export
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <FeedbackTable data={filteredData} />
+                </CardContent>
+                <CardFooter className="p-4 border-t border-[#E2E8F0] flex items-center justify-between">
+                  <div className="text-sm text-[#64748B]">
+                    {/* "Export All Data" button removed from here */}
+                  </div>
+                </CardFooter>
+              </Card>
+            </motion.div>
+          </div>
+        )}
+
+        {activeTab === "byCourse" && (
           <ByCourseTable filteredData={filteredData} />
-          )}
+        )}
 
           {activeTab === "overall" && (
             <motion.div className="space-y-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
