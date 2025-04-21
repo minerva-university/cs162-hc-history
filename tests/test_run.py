@@ -13,8 +13,8 @@ import run
 # --- Tests for run_command() ---
 
 def test_run_command_success(monkeypatch, capsys):
-    # Fake subprocess.run so that it does not raise an exception.
-    def fake_run(cmd, check):
+    # Updated to accept `cwd`
+    def fake_run(cmd, check, cwd=None):
         return  # simulate success
     monkeypatch.setattr(subprocess, "run", fake_run)
 
@@ -23,8 +23,8 @@ def test_run_command_success(monkeypatch, capsys):
     assert "✅ Successfully ran: echo hello" in captured
 
 def test_run_command_failure(monkeypatch, capsys):
-    # Fake subprocess.run that raises CalledProcessError.
-    def fake_run(cmd, check):
+    # Updated to accept `cwd`
+    def fake_run(cmd, check, cwd=None):
         raise subprocess.CalledProcessError(1, cmd)
     monkeypatch.setattr(subprocess, "run", fake_run)
 
