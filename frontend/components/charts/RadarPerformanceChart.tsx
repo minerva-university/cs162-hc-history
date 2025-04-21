@@ -94,7 +94,7 @@ export default function RadarPerformanceChart({
                   </TooltipTrigger>
                   <TooltipContent className="max-w-sm p-4">
                     <p className="font-medium mb-1">What is this chart?</p>
-                    <p className="text-sm mb-2">This radar chart shows your average scores across different {showHCs ? "Habits of Mind" : "Learning Outcomes"}.</p>
+                    <p className="text-sm mb-2">This radar chart shows your average scores across different {showHCs ? "HCs" : "LOs"}.</p>
                     <p className="text-sm mb-2">Each point on the perimeter represents a different {showHCs ? "HC" : "LO"}, and the distance from the center indicates your score (higher is better).</p>
                     <p className="text-sm">Use this chart to identify your strongest and weakest areas at a glance. Look for the smallest sections of the web to find areas for improvement.</p>
                   </TooltipContent>
