@@ -9,6 +9,7 @@ import {
   Play,
   ChevronLeft,
   ChevronRight,
+  NotebookPen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ScoreDisplay from "./ScoreDisplay"; // numeric score pill
@@ -165,6 +166,9 @@ export default function FeedbackTable({ data }: Props) {
                     ) : item.assignment_title === "video" ? (
                       // Use Play icon for class recordings
                       <Play className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
+                    ) : item.assignment_title === "preclass_assignment" ? (
+                      // Use NotebookPen icon for pre-class work
+                      <NotebookPen className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
                     ) : (
                       // Default to BookOpen for all other assignment types
                       <BookOpen className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
