@@ -1,23 +1,55 @@
-# MAIN FILES OF FRONTEND
+# Feedback Platform Frontend
 
-`feedback-platform.tsx` - This is the main component that renders the entire feedback platform UI
-`animated-score-card.tsx` - A reusable component for displaying score cards with animations
-`grade-legend.tsx` - Component that displays the grade scale with visual elements
-`app/page.tsx` - The main page component that imports and renders the FeedbackPlatform
-`app/layout.tsx` - The root layout component for the Next.js app
-`tailwind.config.js` - Configuration for Tailwind CSS
+The web application for viewing and analyzing Minerva University student feedback across HCs and LOs
+## Project Structure
 
-To run the project:
--  Install dependencies: 'npm install or yarn install', then 'npm run build or yarn build', afterwards 'npm start  or yarn start '.
+The codebase follows a modular organization pattern:
+
+### Main Files
+- `app/page.tsx` - Entry point that renders the FeedbackPlatform
+- `app/layout.tsx` - Root layout component for the Next.js app
+- `feedback-platform.tsx` - Main container component that orchestrates the overall application
+
+### Component Organization
+- `components/` - All reusable components organized by category:
+  - `charts/` - Visualization components:
+    - `ClassComparisonChart.tsx` - Compares performance across different courses
+    - `RadarPerformanceChart.tsx` - Shows HC/LO performance in a radar format  
+    - `ScoreDistributionChart.tsx` - Displays distribution of scores
+    - `ScoreOverTimeChart.tsx` - Shows progress over time
+  - `filters/` - Components related to filtering and data selection:
+    - `FiltersPanel.tsx` - Main filtering interface for the application
+  - `summary/` - Components that summarize or aggregate data:
+    - `ErrorCard.tsx` - Error state display component
+    - `SummaryCard.tsx` - Displays AI-generated summaries and overall statistics  
+  - `table/` - Table components for detailed data viewing:
+    - `ByCourseTable.tsx` - Organizes feedback by course
+    - `FeedbackTable.tsx` - Displays recent feedback with collapsible comments
+    - `RankingTable.tsx` - Ranks HCs/LOs from weakest to strongest
+    - `ScoreDisplay.tsx` - Reusable score pill component
+  - `ui/` - Basic UI components and shared elements:
+    - `GradeLegend.tsx` - Explains the grading scale
+    - `MultiSelect.tsx` - Reusable multi-selection dropdown component
+    - Various shadcn/ui components for consistent design system
+
+### Key Features
+- Interactive data filtering by HC/LO, course, term, and score range
+- Different filtered tabs
+- Data visualization through various chart types
+- Recent feedback table
+- HC/LO rankings 
+- Relevant overall averages/averages cross courses
+- AI-generated summaries of strengths and areas for improvement
+- Tooltips and explanations for better user understanding
 
 ## Technologies Used
 
 - **Next.js**: React framework for server-rendered applications
-- **Tailwind CSS**: Utility-first CSS framework
-- **Framer Motion**: Animation library for React
-- **Recharts**: Composable charting library for React
-- **Lucide React**: Icon library
-
+- **Tailwind CSS**: Utility-first CSS framework for styling
+- **Framer Motion**: Animation library for smooth transitions
+- **Recharts**: Composable charting library for data visualization
+- **Lucide React**: Icon library for consistent iconography
+- **Shadcn/UI**: Component library built on Radix UI and Tailwind
 
 The application will be available at [http://localhost:3000]
 

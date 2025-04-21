@@ -11,9 +11,15 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { motion } from "framer-motion";
-import { Activity, AlertCircle as AlertCircleIcon } from "lucide-react";
+import { Activity, AlertCircle as AlertCircleIcon, HelpCircle } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip as UITooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface RadarDataItem {
   subject: string;
@@ -81,6 +87,19 @@ export default function RadarPerformanceChart({
             <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
               <Activity className="h-4 w-4 text-[#8B6BF2]" />
               {showHCs ? "HC Performance Radar" : "LO Performance Radar"}
+              <TooltipProvider>
+                <UITooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-4 w-4 text-[#64748B] cursor-help ml-1" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-sm p-4">
+                    <p className="font-medium mb-1">What is this chart?</p>
+                    <p className="text-sm mb-2">This radar chart shows your average scores across different {showHCs ? "HCs" : "LOs"}.</p>
+                    <p className="text-sm mb-2">Each point on the perimeter represents a different {showHCs ? "HC" : "LO"}, and the distance from the center indicates your score (higher is better).</p>
+                    <p className="text-sm">Use this chart to identify your strongest and weakest areas at a glance. Look for the smallest sections of the web to find areas for improvement.</p>
+                  </TooltipContent>
+                </UITooltip>
+              </TooltipProvider>
             </CardTitle>
             <Button
               variant="outline"
@@ -92,7 +111,7 @@ export default function RadarPerformanceChart({
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-4 h-[380px]">
+        <CardContent className="p-4 h-[380px] relative">
           {data.length === 0 ? (
             <div className="h-full w-full flex items-center justify-center">
               <div className="text-center p-4">
@@ -157,6 +176,11 @@ export default function RadarPerformanceChart({
                 />
               </RadarChart>
             </ResponsiveContainer>
+          )}
+          {filteredRadarData.length > 0 && (
+            <div className="absolute bottom-2 left-0 right-0 text-center text-xs text-gray-500 px-4">
+              <p>Tip: Larger web areas indicate stronger performance. Hover over points for exact scores.</p>
+            </div>
           )}
         </CardContent>
       </Card>
