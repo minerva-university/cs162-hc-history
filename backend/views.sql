@@ -9,6 +9,7 @@ SELECT
     lo.outcome_id AS outcome_id, 
     ad.assignment_title AS assignment_title, 
     ad.assignment_id AS assignment_id, 
+    ad.section_id AS section_id,
     c.course_title AS course_title, 
     c.course_code AS course_code,
     co.college_code AS college_code,
@@ -38,7 +39,7 @@ SELECT
     oa.type AS type,
     ad.section_id AS section_id,
     c.course_id AS course_id,
-    oa.klass_id AS klass_id,
+    oa.class_id AS class_id,
     CASE 
         WHEN oa.type = 'assignment' THEN ad.assignment_title
         ELSE oa.type
@@ -59,7 +60,7 @@ SELECT
         WHEN ad.section_id IS NOT NULL THEN 
             'https://forum.minerva.edu/app/courses/' || c.course_id || 
             '/sections/' || ad.section_id || 
-            '/classes/' || oa.assignment_id
+            '/classes/' || oa.class_id 
     ELSE NULL
     END AS assignment_link,
     CASE 
