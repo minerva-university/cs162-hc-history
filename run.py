@@ -4,13 +4,12 @@ import sys
 import platform
 
 # Function to run a shell command and check for errors
-def run_command(command):
+def run_command(command, cwd=None):
     try:
-        subprocess.run(command, check=True)
+        subprocess.run(command, check=True, cwd=cwd)
         print(f"✅ Successfully ran: {' '.join(command)}")
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         print(f"❌ Error while running: {' '.join(command)}")
-        print(e)
         sys.exit(1)
 
 # Function to check that the necessary files exist
