@@ -230,7 +230,7 @@ During setup, a browser window will open for you to log in to Forum:
    - **Important note:** If you are running `setup.py` for the first time, once you enter your email and password for Google Login, **DON'T close the window or navigate anywhere** unless you hit **Enter** in the terminal. Otherwise, the session gets interrupted and it will show an error.
    - If you ran `setup.py` before, but for some reason you ran it again, you won't need to press enter as it will automatically remember your last login.
    - If nothing happens for a minute after login, try pressing Enter in your terminal
-
+  
 ---
 
 ## How to Run the Project Again (`run.py`)

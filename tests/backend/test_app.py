@@ -2,7 +2,7 @@ import os
 import sys
 
 # Ensure that the project root is on sys.path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 import io
 import csv
@@ -10,7 +10,7 @@ import sqlite3
 import pytest
 
 # Import the entire module; we need it for the Flask instance and for patching get_db_connection
-import backend.app as backend_app
+from backend import app as backend_app
 
 # --- Fake Database Classes for Testing --- 
 

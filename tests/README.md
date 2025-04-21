@@ -9,6 +9,8 @@ The test suite is designed to verify the correct behavior of:
 1. **Setup Process** - Tests for `setup.py` that handles initial project configuration
 2. **Runtime Management** - Tests for `run.py` that manages starting the backend and frontend services
 3. **Backend API** - Tests for the Flask application that provides data access endpoints
+4. **Backend Utilities** - Tests for key backend functionality in `backend/main.py` such as environment loading, schema initialization, and API integration
+
 
 ## Test Isolation Approach
 
@@ -25,6 +27,12 @@ This isolation approach ensures:
 - Tests don't depend on the environment or system configuration
 - Tests can verify error handling without causing actual errors
 - Tests can run in CI/CD pipelines without setup complexity
+
+The `tests/backend/` subfolder mirrors the `backend/` directory and keeps tests modular and organized. This structure:
+
+- Helps isolate tests for specific backend components
+- Makes it easy to locate related tests and source files
+- Enables finer-grained CI triggers based on modified areas
 
 ## Test Files
 
@@ -47,13 +55,24 @@ Tests the runtime management script (`run.py`) which handles:
 - Starting the backend server
 - Launching the frontend in a platform-specific console window (macOS, Windows, Linux)
 
-### `test_app.py`
+### `backend/test_app.py`
 
 Tests the Flask backend application (`backend/app.py`) which provides:
 
 - `/api/feedback` endpoint for retrieving feedback data
 - `/api/export` endpoint for exporting filtered data as CSV
 - `/api/export-all` endpoint for exporting all data as CSV
+
+### `backend/test_main.py`
+
+Tests the backend utility script (`backend/main.py`) which handles:
+
+- Loading environment variables from a `.env` file and raising errors if missing
+- Constructing authorization headers using CSRF and session tokens
+- Initializing the SQLite database using a schema file
+- Fetching data from external API endpoints with proper error handling and response parsing
+
+These tests ensure that core backend setup functions work in isolation, simulate API responses, and validate schema-based database creation logic.
 
 ## Running Tests
 

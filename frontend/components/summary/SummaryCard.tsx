@@ -126,61 +126,121 @@ export default function SummaryCard({
       </CardHeader>
 
       <CardContent className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6">
           {selectedHCs.length > 1 && (
-            <div className="ol-span-2 mb-4">
-              <p className="text-sm text-[#64748B] mb-2">
-                Select which AI summary to display among your chosen HC/LOs:
-              </p>
-              <Select value={currentSummaryHC} onValueChange={onChangeSummaryHC}>
-                <SelectTrigger className="w-[260px]">
-                  <SelectValue placeholder="Choose an HC/LO" />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedHCs.map(hc => (
-                    <SelectItem key={hc} value={hc} className="pr-8">
-                      {hc}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="w-full">
+              <div className="flex flex-col gap-2 mb-4">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+                  <p className="text-sm text-[#64748B] text-center sm:text-left">
+                    Showing AI summary for: <span className="font-medium text-[#334155]">{currentSummaryHC}</span>
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      {/* Previous Button with Preview */}
+                      {(() => {
+                        const sortedHCs = [...selectedHCs].sort();
+                        const currentIndex = sortedHCs.indexOf(currentSummaryHC);
+                        const hasPrevious = currentIndex > 0;
+                        const previousHC = hasPrevious ? sortedHCs[currentIndex - 1] : undefined;
+
+                        return (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (hasPrevious && previousHC) {
+                                onChangeSummaryHC(previousHC);
+                              }
+                            }}
+                            disabled={!hasPrevious}
+                            className="text-[#64748B] hover:text-[#334155] relative group min-w-[80px]"
+                          >
+                            Previous
+                            {previousHC && (
+                              <div className="absolute top-full left-0 mt-1 hidden group-hover:block bg-white shadow-sm border border-gray-100 rounded-md px-2 py-1 text-[11px] text-gray-600 whitespace-nowrap z-10">
+                                {previousHC}
+                              </div>
+                            )}
+                          </Button>
+                        );
+                      })()}
+
+                      {/* Next Button with Preview */}
+                      {(() => {
+                        const sortedHCs = [...selectedHCs].sort();
+                        const currentIndex = sortedHCs.indexOf(currentSummaryHC);
+                        const hasNext = currentIndex < sortedHCs.length - 1;
+                        const nextHC = hasNext ? sortedHCs[currentIndex + 1] : undefined;
+
+                        return (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (hasNext && nextHC) {
+                                onChangeSummaryHC(nextHC);
+                              }
+                            }}
+                            disabled={!hasNext}
+                            className="text-[#64748B] hover:text-[#334155] relative group min-w-[80px]"
+                          >
+                            Next
+                            {nextHC && (
+                              <div className="absolute top-full left-0 mt-1 hidden group-hover:block bg-white shadow-sm border border-gray-100 rounded-md px-2 py-1 text-[11px] text-gray-600 whitespace-nowrap z-10">
+                                {nextHC}
+                              </div>
+                            )}
+                          </Button>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Navigation Progress */}
+                    <span className="text-xs text-[#64748B] whitespace-nowrap">
+                      {[...selectedHCs].sort().indexOf(currentSummaryHC) + 1} of {selectedHCs.length} HC/LOs
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Strengths */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 ">
-              <Lightbulb className="h-5 w-5 text-[#73C173]" />
-              <h3 className="font-semibold text-[#0F172A]">Strengths</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Strengths */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 ">
+                <Lightbulb className="h-5 w-5 text-[#73C173]" />
+                <h3 className="font-semibold text-[#0F172A]">Strengths</h3>
+              </div>
+              <ul className="space-y-2">
+                {pros.map((item, i) => (
+                  <motion.li key={`pro-${i}`} className="flex items-start gap-2">
+                    <span className="mt-1 rounded-full bg-[#73C173]/20 p-0.5">
+                      <Check className="h-3 w-3 text-[#73C173]" />
+                    </span>
+                    <span className="text-sm text-[#334155]">{item}</span>
+                  </motion.li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-2">
-              {pros.map((item, i) => (
-                <motion.li key={`pro-${i}`} className="flex items-start gap-2">
-                  <span className="mt-1 rounded-full bg-[#73C173]/20 p-0.5">
-                    <Check className="h-3 w-3 text-[#73C173]" />
-                  </span>
-                  <span className="text-sm text-[#334155]">{item}</span>
-                </motion.li>
-              ))}
-            </ul>
-          </div>
 
-          {/* Areas for improvement */}
-          <div>
-            <div className="flex items-center gap-2 ">
-              <AlertTriangle className="h-5 w-5 text-[#E89A5D]" />
-              <h3 className="font-semibold text-[#0F172A]">Areas for Improvement</h3>
+            {/* Areas for improvement */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 ">
+                <AlertTriangle className="h-5 w-5 text-[#E89A5D]" />
+                <h3 className="font-semibold text-[#0F172A]">Areas for Improvement</h3>
+              </div>
+              <ul className="space-y-2">
+                {cons.map((item, i) => (
+                  <motion.li key={`con-${i}`} className="flex items-start gap-2">
+                    <span className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5">
+                      <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
+                    </span>
+                    <span className="text-sm text-[#334155]">{item}</span>
+                  </motion.li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-2">
-              {cons.map((item, i) => (
-                <motion.li key={`con-${i}`} className="flex items-start gap-2">
-                  <span className="mt-1 rounded-full bg-[#E89A5D]/20 p-0.5">
-                    <AlertTriangle className="h-3 w-3 text-[#E89A5D]" />
-                  </span>
-                  <span className="text-sm text-[#334155]">{item}</span>
-                </motion.li>
-              ))}
-            </ul>
           </div>
         </div>
       </CardContent>
