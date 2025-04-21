@@ -36,7 +36,7 @@ def get_feedback():
         logger.debug("Attempting to query all_scores view")
         cursor.execute('''
             SELECT score, weight, comment, outcome_name, assignment_title, 
-                   course_title, course_code, term_title, created_on
+                   course_title, course_code, term_title, created_on, forum_link
             FROM all_scores
         ''')
     except sqlite3.OperationalError as e:
@@ -87,7 +87,9 @@ def get_feedback():
             'course_title': row['course_title'] or "",
             'course_code': row['course_code'] or "",
             'term_title': row['term_title'] or "",
-            'created_on': row['created_on'] or ""
+            'created_on': row['created_on'] or "",
+            'forum_link': row['forum_link'] or ""
+
         })
 
 
@@ -141,7 +143,7 @@ def export_data():
         # Base query
         query = '''
             SELECT score, weight, comment, outcome_name, assignment_title, 
-                   course_title, course_code, term_title, created_on
+                   course_title, course_code, term_title, created_on, forum_link
             FROM all_scores
             WHERE 1=1
         '''
@@ -185,7 +187,7 @@ def export_data():
     # Write header
     writer.writerow([
         'Outcome Name', 'Score', 'Comment', 'Weight', 'Assignment Title',
-        'Course Code', 'Course Title', 'Term Title'
+        'Course Code', 'Course Title', 'Term Title', 'Forum Link'
     ])
 
     
@@ -199,7 +201,9 @@ def export_data():
             row['assignment_title'] or "",
             row['course_code'] or "",
             row['course_title'] or "",
-            row['term_title'] or ""
+            row['term_title'] or "",
+            row['forum_link'] or ""
+
         ])
     
     # Prepare the response
@@ -230,7 +234,7 @@ def export_all_data():
         logger.debug("Exporting all data from all_scores view")
         cursor.execute('''
             SELECT score, weight, comment, outcome_name, assignment_title, 
-                   course_title, course_code, term_title, created_on
+                   course_title, course_code, term_title, created_on, forum_link
             FROM all_scores
         ''')
     except sqlite3.OperationalError as e:
@@ -246,7 +250,7 @@ def export_all_data():
     
     # Write header
     writer.writerow(['Score', 'Weight', 'Comment', 'Outcome Name', 'Assignment Title', 
-                     'Course Title', 'Course Code', 'Term Title', 'Created On'])
+                     'Course Title', 'Course Code', 'Term Title', 'Created On', 'Forum Link'])
     
     # Write data rows
     for row in rows:
@@ -259,7 +263,8 @@ def export_all_data():
             row['course_title'] or "",
             row['course_code'] or "",
             row['term_title'] or "",
-            row['created_on'] or ""
+            row['created_on'] or "",
+            row['forum_link'] or ""
         ])
     
     # Prepare the response
