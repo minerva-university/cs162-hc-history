@@ -8,17 +8,35 @@ This project can run fully with just an OpenAI API key (optional, for AI summari
 
 ## Table of Contents
 
-1. [For Non-CS Majors](#for-non-cs-majors)
+1. [Project Overview](#project-overview)
+2. [Video Demo](#video-demo)
+3. [For Non-CS Majors](#for-non-cs-majors)
    - [How to Download the Code](#how-to-download-the-code)
    - [How to Open a Terminal](#how-to-open-a-terminal)
    - [How to Navigate to the Code](#how-to-navigate-to-the-code)
-2. [Project Overview](#project-overview)
-3. [Video Demo](#video-demo)
 4. [Required Credentials](#required-credentials)
    - [How to Get an OpenAI API Key (Optional)](#how-to-get-an-openai-api-key-optional)
 5. [How to Set Up the Project (`setup.py`)](#how-to-set-up-the-project-setuppy)
 6. [How to Run the Project (`run.py`)](#how-to-run-the-project-runpy)
 7. [Accessing the Website](#accessing-the-website)
+
+---
+
+## Project Overview
+
+This project pulls feedback data from Forum using your active browser session, stores it in a local database (`data.db`), and lets you view or summarize that data.
+
+It includes:
+
+- A Python backend for fetching and storing data  
+- An optional AI summarization tool using OpenAI  
+- A modern web frontend to explore the data visually  
+
+---
+
+## Video Demo
+
+A demo video will go here once it's recorded.
 
 ---
 
@@ -41,7 +59,7 @@ Once in your terminal, use the `cd` command to move into the folder.
 
 Example:
 ```bash
-cd Desktop/cs162-hc-history
+cd Desktop/cs162-hc-history-main
 ```
 
 Then, to confirm you're in the right place:
@@ -155,24 +173,6 @@ source venv/bin/activate
 python -m venv venv
 venv\Scripts\activate
 ```
-
----
-
-## Project Overview
-
-This project pulls feedback data from Forum using your active browser session, stores it in a local database (`data.db`), and lets you view or summarize that data.
-
-It includes:
-
-- A Python backend for fetching and storing data  
-- An optional AI summarization tool using OpenAI  
-- A modern web frontend to explore the data visually  
-
----
-
-## Video Demo
-
-A demo video will go here once it's recorded.
 
 ---
 
