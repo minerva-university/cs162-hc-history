@@ -17,13 +17,6 @@ import {
   CardTitle,
   CardContent,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { BarChart2, AlertCircle as AlertCircleIcon } from "lucide-react";
 
@@ -35,17 +28,11 @@ interface ClassComparisonData {
 
 interface ClassComparisonChartProps {
   data: ClassComparisonData[];
-  selectedHC: string;
-  onChangeHC: (value: string) => void;
-  uniqueHCs: string[];
   animate: boolean;
 }
 
 export default function ClassComparisonChart({
   data,
-  selectedHC,
-  onChangeHC,
-  uniqueHCs,
   animate,
 }: ClassComparisonChartProps) {
   const average =
@@ -61,26 +48,10 @@ export default function ClassComparisonChart({
     >
       <Card className="border-none shadow-lg overflow-hidden h-[450px]">
         <CardHeader className="p-4 border-b border-[#E2E8F0]">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-              <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
-              Class Comparison
-            </CardTitle>
-            <Select
-              value={selectedHC || "All"}
-              onValueChange={(v) => onChangeHC(v === "All" ? "" : v)}
-            >
-              <SelectTrigger className="w-[180px] h-8 text-xs border-[#E2E8F0] focus:ring-[#38BDF8]">
-                <SelectValue placeholder="Select HC/LO" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All HC/LOs</SelectItem>
-                {uniqueHCs.map((hc) => (
-                  <SelectItem key={hc} value={hc}>{hc}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <CardTitle className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+            <BarChart2 className="h-4 w-4 text-[#8B6BF2]" />
+            Class Comparison
+          </CardTitle>
         </CardHeader>
 
         <CardContent className="p-4 h-[380px]">

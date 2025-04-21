@@ -68,7 +68,6 @@ export default function FeedbackPlatform() {
   const [uniqueTerms, setUniqueTerms]         = useState<string[]>([]);
 
   const [dbError, setDbError]                 = useState<string>("");
-  const [classComparisonHC, setClassComparisonHC] = useState<string>("");
 
   const [aiSummaries, setAiSummaries]         = useState<AISummary[]>([]);
   const [showHCs, setShowHCs]                 = useState(true);
@@ -345,11 +344,6 @@ export default function FeedbackPlatform() {
     // This ensures all top filters (term, course, score range) are respected
     let dataToUse = filteredData;
     
-    // If a specific HC is selected in the class comparison filter, further filter by that
-    if (classComparisonHC) {
-      dataToUse = dataToUse.filter(item => item.outcome_name === classComparisonHC);
-    }
-    
     // Get unique course codes from the filtered data
     const uniqueCourses = [...new Set(dataToUse.map(item => item.course_code))].filter(Boolean);
     
@@ -369,7 +363,7 @@ export default function FeedbackPlatform() {
         count: courseItems.length // Include count for reference
       };
     }).sort((a, b) => a.course.localeCompare(b.course)); // Sort alphabetically by course code
-  }, [filteredData, classComparisonHC]); // Now depends on filteredData instead of feedbackData
+  }, [filteredData]);
 
 
   // ─── JSX ────────────────────────────────────────────────────────────────────
@@ -501,9 +495,6 @@ export default function FeedbackPlatform() {
               />
               <ClassComparisonChart
                 data={generateClassComparisonData}
-                selectedHC={classComparisonHC}
-                onChangeHC={setClassComparisonHC}
-                uniqueHCs={uniqueHCs}
                 animate={animateCharts}
               />
             </div>
