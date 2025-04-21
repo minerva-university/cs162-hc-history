@@ -38,6 +38,7 @@ SELECT
     oa.type AS type,
     ad.section_id AS section_id,
     c.course_id AS course_id,
+    oa.klass_id AS klass_id,
     CASE 
         WHEN oa.type = 'assignment' THEN ad.assignment_title
         ELSE oa.type
