@@ -69,12 +69,13 @@ def insert_outcome_assessments(cursor, outcome_data):
         outcome_type = outcome.get("type")
         assignment_group_id = outcome.get("target-assignment-group-id")
         user_id = outcome.get("target-user-id")
+        class_id = outcome.get("klass-id")
 
         cursor.execute("""
         INSERT OR IGNORE INTO outcome_assessments 
-        (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, type, assignment_group_id, user_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, outcome_type, assignment_group_id, user_id))
+        (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, type, assignment_group_id, user_id, class_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (assessment_id, assignment_id, comment, created_on, graded_blindly, grader_user_id, outcome_id, score, outcome_type, assignment_group_id, user_id, class_id))
 
     print("✅ Outcome assessment data inserted.")
 
