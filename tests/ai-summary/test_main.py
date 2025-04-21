@@ -1,11 +1,14 @@
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 import sys
 import os
 from pathlib import Path
 
 # Add the ai-summary directory to the Python path
 sys.path.append(str(Path(__file__).parent.parent.parent / 'ai-summary'))
+
+# Add the parent directory to the Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import main
 from main import create_ai_summaries_table, fetch_grouped_comments, store_summary
@@ -15,6 +18,15 @@ TEST_OUTCOME = "Test Outcome"
 TEST_COMMENTS = "Test comment 1\nTest comment 2"
 TEST_STRENGTHS = "Test strength"
 TEST_IMPROVEMENT = "Test improvement"
+
+@pytest.fixture(autouse=True)
+def setup_env():
+    # Set CI environment variable for tests
+    os.environ['CI'] = 'true'
+    yield
+    # Clean up
+    if 'CI' in os.environ:
+        del os.environ['CI']
 
 @pytest.fixture
 def mock_db_functions():
