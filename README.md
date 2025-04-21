@@ -205,6 +205,50 @@ https://platform.openai.com/account/billing
 
 ---
 
+## AI Summary Feature
+
+The AI Summary feature uses OpenAI's GPT models to analyze your feedback and generate natural language summaries. These summaries provide insights into your strengths and areas for improvement for each learning outcome.
+
+### Setting Up the AI Summary Feature
+
+1. **First-Time Setup**
+   - When you run `setup.py`, you'll be asked if you want to enable AI summarization
+   - If you choose yes, you'll be prompted to enter your OpenAI API key
+   - The key will be saved in `.env` file in your project root directory
+   - This file is automatically ignored by Git for security
+
+2. **Manual API Key Setup**
+   If you want to add or update your API key later:
+   - Create or edit the `.env` file in your project root directory
+   - Add your API key in this format:
+     ```
+     OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+     ```
+   - Restart the application for changes to take effect
+
+### How AI Summaries Work
+
+The AI summary feature:
+1. Analyzes all feedback comments for each learning outcome
+2. Generates personalized summaries highlighting:
+   - Your strengths and accomplishments
+   - Specific areas for improvement
+   - Patterns across different courses and terms
+3. Updates automatically when new feedback is pulled
+4. Displays summaries in an easy-to-read format on the web interface
+
+### Viewing AI Summaries
+
+Once enabled:
+1. Navigate to the web interface
+2. Click on any learning outcome
+3. View the AI-generated summary in the expanded card
+4. Use the navigation buttons to cycle through different learning outcomes
+
+> Note: The first time you view summaries for a learning outcome, there might be a brief delay as the summary is generated.
+
+---
+
 ## How to Set Up the Project (`setup.py`)
 
 Run this the first time to set everything up. This will automatically run the project as well:

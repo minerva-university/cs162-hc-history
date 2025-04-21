@@ -4,23 +4,34 @@ import time
 from dotenv import load_dotenv
 import openai
 from pathlib import Path
+import json
+import sys
+from typing import Dict, List, Optional, Tuple
 
 from db import create_ai_summaries_table, fetch_grouped_comments, fetch_outcome_metadata, store_summary
 from generate import generate_summary_parts
 
-# Load environment variables from the main .env file
-env_path = Path(__file__).parent.parent / '.env'
+# Get the absolute path to the directory containing this script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(script_dir, '.env')
+
+# Load environment variables from .env file
 load_dotenv(env_path)
 
 # Check if OpenAI API key exists, if not prompt user
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
-    print("🔑 OpenAI API key not found in .env file.")
-    api_key = input("Please enter your OpenAI API key: ").strip()
-    # Save the key to .env file
-    with open(env_path, 'a') as f:
-        f.write(f"\nOPENAI_API_KEY={api_key}\n")
-    print("✅ OpenAI API key saved to .env file for future use.")
+    if os.environ.get('CI'):
+        # In CI environment, use a dummy key
+        api_key = 'dummy-key-for-testing'
+    else:
+        # In local environment, prompt for key
+        print("🔑 OpenAI API key not found in .env file.")
+        api_key = input("Please enter your OpenAI API key: ").strip()
+        # Save the key to .env file
+        with open(env_path, 'a') as f:
+            f.write(f"\nOPENAI_API_KEY={api_key}\n")
+        print("✅ OpenAI API key saved to .env file for future use.")
 
 openai.api_key = api_key
 # Define client as the openai module
