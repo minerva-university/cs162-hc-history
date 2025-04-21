@@ -1,3 +1,16 @@
+####  This project uses React, TypeScript, and Jest with React Testing Library for component testing. This setup enables us to test interactive UI components and validate data rendering logic in isolation.
+
+
+
+## Testing Overview
+
+### What’s Covered?
+
+We currently test:
+	•	FeedbackPlatform: Main dashboard UI displaying feedback tabs and summaries.
+	•	FeedbackTable: Table component rendering feedback entries with proper formatting and scores.
+	•	MultiSelect: Custom UI dropdown supporting multi-selection and dynamic updates.
+
 # Tests Documentation
 
 This directory contains automated tests for the application using **pytest**. The tests cover various components of the system including setup scripts, runtime management, and backend API functionality.
