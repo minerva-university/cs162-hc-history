@@ -90,19 +90,19 @@ export default function RankingTable({ data }: { data: FeedbackItem[] }) {
 
   return (
     <motion.div
-      className="space-y-6"
+      className=""
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="border-none shadow-lg overflow-hidden">
+      <Card className="border-none shadow-lg overflow-hidden mb-6">
         <CardHeader className="bg-gradient-to-r from-[#0F172A] to-[#334155] text-white p-4">
           <CardTitle className="text-xl font-bold">Overall Performance</CardTitle>
           <CardDescription className="text-[#94A3B8] mt-1">
             Aggregated metrics across all categories
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col items-center">
             <h2 className="text-4xl font-bold text-[#334155]">{avgScore}</h2>
             <p className="text-[#64748B]">
@@ -157,7 +157,7 @@ export default function RankingTable({ data }: { data: FeedbackItem[] }) {
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <div className="flex flex-wrap items-center justify-between px-6 py-3 border-b border-[#E2E8F0] gap-3">
+              <div className="flex flex-wrap items-center justify-between px-4 sm:px-6 py-3 border-b border-[#E2E8F0] gap-3">
                 <h3 className="font-medium text-[#0F172A]">
                   Showing {rankedOutcomes.length} {showType} outcomes
                 </h3>
@@ -199,16 +199,16 @@ export default function RankingTable({ data }: { data: FeedbackItem[] }) {
               <table className="w-full">
                 <thead>
                   <tr className="bg-[#F1F5F9]">
-                    <th className="px-6 py-3 text-left text-xs text-[#64748B] uppercase tracking-wider">
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs text-[#64748B] uppercase tracking-wider">
                       Rank
                     </th>
-                    <th className="px-6 py-3 text-left text-xs text-[#64748B] uppercase tracking-wider">
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs text-[#64748B] uppercase tracking-wider">
                       HC/LO
                     </th>
-                    <th className="px-6 py-3 text-right text-xs text-[#64748B] uppercase tracking-wider">
+                    <th className="px-4 sm:px-6 py-3 text-right text-xs text-[#64748B] uppercase tracking-wider">
                       Average Score
                     </th>
-                    <th className="px-6 py-3 text-right text-xs text-[#64748B] uppercase tracking-wider">
+                    <th className="px-4 sm:px-6 py-3 text-right text-xs text-[#64748B] uppercase tracking-wider">
                       Feedback Count
                     </th>
                   </tr>
@@ -225,8 +225,8 @@ export default function RankingTable({ data }: { data: FeedbackItem[] }) {
                           : ""
                       }`}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
-                      <td className="px-6 py-4 font-medium">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">{index + 1}</td>
+                      <td className="px-4 sm:px-6 py-4 font-medium">
                         <div className="flex items-center gap-2">
                           <span>{outcome.name}</span>
                           <span
@@ -241,13 +241,13 @@ export default function RankingTable({ data }: { data: FeedbackItem[] }) {
                         </div>
                       </td>
                       <td
-                        className={`px-6 py-4 whitespace-nowrap text-right font-bold ${getScoreColorClass(
+                        className={`px-4 sm:px-6 py-4 whitespace-nowrap text-right font-bold ${getScoreColorClass(
                           outcome.avgScore
                         )}`}
                       >
                         {outcome.avgScore.toFixed(2)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-[#64748B]">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-[#64748B]">
                         {outcome.count}
                       </td>
                     </tr>

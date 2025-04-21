@@ -87,7 +87,7 @@ export default function ByCourseTable({ filteredData }: ByCourseTableProps) {
 
   return (
     <motion.div
-      className="space-y-6"
+      className=""
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -99,18 +99,18 @@ export default function ByCourseTable({ filteredData }: ByCourseTableProps) {
             Detailed performance metrics by course
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="bg-[#F1F5F9] border-b border-[#E2E8F0]">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
                     Course
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
                     Average Score
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-[#64748B] uppercase tracking-wider">
                     Course Score
                   </th>
                 </tr>
@@ -118,13 +118,13 @@ export default function ByCourseTable({ filteredData }: ByCourseTableProps) {
               <tbody className="divide-y divide-[#E2E8F0]">
                 {mergedData.map((row) => (
                   <tr key={row.course_code} className="hover:bg-[#F8FAFC]">
-                    <td className="px-6 py-4 whitespace-nowrap text-[#334155] font-medium">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-[#334155] font-medium">
                       {row.course_code}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[#334155]">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-[#334155]">
                       {row.averageScore.toFixed(2)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[#334155]">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-[#334155]">
                       {row.courseScore !== null
                         ? row.courseScore.toFixed(2)
                         : "—"}
