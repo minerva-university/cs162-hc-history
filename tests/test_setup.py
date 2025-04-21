@@ -221,7 +221,7 @@ def test_main_success(monkeypatch, capsys):
     def fake_exists(path):
         if path == "requirements.txt":
             return False  # skip dependency installation
-        if path == "./backend/data.db":
+        if path in ["./backend/data.db", ".env"]:  # <- Add .env
             return True
         return False
     monkeypatch.setattr(os.path, "exists", fake_exists)
@@ -243,4 +243,4 @@ def test_main_success(monkeypatch, capsys):
     setup.main()
     captured = capsys.readouterr().out
     # Check that key prints occur.
-    assert "🚀 Running backend/setup.py..." in captured
+    assert "🚀 Running backend/scrape.py..." in captured
