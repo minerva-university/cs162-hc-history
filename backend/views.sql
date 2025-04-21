@@ -35,6 +35,9 @@ SELECT
     oa.comment AS comment,
     lo.name AS outcome_name, 
     lo.outcome_id AS outcome_id, 
+    oa.type AS type,
+    ad.section_id AS section_id,
+    c.course_id AS course_id,
     CASE 
         WHEN oa.type = 'assignment' THEN ad.assignment_title
         ELSE oa.type
@@ -49,6 +52,15 @@ SELECT
     c.term_id AS term_id, 
     c.state AS course_state,
     oa.created_on AS created_on,
+    CASE 
+        WHEN oa.type = 'assignment' THEN 
+            'https://forum.minerva.edu/app/assignments/' || oa.assignment_id
+        WHEN ad.section_id IS NOT NULL THEN 
+            'https://forum.minerva.edu/app/courses/' || c.course_id || 
+            '/sections/' || ad.section_id || 
+            '/classes/' || oa.assignment_id
+    ELSE NULL
+    END AS assignment_link,
     CASE 
         WHEN oa.type = 'assignment' THEN ad.weight
         ELSE '1x'

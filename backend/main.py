@@ -198,6 +198,10 @@ def process_assignments(BASE_URL, headers, db_name, assignment_ids):
         assignment_data = fetch_assignment_data(BASE_URL, headers, assignment_id)
         
         if assignment_data:
+            print(f"\n🔍 Assignment ID: {assignment_id}")
+            print(json.dumps(assignment_data, indent=2))
+            break  # stop after first for clarity
+
             if insert_assignment_data(cursor, assignment_data):
                 assignments_added += 1
 
