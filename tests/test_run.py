@@ -15,7 +15,10 @@ import run
 def test_run_command_success(monkeypatch, capsys):
     # Updated to accept `cwd`
     def fake_run(cmd, check, cwd=None):
-        return  # simulate success
+        class DummyProcess:
+            def __enter__(self): return self
+            def __exit__(self, *args): pass
+        return DummyProcess()
     monkeypatch.setattr(subprocess, "run", fake_run)
 
     run.run_command(["echo", "hello"])
@@ -23,9 +26,11 @@ def test_run_command_success(monkeypatch, capsys):
     assert "✅ Successfully ran: echo hello" in captured
 
 def test_run_command_failure(monkeypatch, capsys):
-    # Updated to accept `cwd`
     def fake_run(cmd, check, cwd=None):
-        raise subprocess.CalledProcessError(1, cmd)
+        class DummyProcess:
+            def __enter__(self): raise subprocess.CalledProcessError(1, cmd)
+            def __exit__(self, *args): pass
+        return DummyProcess()
     monkeypatch.setattr(subprocess, "run", fake_run)
 
     with pytest.raises(SystemExit) as exit_info:
@@ -33,6 +38,7 @@ def test_run_command_failure(monkeypatch, capsys):
     captured = capsys.readouterr().out
     assert "❌ Error while running: false command" in captured
     assert exit_info.value.code == 1
+
 
 # --- Tests for check_required_files() ---
 
