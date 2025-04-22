@@ -196,14 +196,14 @@ def test_export_data(client_export):
 
     expected_header = [
         'Outcome Name', 'Score', 'Comment', 'Weight',
-        'Assignment Title', 'Course Code', 'Course Title', 'Term Title'
+        'Assignment Title', 'Course Code', 'Course Title', 'Term Title', 'Forum Link'
     ]
     # Check CSV header.
     assert rows[0] == expected_header
 
     expected_row = [
         'Outcome Export', '4.5', 'Well done', '10x',
-        'Export Assignment', 'CExport', 'Course Export', 'Winter 2022'
+        'Export Assignment', 'CExport', 'Course Export', 'Winter 2022', 'https://forums/minerva/456'
     ]
     # Check CSV data row.
     assert rows[1] == expected_row
@@ -222,12 +222,12 @@ def test_export_all_data(client_export_all):
 
     expected_header = [
         'Score', 'Weight', 'Comment', 'Outcome Name', 'Assignment Title',
-        'Course Title', 'Course Code', 'Term Title', 'Created On'
+        'Course Title', 'Course Code', 'Term Title', 'Created On', 'Forum Link'
     ]
     assert rows[0] == expected_header
 
     expected_row = [
         '3.2', '5x', 'Average', 'Outcome All', 'All Assignment',
-        'Course All', 'CAll', 'Spring 2022', '2022-03-10'
+        'Course All', 'CAll', 'Spring 2022', '2022-03-10', 'https://forums/minerva/789'
     ]
     assert rows[1] == expected_row
