@@ -11,9 +11,9 @@ from typing import Dict, List, Optional, Tuple
 from db import create_ai_summaries_table, fetch_grouped_comments, fetch_outcome_metadata, store_summary
 from generate import generate_summary_parts
 
-# Get the absolute path to the directory containing this script
-script_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(script_dir, '.env')
+# Get the absolute path to the root directory
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env_path = os.path.join(root_dir, '.env')
 
 # Load environment variables from .env file
 load_dotenv(env_path)
@@ -28,7 +28,7 @@ if not api_key:
         # In local environment, prompt for key
         print("🔑 OpenAI API key not found in .env file.")
         api_key = input("Please enter your OpenAI API key: ").strip()
-        # Save the key to .env file
+        # Save the key to .env file in the root directory
         with open(env_path, 'a') as f:
             f.write(f"\nOPENAI_API_KEY={api_key}\n")
         print("✅ OpenAI API key saved to .env file for future use.")
