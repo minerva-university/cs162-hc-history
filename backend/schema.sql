@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS outcome_assessments (
     type TEXT,
     assignment_group_id INTEGER,
     user_id TEXT,
+    class_id INTEGER,
     updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

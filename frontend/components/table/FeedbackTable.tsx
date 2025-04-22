@@ -25,6 +25,7 @@ interface FeedbackItem {
   created_on: string;
   weight: string;
   weight_numeric?: number;
+  forum_link?: string;
 }
 
 type Props = {
@@ -57,10 +58,13 @@ export default function FeedbackTable({ data }: Props) {
 
   // Handle click on assignment title
   const handleAssignmentClick = (item: FeedbackItem) => {
-    // In the future, this could navigate to an assignment page or open a modal with details
-    // For now, we'll just show an alert with the assignment details
-    alert(`Assignment: ${item.assignment_title}\nCourse: ${item.course_title}\n\nThis is a placeholder for future link functionality.`);
+    if (item.forum_link) {
+      window.open(item.forum_link, "_blank");
+    } else {
+      alert("No link available for this assignment or class.");
+    }
   };
+  
 
   // Toggle sort direction
   const toggleSortDirection = () => {

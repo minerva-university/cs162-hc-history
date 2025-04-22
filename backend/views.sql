@@ -9,6 +9,7 @@ SELECT
     lo.outcome_id AS outcome_id, 
     ad.assignment_title AS assignment_title, 
     ad.assignment_id AS assignment_id, 
+    ad.section_id AS section_id,
     c.course_title AS course_title, 
     c.course_code AS course_code,
     co.college_code AS college_code,
@@ -35,6 +36,10 @@ SELECT
     oa.comment AS comment,
     lo.name AS outcome_name, 
     lo.outcome_id AS outcome_id, 
+    oa.type AS type,
+    ad.section_id AS section_id,
+    c.course_id AS course_id,
+    oa.class_id AS class_id,
     CASE 
         WHEN oa.type = 'assignment' THEN ad.assignment_title
         ELSE oa.type
@@ -50,6 +55,15 @@ SELECT
     c.state AS course_state,
     oa.created_on AS created_on,
     CASE 
+        WHEN oa.type = 'assignment' THEN 
+            'https://forum.minerva.edu/app/assignments/' || oa.assignment_id
+        WHEN oa.class_id IS NOT NULL THEN 
+            'https://forum.minerva.edu/app/courses/' || c.course_id || 
+            '/sections/' || COALESCE(ad.section_id, fallback_sections.section_id) || 
+            '/classes/' || oa.class_id
+        ELSE NULL
+    END AS forum_link,
+    CASE 
         WHEN oa.type = 'assignment' THEN ad.weight
         ELSE '1x'
     END AS weight
@@ -58,4 +72,15 @@ JOIN learning_outcomes lo ON oa.outcome_id = lo.outcome_id
 JOIN courses c ON lo.course_id = c.course_id
 JOIN terms t ON c.term_id = t.term_id
 JOIN colleges co ON c.college_id = co.college_id
-LEFT JOIN assignments_data ad ON oa.assignment_id = ad.assignment_id;
+LEFT JOIN assignments_data ad ON oa.assignment_id = ad.assignment_id
+LEFT JOIN (
+  SELECT 
+    ad.section_id,
+    c.course_title
+  FROM assignments_data ad
+  JOIN outcome_assessments oa2 ON oa2.assignment_id = ad.assignment_id
+  JOIN learning_outcomes lo2 ON oa2.outcome_id = lo2.outcome_id
+  JOIN courses c ON lo2.course_id = c.course_id
+  WHERE oa2.type = 'assignment' AND ad.section_id IS NOT NULL
+  GROUP BY c.course_title
+) AS fallback_sections ON fallback_sections.course_title = c.course_title;
