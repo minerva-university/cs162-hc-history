@@ -41,7 +41,7 @@ It includes:
 
 ## Video Demo
 
-A demo video will go here once it's recorded.
+This is the link to our demo video: https://youtu.be/9OJhvBPjuWA 
 
 ---
 
