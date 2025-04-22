@@ -67,9 +67,10 @@ def fake_get_db_connection_success_feedback():
             'course_title': 'Course 101',
             'course_code': 'C101',
             'term_title': 'Fall 2021',
-            'created_on': '2021-09-01'
+            'created_on': '2021-09-01',
+            'forum_link': 'https://forums/minerva/123'
         },
-        {
+        { # deliberately full of None to test fallbacks
             'score': None,
             'weight': None,
             'comment': None,
@@ -78,7 +79,8 @@ def fake_get_db_connection_success_feedback():
             'course_title': None,
             'course_code': None,
             'term_title': None,
-            'created_on': None
+            'created_on': None,
+            'forum_link': None
         }
     ]
     fake_cursor = FakeCursor(rows=fake_rows, fail_on_all_scores=False)
@@ -100,7 +102,8 @@ def fake_get_db_connection_export():
         'course_title': 'Course Export',
         'course_code': 'CExport',
         'term_title': 'Winter 2022',
-        'created_on': '2022-01-15'
+        'created_on': '2022-01-15',
+        'forum_link': 'https://forums/minerva/456'
     }]
     fake_cursor = FakeCursor(rows=fake_rows, fail_on_all_scores=False)
     return FakeConnection(fake_cursor)
@@ -116,7 +119,8 @@ def fake_get_db_connection_export_all():
         'course_title': 'Course All',
         'course_code': 'CAll',
         'term_title': 'Spring 2022',
-        'created_on': '2022-03-10'
+        'created_on': '2022-03-10',
+        'forum_link': 'https://forums/minerva/789'
     }]
     fake_cursor = FakeCursor(rows=fake_rows, fail_on_all_scores=False)
     return FakeConnection(fake_cursor)
