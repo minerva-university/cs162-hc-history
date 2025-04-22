@@ -59,7 +59,7 @@ export default function FeedbackTable({ data }: Props) {
   // Handle click on assignment title
   const handleAssignmentClick = (item: FeedbackItem) => {
     if (item.forum_link) {
-      window.open(item.forum_link, "_blank");
+      window.open(item.forum_link, "_blank", "noopener,noreferrer");
     } else {
       alert("No link available for this assignment or class.");
     }
@@ -160,10 +160,15 @@ export default function FeedbackTable({ data }: Props) {
                   <div className="font-medium text-[#0F172A]">{item.course_code}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-normal">
-                  <div 
-                    className="text-[#334155] hover:text-[#3A4DB9] hover:underline cursor-pointer flex items-center gap-1.5"
-                    onClick={() => handleAssignmentClick(item)}
-                  >
+                <div
+                  title={item.forum_link ? "Open in Forum" : "No link available"}
+                  className={`flex items-center gap-1.5 ${
+                    item.forum_link
+                      ? "text-[#334155] hover:text-[#3A4DB9] hover:underline cursor-pointer"
+                      : "text-gray-400 cursor-default"
+                  }`}
+                  onClick={() => item.forum_link && handleAssignmentClick(item)}
+                >
                     {item.assignment_title === "poll" ? (
                       // Use ClipboardList icon for polls
                       <ClipboardList className="h-3.5 w-3.5 flex-shrink-0 mt-[2px]" />
