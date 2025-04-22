@@ -31,6 +31,8 @@ interface FeedbackItem {
   outcome_name: string;
   assignment_title: string;
   course_title: string;
+  assignment_id: number;
+  assignment_link?: string;
   course_code: string;
   term_title: string;
   created_on: string;
@@ -531,7 +533,13 @@ export default function FeedbackPlatform() {
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <FeedbackTable data={filteredData} />
+                  <FeedbackTable data={filteredData} onAssignmentClick={(item) => {
+                    if (item.assignment_link) {
+                      window.open(item.assignment_link, '_blank');
+                    } else {
+                      alert("No assignment link available.");
+                    }
+                  }} />
                 </CardContent>
                 <CardFooter className="p-4 border-t border-[#E2E8F0] flex items-center justify-between">
                   <div className="text-sm text-[#64748B]">
@@ -548,7 +556,7 @@ export default function FeedbackPlatform() {
         )}
 
           {activeTab === "overall" && (
-            <motion.div className="space-y-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+           <motion.div className="space-y-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
               <RankingTable data={feedbackData} />
             </motion.div>
           )}
